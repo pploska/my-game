@@ -4,104 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لعبة المؤامرة</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    :root {
+      --bg-dark: #0f0f11; --panel-bg: #1c1c21; --red: #c0392b; --green: #27ae60; --gold: #f1c40f;
+    }
     body {
-      background-color: #111;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
+      background-color: var(--bg-dark); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center; margin: 0; padding: 20px;
     }
     .container {
-      background-color: #222;
-      padding: 30px;
-      border-radius: 15px;
-      max-width: 400px;
-      margin: 50px auto;
-      border: 1px solid #c0392b;
-      box-shadow: 0 0 20px rgba(192, 57, 43, 0.4);
+      background-color: var(--panel-bg); padding: 30px; border-radius: 15px; max-width: 500px;
+      margin: 30px auto; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.8);
     }
-    h1 { color: #e74c3c; margin-bottom: 5px;}
-    p { color: #bdc3c7; margin-bottom: 25px;}
+    h1, h2 { color: var(--red); margin-bottom: 5px; text-shadow: 0 0 10px rgba(192,57,43,0.5); }
+    p { color: #bdc3c7; margin-bottom: 25px; line-height: 1.6; }
     input {
       padding: 12px; font-size: 16px; width: 80%; border-radius: 8px; border: 1px solid #555;
-      background-color: #333; color: white; margin-bottom: 15px; text-align: center;
+      background-color: #111; color: white; margin-bottom: 15px; text-align: center;
     }
-    input:focus { outline: none; border-color: #e74c3c; }
+    input:focus { outline: none; border-color: var(--red); }
     button {
-      background-color: #c0392b; color: white; border: none; padding: 12px 25px;
-      font-size: 16px; border-radius: 8px; cursor: pointer; width: 85%;
-      transition: 0.3s; font-weight: bold; margin-bottom: 10px;
+      background-color: var(--red); color: white; border: none; padding: 12px 25px; font-size: 16px;
+      border-radius: 8px; cursor: pointer; width: 85%; transition: 0.3s; font-weight: bold; margin-bottom: 10px;
     }
     button:hover { background-color: #e74c3c; transform: scale(1.05); }
     .btn-secondary { background-color: #2980b9; }
     .btn-secondary:hover { background-color: #3498db; }
-    .btn-success { background-color: #27ae60; width: 100%; font-size: 20px; margin-top: 15px; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
-    .btn-success:hover { background-color: #2ecc71; transform: scale(1.02); }
+    .btn-success { background-color: var(--green); }
     
-    #roomCodeDisplay {
-      color: #2ecc71; font-size: 24px; letter-spacing: 3px; margin: 15px 0;
-      background: #111; padding: 10px; border-radius: 8px; border: 1px dashed #2ecc71;
-    }
+    /* لوحة اللعب */
+    .board { display: flex; justify-content: space-around; margin: 20px 0; padding: 15px; background: #000; border-radius: 10px; }
+    .card-slot { width: 45%; padding: 15px 0; border-radius: 8px; font-weight: bold; font-size: 20px; }
+    .slot-red { border: 2px solid var(--red); color: var(--red); }
+    .slot-green { border: 2px solid var(--green); color: var(--green); }
+    .fail-track { margin: 15px 0; color: var(--gold); font-size: 18px; }
     
-    /* تصميم قائمة اللاعبين */
-    #playersList { list-style: none; padding: 0; font-size: 20px; text-align: right; }
-    #playersList li { background-color: #333; margin: 5px 0; padding: 10px; border-radius: 5px; border-right: 4px solid #2ecc71; }
-    .owner-item { background-color: #2c3e50 !important; border-right: 4px solid #f1c40f !important; margin-bottom: 20px !important; }
-    .owner-badge { background-color: #f1c40f; color: #000; font-size: 12px; padding: 3px 8px; border-radius: 5px; margin-right: 10px; font-weight: bold; vertical-align: middle; }
-    
-    /* تصميم بطاقات اللعب السرية */
-    #roleCard {
-      padding: 25px; border-radius: 12px; margin-top: 25px; display: none;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    }
-    .role-spy { background-color: #8B0000; border: 2px solid #e74c3c; }
-    .role-citizen { background-color: #1A5276; border: 2px solid #3498db; }
-    .role-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-    .spies-list { color: #ffcccc; font-size: 18px; margin-top: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+    /* قائمة اللاعبين */
+    #playersList, #gamePlayersList { list-style: none; padding: 0; text-align: right; margin-top: 20px; }
+    #playersList li, #gamePlayersList li { background-color: #222; margin: 5px 0; padding: 12px; border-radius: 5px; border-right: 4px solid var(--red); display: flex; justify-content: space-between; align-items: center;}
+    .dead-player { opacity: 0.5; text-decoration: line-through; border-right-color: #555 !important; }
+    .role-card { margin-top: 20px; padding: 15px; border-radius: 10px; border: 2px dashed #555; background: #000; }
   </style>
 </head>
 <body>
 
   <div class="container" id="loginScreen">
-    <h1>🕵️‍♂️ المؤامرة</h1>
-    <p>أدخل اسمك، ثم اختر إنشاء أو انضمام</p>
+    <h1>🎭 المؤامرة</h1>
+    <p>الخداع، التحالفات، والبقاء للأذكى</p>
     <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." required>
-    <hr style="border-color: #444; margin: 20px 0;">
+    <hr style="border-color: #333; margin: 20px 0;">
     <button id="createRoomBtn">✨ إنشاء غرفة جديدة</button>
-    <hr style="border-color: #444; margin: 20px 0;">
-    <input type="text" id="roomCodeInput" placeholder="كود الغرفة (للانضمام فقط)" maxlength="4" style="text-transform: uppercase;">
+    <hr style="border-color: #333; margin: 20px 0;">
+    <input type="text" id="roomCodeInput" placeholder="كود الغرفة" maxlength="4" style="text-transform: uppercase;">
     <button id="joinRoomBtn" class="btn-secondary">🔗 انضمام للغرفة</button>
   </div>
 
   <div class="container" id="lobbyScreen" style="display: none;">
-    <h1>غرفة الانتظار ⏳</h1>
-    <div id="roomCodeDisplay">كود الغرفة: ----</div>
-    <p>أرسل هذا الكود لأصدقائك للانضمام</p>
-    
+    <h2>غرفة الانتظار ⏳</h2>
+    <h1 style="color: var(--green); letter-spacing: 5px;" id="roomCodeDisplay">----</h1>
+    <p>شارك الكود. اللعبة تدعم (5 إلى 12 لاعب)</p>
     <ul id="playersList"></ul>
-    <h3 id="playerCount" style="color: #f1c40f;">العدد الحالي: 0</h3>
-
-    <button id="startGameBtn" class="btn-success" style="display: none;">🚀 بدء اللعبة الآن</button>
-    <p id="waitingMessage" style="display: none; color: #3498db; font-weight: bold; margin-top: 15px;">في انتظار مالك الغرفة لبدء اللعبة...</p>
+    <h3 id="playerCount" style="color: var(--gold);">العدد: 0</h3>
+    <button id="startGameBtn" class="btn-success" style="display: none;">🚀 بدء المؤامرة</button>
+    <p id="waitingMessage" style="display: none; color: #3498db;">بانتظار المالك لبدء اللعبة...</p>
   </div>
 
-  <div class="container" id="gameScreen" style="display: none; border-color: #2ecc71; box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);">
-    <h1 style="color: #2ecc71;">بدأت المؤامرة! 🎭</h1>
-    <p>إليك بطاقة هويتك السرية. لا ترها لأحد!</p>
+  <div class="container" id="gameScreen" style="display: none; max-width: 800px;">
+    <h2>طاولة المؤامرة 🩸</h2>
     
-    <div id="roleCard">
-      <div class="role-title" id="myRoleTitle"></div>
-      <p id="myRoleDesc"></p>
-      <div id="otherSpiesDiv" class="spies-list" style="display: none;"></div>
+    <div class="board">
+      <div class="card-slot slot-red">بطاقات حمراء<br><span id="redScore" style="font-size: 30px;">0</span> / 6</div>
+      <div class="card-slot slot-green">بطاقات خضراء<br><span id="greenScore" style="font-size: 30px;">0</span> / 5</div>
     </div>
+    <div class="fail-track">فشل الحكومة: <span id="failScore">0</span> / 2</div>
+
+    <div class="role-card" id="myRoleDisplay">
+      <h3 id="myRoleTitle" style="margin: 0 0 10px 0;"></h3>
+      <p id="myRoleDesc" style="margin: 0; font-size: 14px;"></p>
+      <div id="spiesListDiv" style="color: #ff9999; margin-top: 10px; font-weight: bold;"></div>
+    </div>
+
+    <div id="actionArea" style="margin-top: 20px; padding: 15px; background: #2c3e50; border-radius: 10px; display: none;">
+      <h3 id="actionTitle" style="color: white; margin-top:0;"></h3>
+      <div id="actionContent"></div>
+    </div>
+
+    <h3 style="text-align: right; border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 30px;">اللاعبون</h3>
+    <ul id="gamePlayersList"></ul>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, push, onValue, onDisconnect, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, set, push, onValue, onDisconnect, update, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
+    // 🔴🔴🔴 ضع بيانات فايربيس الخاصة بك هنا 🔴🔴🔴
     const firebaseConfig = {
       apiKey: "AIzaSyCu5Hbu2Rqml7_4DICZf8XyM9B4hzbpdOQ",
       authDomain: "ploska-ae755.firebaseapp.com",
@@ -115,167 +112,235 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // العناصر
-    const createRoomBtn = document.getElementById('createRoomBtn');
-    const joinRoomBtn = document.getElementById('joinRoomBtn');
-    const nameInput = document.getElementById('playerName');
-    const roomCodeInput = document.getElementById('roomCodeInput');
-    
-    const loginScreen = document.getElementById('loginScreen');
-    const lobbyScreen = document.getElementById('lobbyScreen');
-    const gameScreen = document.getElementById('gameScreen');
-    
-    const roomCodeDisplay = document.getElementById('roomCodeDisplay');
-    const playersList = document.getElementById('playersList');
-    const playerCount = document.getElementById('playerCount');
-    
-    const startGameBtn = document.getElementById('startGameBtn');
-    const waitingMessage = document.getElementById('waitingMessage');
+    // المتغيرات
+    let myKey = null, currentRoom = "", isOwner = false;
+    let gameData = {};
 
-    const roleCard = document.getElementById('roleCard');
-    const myRoleTitle = document.getElementById('myRoleTitle');
-    const myRoleDesc = document.getElementById('myRoleDesc');
-    const otherSpiesDiv = document.getElementById('otherSpiesDiv');
+    // دوال مساعدة
+    const uid = () => Math.random().toString(36).substr(2, 9);
+    const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 3000, timerProgressBar: true });
 
-    let myPlayerRef = null;
-    let myPlayerKey = null;
-    let currentRoom = "";
-    let roomPlayersData = {};
-
-    function generateRoomCode() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let code = '';
-      for (let i = 0; i < 4; i++) { code += chars.charAt(Math.floor(Math.random() * chars.length)); }
-      return code;
-    }
-
-    function updateGameUI() {
-      const myData = roomPlayersData[myPlayerKey];
-      if (!myData || !myData.role) return;
-
-      roleCard.style.display = 'block';
-      
-      if (myData.role === 'متآمر') {
-        roleCard.className = 'role-spy';
-        myRoleTitle.innerText = '🔪 أنت متآمر';
-        myRoleDesc.innerText = 'مهمتك هي خداع الآخرين والسيطرة على اللعبة. تعاون مع زملائك!';
-        
-        let spies = [];
-        for (let key in roomPlayersData) {
-          if (key !== myPlayerKey && roomPlayersData[key].role === 'متآمر') {
-            spies.push(roomPlayersData[key].name);
-          }
-        }
-        
-        otherSpiesDiv.style.display = 'block';
-        if (spies.length > 0) {
-          otherSpiesDiv.innerHTML = '<strong>زملائك المتآمرون:</strong><br>' + spies.join(' ، ');
-        } else {
-          otherSpiesDiv.innerHTML = 'أنت المتآمر الوحيد في هذه الجولة!';
-        }
-      } else {
-        roleCard.className = 'role-citizen';
-        myRoleTitle.innerText = '🛡️ أنت مواطن صالح';
-        myRoleDesc.innerText = 'ابحث عن الخونة المتآمرين ولا تثق بأي شخص! حاول كشفهم قبل فوات الأوان.';
-        otherSpiesDiv.style.display = 'none';
-      }
-    }
-
-    function enterRoom(name, roomCode, isOwner) {
-      loginScreen.style.display = 'none';
-      lobbyScreen.style.display = 'block';
-      roomCodeDisplay.innerText = 'كود الغرفة: ' + roomCode;
-      
-      if (isOwner) {
-        startGameBtn.style.display = 'block';
-        waitingMessage.style.display = 'none';
-      } else {
-        startGameBtn.style.display = 'none';
-        waitingMessage.style.display = 'block';
-      }
-
-      const roomRef = ref(db, 'rooms/' + roomCode + '/players');
-      myPlayerRef = push(roomRef);
-      myPlayerKey = myPlayerRef.key;
-      
-      set(myPlayerRef, { name: name, isOwner: isOwner });
-      onDisconnect(myPlayerRef).remove();
-
-      onValue(roomRef, (snapshot) => {
-        roomPlayersData = snapshot.val() || {};
-        let count = 0;
-        let ownerHTML = '';
-        let othersHTML = '';
-
-        for (let key in roomPlayersData) {
-          const player = roomPlayersData[key];
-          count++;
-          if (player.isOwner) {
-            ownerHTML = `<li class="owner-item">👑 ${player.name} <span class="owner-badge">مالك الغرفة</span></li>`;
-          } else {
-            othersHTML += `<li>👤 ${player.name}</li>`;
-          }
-        }
-
-        playersList.innerHTML = ownerHTML + othersHTML;
-        playerCount.innerText = 'العدد الحالي: ' + count;
-
-        // تحديث شاشة اللعب إذا كنا داخل اللعبة
-        if (gameScreen.style.display === 'block') {
-          updateGameUI();
-        }
-      });
-
-      const gameStateRef = ref(db, 'rooms/' + roomCode + '/status');
-      onValue(gameStateRef, (snapshot) => {
-        if (snapshot.val() === 'playing') {
-          lobbyScreen.style.display = 'none';
-          gameScreen.style.display = 'block';
-          updateGameUI();
-        }
-      });
-    }
-
-    createRoomBtn.addEventListener('click', () => {
-      const name = nameInput.value.trim();
-      if(name === "") { alert("الرجاء كتابة اسمك!"); return; }
-      currentRoom = generateRoomCode();
-      set(ref(db, 'rooms/' + currentRoom + '/status'), 'waiting');
-      enterRoom(name, currentRoom, true);
-    });
-
-    joinRoomBtn.addEventListener('click', () => {
-      const name = nameInput.value.trim();
-      const code = roomCodeInput.value.trim().toUpperCase();
-      if(name === "") { alert("الرجاء كتابة اسمك!"); return; }
-      if(code.length < 4) { alert("الكود غير صحيح!"); return; }
+    // الدخول للغرفة
+    function joinGame(name, code, ownerFlag) {
+      isOwner = ownerFlag;
       currentRoom = code;
-      enterRoom(name, currentRoom, false);
-    });
-
-    // زر بدء اللعبة: يوزع الأدوار عشوائياً وينقل الجميع
-    startGameBtn.addEventListener('click', () => {
-      let keys = Object.keys(roomPlayersData);
       
-      // خلط اللاعبين بطريقة احترافية (Fisher-Yates)
-      for (let i = keys.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [keys[i], keys[j]] = [keys[j], keys[i]];
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('lobbyScreen').style.display = 'block';
+      document.getElementById('roomCodeDisplay').innerText = code;
+      
+      if(isOwner) {
+        document.getElementById('startGameBtn').style.display = 'block';
+      } else {
+        document.getElementById('waitingMessage').style.display = 'block';
       }
 
-      // تحديد عدد المتآمرين (متآمر واحد لكل 3 لاعبين كحد أدنى)
-      let spyCount = Math.max(1, Math.floor(keys.length / 3)); 
-      
-      let updates = {};
-      keys.forEach((key, index) => {
-        // أول مجموعة بعد الخلط يأخذون متآمر، والبقية مواطنين
-        updates['rooms/' + currentRoom + '/players/' + key + '/role'] = (index < spyCount) ? 'متآمر' : 'مواطن';
-      });
-      
-      updates['rooms/' + currentRoom + '/status'] = 'playing';
-      update(ref(db), updates);
-    });
+      const playerRef = push(ref(db, `rooms/${code}/players`));
+      myKey = playerRef.key;
+      set(playerRef, { name: name, isOwner: isOwner, isAlive: true });
+      onDisconnect(playerRef).remove();
 
+      // مراقبة الغرفة
+      onValue(ref(db, `rooms/${code}`), (snapshot) => {
+        const data = snapshot.val();
+        if(!data) return;
+        gameData = data;
+
+        // تحديث قائمة اللوبي
+        if(data.status === 'waiting') {
+          const pList = document.getElementById('playersList');
+          pList.innerHTML = '';
+          let count = 0;
+          for(let k in data.players) {
+            count++;
+            pList.innerHTML += `<li>${data.players[k].name} ${data.players[k].isOwner ? '👑' : ''}</li>`;
+          }
+          document.getElementById('playerCount').innerText = `العدد: ${count}`;
+        }
+        
+        // الانتقال للعب
+        if(data.status && data.status !== 'waiting') {
+          document.getElementById('lobbyScreen').style.display = 'none';
+          document.getElementById('gameScreen').style.display = 'block';
+          updateGameUI();
+        }
+      });
+    }
+
+    document.getElementById('createRoomBtn').onclick = () => {
+      const name = document.getElementById('playerName').value;
+      if(!name) return;
+      const code = Math.random().toString(36).substr(2, 4).toUpperCase();
+      set(ref(db, `rooms/${code}/status`), 'waiting');
+      joinGame(name, code, true);
+    };
+
+    document.getElementById('joinRoomBtn').onclick = () => {
+      const name = document.getElementById('playerName').value;
+      const code = document.getElementById('roomCodeInput').value.toUpperCase();
+      if(!name || code.length < 4) return;
+      joinGame(name, code, false);
+    };
+
+    // خوارزمية بدء اللعبة (توزيع الأدوار وبناء الكومة)
+    document.getElementById('startGameBtn').onclick = async () => {
+      const snap = await get(ref(db, `rooms/${currentRoom}/players`));
+      const players = snap.val();
+      const pKeys = Object.keys(players);
+      const count = pKeys.length;
+
+      // if(count < 5 || count > 12) { Swal.fire('خطأ', 'العدد يجب أن يكون من 5 إلى 12', 'error'); return; }
+
+      // خلط اللاعبين
+      pKeys.sort(() => Math.random() - 0.5);
+
+      // تحديد عدد المجرمين
+      let crimCount = 2;
+      if(count >= 8 && count <= 11) crimCount = 3;
+      if(count === 12) crimCount = 4;
+
+      let updates = {};
+      
+      // توزيع الأدوار
+      pKeys.forEach((k, i) => {
+        if(i === 0) updates[`rooms/${currentRoom}/players/${k}/role`] = 'المجرم الأساسي';
+        else if (i < crimCount) updates[`rooms/${currentRoom}/players/${k}/role`] = 'مساعد مجرم';
+        else updates[`rooms/${currentRoom}/players/${k}/role`] = 'مواطن';
+      });
+
+      // بناء كومة البطاقات
+      let deck = [];
+      let redCount = (count <= 8) ? 11 : (count <= 10) ? 13 : 15;
+      for(let i=0; i<redCount; i++) deck.push('R');
+      for(let i=0; i<6; i++) deck.push('G');
+      deck.sort(() => Math.random() - 0.5);
+
+      // إعدادات الطاولة
+      updates[`rooms/${currentRoom}/board/red`] = 0;
+      updates[`rooms/${currentRoom}/board/green`] = 0;
+      updates[`rooms/${currentRoom}/board/fail`] = 0;
+      updates[`rooms/${currentRoom}/deck`] = deck;
+      updates[`rooms/${currentRoom}/turnOrder`] = pKeys; // ترتيب اللعب
+      updates[`rooms/${currentRoom}/currentTurnIndex`] = 0; 
+      
+      // إعلان الرئيس الأول
+      updates[`rooms/${currentRoom}/status`] = 'nomination'; // مرحلة الترشيح
+      updates[`rooms/${currentRoom}/currentPresident`] = pKeys[0];
+
+      await update(ref(db), updates);
+
+      // إشعار فخم للجميع
+      set(ref(db, `rooms/${currentRoom}/globalAlert`), {
+        title: `تم تعيين ${players[pKeys[0]].name} رئيساً للجولة`,
+        text: 'بانتظار الرئيس لاختيار مستشار',
+        icon: 'info',
+        id: uid()
+      });
+    };
+
+    // تحديث الشاشة بناءً على حالة اللعبة
+    let lastAlertId = null;
+    function updateGameUI() {
+      const data = gameData;
+      const me = data.players[myKey];
+
+      // 1. الإشعارات العامة (تظهر مرة واحدة للكل)
+      if(data.globalAlert && data.globalAlert.id !== lastAlertId) {
+        Swal.fire({
+          title: data.globalAlert.title,
+          text: data.globalAlert.text,
+          icon: data.globalAlert.icon,
+          background: '#1c1c21',
+          color: '#fff',
+          confirmButtonColor: '#c0392b'
+        });
+        lastAlertId = data.globalAlert.id;
+      }
+
+      // 2. تحديث العدادات
+      document.getElementById('redScore').innerText = data.board.red || 0;
+      document.getElementById('greenScore').innerText = data.board.green || 0;
+      document.getElementById('failScore').innerText = data.board.fail || 0;
+
+      // 3. عرض دوري السري والمعرفة
+      document.getElementById('myRoleTitle').innerText = me.role;
+      const spiesDiv = document.getElementById('spiesListDiv');
+      spiesDiv.innerHTML = '';
+      
+      if(me.role !== 'مواطن') {
+        document.getElementById('myRoleDisplay').style.borderColor = 'var(--red)';
+        
+        let known = [];
+        let pCount = Object.keys(data.players).length;
+        
+        for(let k in data.players) {
+          if(k !== myKey && data.players[k].role !== 'مواطن') {
+            // نظام المعرفة المعقد
+            if(pCount === 5) { /* لا يعرفون بعض */ }
+            else if (pCount >= 6 && pCount <= 10) known.push(`${data.players[k].name} (${data.players[k].role})`);
+            else if (pCount === 11 && me.role === 'مساعد مجرم' && data.players[k].role === 'المجرم الأساسي') known.push(`${data.players[k].name} (المجرم الأساسي)`);
+            // لضيق المساحة البرمجية تم تبسيط 12 لاعب
+            else if (pCount === 12) known.push(`${data.players[k].name} (${data.players[k].role})`); 
+          }
+        }
+        if(known.length > 0) spiesDiv.innerHTML = 'تعرف على: <br>' + known.join('<br>');
+      } else {
+        document.getElementById('myRoleDisplay').style.borderColor = 'var(--green)';
+      }
+
+      // 4. تحديث قائمة اللاعبين وإبراز الرئيس
+      const gList = document.getElementById('gamePlayersList');
+      gList.innerHTML = '';
+      for(let k in data.players) {
+        const p = data.players[k];
+        let tags = '';
+        if(data.currentPresident === k) tags += '<span style="background:var(--gold); color:#000; padding:2px 5px; border-radius:3px;">الرئيس</span> ';
+        if(data.currentChancellor === k) tags += '<span style="background:#3498db; color:#fff; padding:2px 5px; border-radius:3px;">المستشار</span>';
+        
+        gList.innerHTML += `<li class="${p.isAlive ? '' : 'dead-player'}">
+          ${p.name} <div>${tags}</div>
+        </li>`;
+      }
+
+      // 5. التحكم بمنطقة الإجراءات (الترشيح)
+      const actionArea = document.getElementById('actionArea');
+      const actionTitle = document.getElementById('actionTitle');
+      const actionContent = document.getElementById('actionContent');
+      
+      actionArea.style.display = 'none';
+
+      if(data.status === 'nomination' && data.currentPresident === myKey) {
+        actionArea.style.display = 'block';
+        actionTitle.innerText = 'أنت الرئيس: اختر مستشارك';
+        actionContent.innerHTML = '';
+        
+        for(let k in data.players) {
+          if(k !== myKey && data.players[k].isAlive) {
+            let btn = document.createElement('button');
+            btn.innerText = data.players[k].name;
+            btn.onclick = () => nominateChancellor(k, data.players[k].name);
+            actionContent.appendChild(btn);
+          }
+        }
+      }
+    }
+
+    // دالة ترشيح المستشار (ترسل للفايربيس وتغير الحالة للتصويت)
+    async function nominateChancellor(chancellorKey, chancellorName) {
+      let updates = {};
+      updates[`rooms/${currentRoom}/currentChancellor`] = chancellorKey;
+      updates[`rooms/${currentRoom}/status`] = 'voting'; // الانتقال لمرحلة التصويت
+      
+      // إرسال إشعار للكل
+      updates[`rooms/${currentRoom}/globalAlert`] = {
+        title: 'اكتمل تشكيل الحكومة',
+        text: `الرئيس: ${gameData.players[myKey].name} | المستشار: ${chancellorName}\n(الرجاء الاستعداد للتصويت)`,
+        icon: 'warning',
+        id: uid()
+      };
+      
+      await update(ref(db), updates);
+    }
   </script>
 </body>
 </html>
