@@ -11,91 +11,136 @@
     p { color: #bdc3c7; margin-bottom: 25px;}
     input { padding: 12px; font-size: 16px; width: 80%; border-radius: 8px; border: 1px solid #555; background-color: #333; color: white; margin-bottom: 15px; text-align: center; }
     input:focus { outline: none; border-color: #e74c3c; }
-    button { background-color: #c0392b; color: white; border: none; padding: 12px 25px; font-size: 18px; border-radius: 8px; cursor: pointer; width: 85%; transition: 0.3s; font-weight: bold; }
+    button { background-color: #c0392b; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 85%; transition: 0.3s; font-weight: bold; margin-bottom: 10px;}
     button:hover { background-color: #e74c3c; transform: scale(1.05); }
+    .btn-secondary { background-color: #2980b9; }
+    .btn-secondary:hover { background-color: #3498db; }
+    #roomCodeDisplay { color: #2ecc71; font-size: 24px; letter-spacing: 3px; margin: 15px 0; background: #111; padding: 10px; border-radius: 8px; border: 1px dashed #2ecc71; }
     #playersList { list-style: none; padding: 0; font-size: 20px; text-align: right; }
     #playersList li { background-color: #333; margin: 5px 0; padding: 10px; border-radius: 5px; border-right: 4px solid #2ecc71; }
   </style>
 </head>
 <body>
 
+  <!-- شاشة الدخول وإنشاء/الانضمام لغرفة -->
   <div class="container" id="loginScreen">
     <h1>🕵️‍♂️ المؤامرة</h1>
-    <p>أدخل اسمك للانضمام للغرفة السرية</p>
-    <input type="text" id="playerName" placeholder="اكتب اسمك هنا...">
-    <br>
-    <button id="joinBtn">دخول اللعبة</button>
+    <p>أدخل اسمك، ثم اختر إنشاء أو انضمام</p>
+    
+    <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." required>
+    
+    <hr style="border-color: #444; margin: 20px 0;">
+    
+    <button id="createRoomBtn">✨ إنشاء غرفة جديدة</button>
+    
+    <hr style="border-color: #444; margin: 20px 0;">
+    
+    <input type="text" id="roomCodeInput" placeholder="كود الغرفة (للانضمام فقط)" maxlength="4" style="text-transform: uppercase;">
+    <button id="joinRoomBtn" class="btn-secondary">🔗 انضمام للغرفة</button>
   </div>
 
+  <!-- شاشة الانتظار (اللوبي) -->
   <div class="container" id="lobbyScreen" style="display: none;">
     <h1>غرفة الانتظار ⏳</h1>
-    <p>بانتظار دخول باقي اللاعبين...</p>
+    <div id="roomCodeDisplay">كود الغرفة: ----</div>
+    <p>أرسل هذا الكود لأصدقائك للانضمام</p>
     <ul id="playersList"></ul>
     <h3 id="playerCount" style="color: #f1c40f;">العدد الحالي: 0</h3>
   </div>
 
+  <!-- أكواد فايربيس -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 🔴🔴🔴 امسح هذا المربع، والصق كود firebaseConfig الخاص بك من شاشة فايربيس هنا 🔴🔴🔴
+    // 🔴🔴🔴 الصق كود firebaseConfig حقك هنا 🔴🔴🔴
     const firebaseConfig = {
-      apiKey: "اكتب_الكود_حقك_هنا",
-      authDomain: "ploska-ae755.firebaseapp.com",
-      projectId: "ploska-ae755",
-      storageBucket: "ploska-ae755.firebasestorage.app",
-      messagingSenderId: "115680839911",
-      appId: "1:115680839911:web:1220fea64c03c3a9137a42"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
     // 🔴🔴🔴 نهاية التعديل 🔴🔴🔴
 
-    // تشغيل السيرفر
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // تعريف عناصر الشاشة
-    const joinBtn = document.getElementById('joinBtn');
+    // ربط العناصر
+    const createRoomBtn = document.getElementById('createRoomBtn');
+    const joinRoomBtn = document.getElementById('joinRoomBtn');
     const nameInput = document.getElementById('playerName');
+    const roomCodeInput = document.getElementById('roomCodeInput');
     const loginScreen = document.getElementById('loginScreen');
     const lobbyScreen = document.getElementById('lobbyScreen');
+    const roomCodeDisplay = document.getElementById('roomCodeDisplay');
     const playersList = document.getElementById('playersList');
     const playerCount = document.getElementById('playerCount');
 
     let myPlayerRef = null;
+    let currentRoom = "";
 
-    // لما اللاعب يضغط زر الدخول
-    joinBtn.addEventListener('click', () => {
-      const name = nameInput.value.trim();
-      if(name !== "") {
-        loginScreen.style.display = 'none';
-        lobbyScreen.style.display = 'block';
-
-        // إضافة اللاعب لقاعدة البيانات
-        const playersRef = ref(db, 'players');
-        myPlayerRef = push(playersRef);
-        set(myPlayerRef, { name: name });
-
-        // حذف اللاعب تلقائياً إذا قفل الصفحة
-        onDisconnect(myPlayerRef).remove();
-      } else {
-        alert("الرجاء كتابة اسمك قبل الدخول!");
+    // دالة إنشاء كود عشوائي للغرفة (4 حروف وأرقام)
+    function generateRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
       }
+      return code;
+    }
+
+    // دالة الدخول للغرفة
+    function enterRoom(name, roomCode) {
+      loginScreen.style.display = 'none';
+      lobbyScreen.style.display = 'block';
+      roomCodeDisplay.innerText = 'كود الغرفة: ' + roomCode;
+      
+      // تسجيل اللاعب في مسار الغرفة المخصصة
+      const roomRef = ref(db, 'rooms/' + roomCode + '/players');
+      myPlayerRef = push(roomRef);
+      set(myPlayerRef, { name: name });
+
+      // حذف اللاعب تلقائياً إذا خرج
+      onDisconnect(myPlayerRef).remove();
+
+      // مراقبة الغرفة المخصصة فقط
+      onValue(roomRef, (snapshot) => {
+        playersList.innerHTML = '';
+        let count = 0;
+        snapshot.forEach((childSnapshot) => {
+          const player = childSnapshot.val();
+          let li = document.createElement('li');
+          li.innerText = '👤 ' + player.name;
+          playersList.appendChild(li);
+          count++;
+        });
+        playerCount.innerText = 'العدد الحالي: ' + count;
+      });
+    }
+
+    // زر إنشاء غرفة
+    createRoomBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      if(name === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
+      
+      currentRoom = generateRoomCode();
+      enterRoom(name, currentRoom);
     });
 
-    // مراقبة الغرفة (تحديث الأسماء عند الكل في نفس اللحظة)
-    const playersRef = ref(db, 'players');
-    onValue(playersRef, (snapshot) => {
-      playersList.innerHTML = '';
-      let count = 0;
-      snapshot.forEach((childSnapshot) => {
-        const player = childSnapshot.val();
-        let li = document.createElement('li');
-        li.innerText = '👤 ' + player.name;
-        playersList.appendChild(li);
-        count++;
-      });
-      playerCount.innerText = 'العدد الحالي: ' + count;
+    // زر الانضمام لغرفة
+    joinRoomBtn.addEventListener('click', () => {
+      const name = nameInput.value.trim();
+      const code = roomCodeInput.value.trim().toUpperCase();
+      
+      if(name === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
+      if(code === "" || code.length < 4) { alert("الرجاء كتابة كود الغرفة بشكل صحيح (4 أحرف/أرقام)!"); return; }
+      
+      currentRoom = code;
+      enterRoom(name, currentRoom);
     });
+
   </script>
 </body>
 </html>
