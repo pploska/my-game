@@ -5,17 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لعبة المؤامرة</title>
   <style>
-    body { background-color: #111; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; padding: 20px; }
-    .container { background-color: #222; padding: 30px; border-radius: 15px; max-width: 400px; margin: 50px auto; border: 1px solid #c0392b; box-shadow: 0 0 20px rgba(192, 57, 43, 0.4); }
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background-color: #222;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      margin: 50px auto;
+      border: 1px solid #c0392b;
+      box-shadow: 0 0 20px rgba(192, 57, 43, 0.4);
+    }
     h1 { color: #e74c3c; margin-bottom: 5px;}
     p { color: #bdc3c7; margin-bottom: 25px;}
-    input { padding: 12px; font-size: 16px; width: 80%; border-radius: 8px; border: 1px solid #555; background-color: #333; color: white; margin-bottom: 15px; text-align: center; }
+    input {
+      padding: 12px;
+      font-size: 16px;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background-color: #333;
+      color: white;
+      margin-bottom: 15px;
+      text-align: center;
+    }
     input:focus { outline: none; border-color: #e74c3c; }
-    button { background-color: #c0392b; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 8px; cursor: pointer; width: 85%; transition: 0.3s; font-weight: bold; margin-bottom: 10px;}
+    button {
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 85%;
+      transition: 0.3s;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
     button:hover { background-color: #e74c3c; transform: scale(1.05); }
     .btn-secondary { background-color: #2980b9; }
     .btn-secondary:hover { background-color: #3498db; }
-    #roomCodeDisplay { color: #2ecc71; font-size: 24px; letter-spacing: 3px; margin: 15px 0; background: #111; padding: 10px; border-radius: 8px; border: 1px dashed #2ecc71; }
+    
+    #roomCodeDisplay {
+      color: #2ecc71;
+      font-size: 24px;
+      letter-spacing: 3px;
+      margin: 15px 0;
+      background: #111;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px dashed #2ecc71;
+    }
     
     /* تصميم قائمة اللاعبين */
     #playersList { list-style: none; padding: 0; font-size: 20px; text-align: right; }
@@ -25,8 +72,7 @@
     .owner-item { 
       background-color: #2c3e50 !important; 
       border-right: 4px solid #f1c40f !important; 
-      margin-bottom: 25px !important; /* المسافة التي تفصل المالك عن البقية */
-      position: relative;
+      margin-bottom: 20px !important;
     }
     .owner-badge {
       background-color: #f1c40f;
@@ -49,11 +95,9 @@
     <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." required>
     
     <hr style="border-color: #444; margin: 20px 0;">
-    
     <button id="createRoomBtn">✨ إنشاء غرفة جديدة</button>
     
     <hr style="border-color: #444; margin: 20px 0;">
-    
     <input type="text" id="roomCodeInput" placeholder="كود الغرفة (للانضمام فقط)" maxlength="4" style="text-transform: uppercase;">
     <button id="joinRoomBtn" class="btn-secondary">🔗 انضمام للغرفة</button>
   </div>
@@ -62,9 +106,7 @@
     <h1>غرفة الانتظار ⏳</h1>
     <div id="roomCodeDisplay">كود الغرفة: ----</div>
     <p>أرسل هذا الكود لأصدقائك للانضمام</p>
-    
     <ul id="playersList"></ul>
-    
     <h3 id="playerCount" style="color: #f1c40f;">العدد الحالي: 0</h3>
   </div>
 
@@ -72,14 +114,18 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 🔴🔴🔴 الصق كود firebaseConfig حقك هنا (من فايربيس) 🔴🔴🔴
+    // 🔴🔴🔴 ركز هنا: انسخ بيانات مشروعك والصقها، وتأكد من رابط قاعدة البيانات 🔴🔴🔴
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "مفتاح_apiKey_حقك",
+      authDomain: "ploska-ae755.firebaseapp.com",
+      
+      // هذا هو السطر الحاسم! الصق رابط قاعدة بياناتك الحقيقي هنا:
+      databaseURL: "رابط_قاعدة_البيانات_يبدأ_بـ_https",
+      
+      projectId: "ploska-ae755",
+      storageBucket: "ploska-ae755.firebasestorage.app",
+      messagingSenderId: "115680839911",
+      appId: "1:115680839911:web:1220fea64c03c3a9137a42"
     };
     // 🔴🔴🔴 نهاية التعديل 🔴🔴🔴
 
@@ -100,7 +146,7 @@
     let myPlayerRef = null;
     let currentRoom = "";
 
-    // إنشاء كود الغرفة
+    // دالة لإنشاء كود الغرفة
     function generateRoomCode() {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       let code = '';
@@ -110,20 +156,28 @@
       return code;
     }
 
-    // دالة الدخول للغرفة (تم إضافة متغير isOwner)
+    // دالة الدخول للغرفة
     function enterRoom(name, roomCode, isOwner) {
       loginScreen.style.display = 'none';
       lobbyScreen.style.display = 'block';
       roomCodeDisplay.innerText = 'كود الغرفة: ' + roomCode;
       
+      // تحديد مسار الغرفة في قاعدة البيانات
       const roomRef = ref(db, 'rooms/' + roomCode + '/players');
+      
+      // إضافة اللاعب الجديد
       myPlayerRef = push(roomRef);
       
-      // حفظ بيانات اللاعب مع صفة "المالك"
-      set(myPlayerRef, { name: name, isOwner: isOwner });
+      // حفظ بياناته (الاسم + هل هو المالك؟)
+      set(myPlayerRef, { 
+        name: name, 
+        isOwner: isOwner 
+      });
+      
+      // حذفه تلقائياً إذا قفل الصفحة
       onDisconnect(myPlayerRef).remove();
 
-      // مراقبة اللاعبين وفرزهم في الشاشة
+      // مراقبة اللاعبين في الغرفة وتحديث الشاشة
       onValue(roomRef, (snapshot) => {
         let count = 0;
         let ownerHTML = '';
@@ -134,21 +188,21 @@
           count++;
           
           if (player.isOwner) {
-            // تصميم المالك
+            // إذا كان المالك، نعطيه التاج والتصميم الخاص
             ownerHTML = `<li class="owner-item">👑 ${player.name} <span class="owner-badge">مالك الغرفة</span></li>`;
           } else {
-            // تصميم باقي اللاعبين
+            // باقي اللاعبين
             othersHTML += `<li>👤 ${player.name}</li>`;
           }
         });
 
-        // دمج المالك أولاً ثم البقية
+        // دمج المالك أولاً ثم باقي اللاعبين تحته
         playersList.innerHTML = ownerHTML + othersHTML;
         playerCount.innerText = 'العدد الحالي: ' + count;
       });
     }
 
-    // زر الإنشاء (يعطي اللاعب صفة المالك true)
+    // عند الضغط على زر إنشاء غرفة (تكون أنت المالك: true)
     createRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       if(name === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
@@ -157,7 +211,7 @@
       enterRoom(name, currentRoom, true);
     });
 
-    // زر الانضمام (يعطي اللاعب صفة عادي false)
+    // عند الضغط على زر انضمام لغرفة (تكون لاعب عادي: false)
     joinRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       const code = roomCodeInput.value.trim().toUpperCase();
