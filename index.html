@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبة المؤامرة</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      background-color: #222;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 400px;
+      margin: 50px auto;
+      border: 1px solid #c0392b;
+      box-shadow: 0 0 20px rgba(192, 57, 43, 0.4);
+    }
+    h1 { color: #e74c3c; margin-bottom: 5px;}
+    p { color: #bdc3c7; margin-bottom: 25px;}
+    input {
+      padding: 12px;
+      font-size: 16px;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background-color: #333;
+      color: white;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    input:focus { outline: none; border-color: #e74c3c; }
+    button {
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 85%;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+    button:hover { background-color: #e74c3c; transform: scale(1.05); }
+    #playersList {
+      list-style: none;
+      padding: 0;
+      font-size: 20px;
+      text-align: right;
+    }
+    #playersList li {
+      background-color: #333;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border-right: 4px solid #2ecc71;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="loginScreen">
+    <h1>🕵️‍♂️ المؤامرة</h1>
+    <p>أدخل اسمك للانضمام للغرفة السرية</p>
+    <input type="text" id="playerName" placeholder="اكتب اسمك هنا...">
+    <br>
+    <button onclick="joinLobby()">دخول اللعبة</button>
+  </div>
+
+  <div class="container" id="lobbyScreen" style="display: none;">
+    <h1>غرفة الانتظار ⏳</h1>
+    <p>بانتظار اكتمال النصاب (5 إلى 12 لاعب)</p>
+    <ul id="playersList"></ul>
+    <h3 id="playerCount" style="color: #f1c40f;">العدد الحالي: 0</h3>
+  </div>
+
+  <script>
+    // مصفوفة لتخزين اللاعبين محلياً للتجربة
+    let players = [];
+
+    function joinLobby() {
+      const nameInput = document.getElementById('playerName');
+      const name = nameInput.value.trim();
+
+      if(name !== "") {
+        // إخفاء شاشة الدخول وإظهار اللوبي
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('lobbyScreen').style.display = 'block';
+
+        // إضافة اللاعب الأول (أنت)
+        players.push({ name: name });
+        
+        // إضافة لاعبين وهميين بس عشان تشوف شكل القائمة كيف بيطلع
+        players.push({ name: 'أحمد (للتجربة)' });
+        players.push({ name: 'سالم (للتجربة)' });
+
+        updateList();
+      } else {
+        alert("الرجاء كتابة اسمك قبل الدخول!");
+      }
+    }
+
+    function updateList() {
+      const list = document.getElementById('playersList');
+      list.innerHTML = '';
+      
+      players.forEach(p => {
+        let li = document.createElement('li');
+        li.innerText = '👤 ' + p.name;
+        list.appendChild(li);
+      });
+      
+      document.getElementById('playerCount').innerText = 'العدد الحالي: ' + players.length;
+    }
+  </script>
+</body>
+</html>
