@@ -52,6 +52,8 @@
     button:hover { background-color: #e74c3c; transform: scale(1.05); }
     .btn-secondary { background-color: #2980b9; }
     .btn-secondary:hover { background-color: #3498db; }
+    .btn-success { background-color: #27ae60; width: 100%; font-size: 20px; margin-top: 15px; box-shadow: 0 0 10px rgba(39, 174, 96, 0.5); }
+    .btn-success:hover { background-color: #2ecc71; transform: scale(1.02); }
     
     #roomCodeDisplay {
       color: #2ecc71;
@@ -91,12 +93,9 @@
   <div class="container" id="loginScreen">
     <h1>🕵️‍♂️ المؤامرة</h1>
     <p>أدخل اسمك، ثم اختر إنشاء أو انضمام</p>
-    
     <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." required>
-    
     <hr style="border-color: #444; margin: 20px 0;">
     <button id="createRoomBtn">✨ إنشاء غرفة جديدة</button>
-    
     <hr style="border-color: #444; margin: 20px 0;">
     <input type="text" id="roomCodeInput" placeholder="كود الغرفة (للانضمام فقط)" maxlength="4" style="text-transform: uppercase;">
     <button id="joinRoomBtn" class="btn-secondary">🔗 انضمام للغرفة</button>
@@ -106,15 +105,25 @@
     <h1>غرفة الانتظار ⏳</h1>
     <div id="roomCodeDisplay">كود الغرفة: ----</div>
     <p>أرسل هذا الكود لأصدقائك للانضمام</p>
+    
     <ul id="playersList"></ul>
     <h3 id="playerCount" style="color: #f1c40f;">العدد الحالي: 0</h3>
+
+    <button id="startGameBtn" class="btn-success" style="display: none;">🚀 بدء اللعبة الآن</button>
+    <p id="waitingMessage" style="display: none; color: #3498db; font-weight: bold; margin-top: 15px;">في انتظار مالك الغرفة لبدء اللعبة...</p>
+  </div>
+
+  <div class="container" id="gameScreen" style="display: none; border-color: #2ecc71; box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);">
+    <h1 style="color: #2ecc71;">بدأت المؤامرة! 🎭</h1>
+    <p>هنا ستكون طاولة اللعب وتوزيع البطاقات</p>
+    <h3 id="myRoleDisplay" style="color: #f1c40f;">جارٍ تجهيز اللعبة...</h3>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // تم وضع بياناتك بشكل صحيح وتلقائي هنا لضمان عملها 100%
+    // بياناتك الصحيحة
     const firebaseConfig = {
       apiKey: "AIzaSyCu5Hbu2Rqml7_4DICZf8XyM9B4hzbpdOQ",
       authDomain: "ploska-ae755.firebaseapp.com",
@@ -133,16 +142,24 @@
     const joinRoomBtn = document.getElementById('joinRoomBtn');
     const nameInput = document.getElementById('playerName');
     const roomCodeInput = document.getElementById('roomCodeInput');
+    
     const loginScreen = document.getElementById('loginScreen');
     const lobbyScreen = document.getElementById('lobbyScreen');
+    const gameScreen = document.getElementById('gameScreen');
+    
     const roomCodeDisplay = document.getElementById('roomCodeDisplay');
     const playersList = document.getElementById('playersList');
     const playerCount = document.getElementById('playerCount');
+    
+    const startGameBtn = document.getElementById('startGameBtn');
+    const waitingMessage = document.getElementById('waitingMessage');
 
     let myPlayerRef = null;
     let currentRoom = "";
+    let isLocalOwner = false;
+    let totalPlayers = 0;
 
-    // دالة لإنشاء كود الغرفة
+    // دالة إنشاء كود
     function generateRoomCode() {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       let code = '';
@@ -152,28 +169,29 @@
       return code;
     }
 
-    // دالة الدخول للغرفة
+    // دالة دخول الغرفة
     function enterRoom(name, roomCode, isOwner) {
+      isLocalOwner = isOwner;
       loginScreen.style.display = 'none';
       lobbyScreen.style.display = 'block';
       roomCodeDisplay.innerText = 'كود الغرفة: ' + roomCode;
       
-      // تحديد مسار الغرفة في قاعدة البيانات
+      // إظهار زر البدء للمالك فقط، ورسالة الانتظار للضيوف
+      if (isOwner) {
+        startGameBtn.style.display = 'block';
+        waitingMessage.style.display = 'none';
+      } else {
+        startGameBtn.style.display = 'none';
+        waitingMessage.style.display = 'block';
+      }
+
+      // إضافة اللاعب
       const roomRef = ref(db, 'rooms/' + roomCode + '/players');
-      
-      // إضافة اللاعب الجديد
       myPlayerRef = push(roomRef);
-      
-      // حفظ بياناته (الاسم + هل هو المالك؟)
-      set(myPlayerRef, { 
-        name: name, 
-        isOwner: isOwner 
-      });
-      
-      // حذفه تلقائياً إذا قفل الصفحة
+      set(myPlayerRef, { name: name, isOwner: isOwner });
       onDisconnect(myPlayerRef).remove();
 
-      // مراقبة اللاعبين في الغرفة وتحديث الشاشة
+      // تحديث قائمة اللاعبين
       onValue(roomRef, (snapshot) => {
         let count = 0;
         let ownerHTML = '';
@@ -182,32 +200,41 @@
         snapshot.forEach((childSnapshot) => {
           const player = childSnapshot.val();
           count++;
-          
           if (player.isOwner) {
-            // إذا كان المالك، نعطيه التاج والتصميم الخاص
             ownerHTML = `<li class="owner-item">👑 ${player.name} <span class="owner-badge">مالك الغرفة</span></li>`;
           } else {
-            // باقي اللاعبين
             othersHTML += `<li>👤 ${player.name}</li>`;
           }
         });
 
-        // دمج المالك أولاً ثم باقي اللاعبين تحته
         playersList.innerHTML = ownerHTML + othersHTML;
         playerCount.innerText = 'العدد الحالي: ' + count;
+        totalPlayers = count;
+      });
+
+      // مراقبة "حالة اللعبة" (عشان لو المالك ضغط ستارت، الكل يدخل)
+      const gameStateRef = ref(db, 'rooms/' + roomCode + '/status');
+      onValue(gameStateRef, (snapshot) => {
+        if (snapshot.val() === 'playing') {
+          lobbyScreen.style.display = 'none';
+          gameScreen.style.display = 'block';
+        }
       });
     }
 
-    // عند الضغط على زر إنشاء غرفة
+    // زر الإنشاء
     createRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       if(name === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
       
       currentRoom = generateRoomCode();
+      
+      // تهيئة حالة الغرفة إلى "waiting"
+      set(ref(db, 'rooms/' + currentRoom + '/status'), 'waiting');
       enterRoom(name, currentRoom, true);
     });
 
-    // عند الضغط على زر انضمام لغرفة
+    // زر الانضمام
     joinRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       const code = roomCodeInput.value.trim().toUpperCase();
@@ -217,6 +244,15 @@
       
       currentRoom = code;
       enterRoom(name, currentRoom, false);
+    });
+
+    // زر بدء اللعبة (للمالك فقط)
+    startGameBtn.addEventListener('click', () => {
+      // اختياري: نمنع بدء اللعبة إذا العدد أقل من 5 (عطلتها حالياً عشان تقدر تجربها لحالك)
+      // if (totalPlayers < 5) { alert("يجب أن يكون العدد 5 لاعبين على الأقل!"); return; }
+      
+      // تغيير حالة الغرفة إلى playing (هذا الأمر سينقل الجميع فوراً)
+      set(ref(db, 'rooms/' + currentRoom + '/status'), 'playing');
     });
 
   </script>
