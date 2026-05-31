@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لعبة المتخفي</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
       --bg-color: #121212; --panel-bg: #1e1e1e; --primary: #3498db; 
@@ -36,9 +37,8 @@
     .btn-warning { background-color: var(--warning); color: #000; }
     
     /* العدادات والكلمة */
-    .timer-display { font-size: 48px; font-weight: bold; color: var(--danger); text-shadow: 0 0 15px rgba(231,76,60,0.5); margin: 20px 0; }
+    .timer-display { font-size: 55px; font-weight: bold; color: var(--danger); text-shadow: 0 0 20px rgba(231,76,60,0.6); margin: 20px 0; }
     .word-box { background: #2c3e50; padding: 20px; border-radius: 10px; border: 2px dashed var(--primary); font-size: 28px; font-weight: bold; letter-spacing: 2px; margin: 20px 0; }
-    .role-box { background: #333; padding: 15px; border-radius: 8px; border-right: 5px solid var(--warning); font-size: 20px; margin-bottom: 20px; }
     
     /* قائمة اللاعبين للتصويت */
     .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
@@ -52,6 +52,24 @@
     .player-card.disabled { cursor: not-allowed; opacity: 0.7; }
     
     #oldManDisplay { font-size: 22px; color: var(--warning); margin: 15px 0; font-weight: bold; background: #333; padding: 10px; border-radius: 8px; }
+
+    /* الشاشات المنبثقة (Overlays) */
+    .overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95); z-index: 9999;
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+    }
+    #countdownNumber { font-size: 180px; font-weight: bold; color: var(--warning); text-shadow: 0 0 50px var(--warning); animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    
+    /* كرت الدور في شاشة "فهمت" */
+    .big-role-card {
+      background: #1e1e1e; padding: 30px; border-radius: 15px; border: 3px solid #555;
+      width: 80%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+    .role-icon { font-size: 60px; margin-bottom: 10px; }
+    .role-title { font-size: 35px; font-weight: bold; margin-bottom: 15px; }
+    .role-desc { font-size: 18px; color: #ccc; margin-bottom: 30px; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -88,10 +106,6 @@
 
   <div class="container" id="gameScreen" style="display: none;">
     <div id="oldManDisplay">الشايب: <span id="oldManName">---</span> 👑</div>
-    
-    <div class="role-box" id="myRoleBox">
-      هويتك: <span id="myRoleLabel" style="font-weight: bold;">---</span>
-    </div>
 
     <div class="word-box" id="wordBox" style="display: none;">
       الكلمة السرية: <span id="secretWord" style="color: var(--warning);">---</span>
@@ -114,17 +128,38 @@
   </div>
 
   <div class="container" id="endScreen" style="display: none;">
-    <h1 id="winnerText" style="font-size: 40px;"></h1>
-    <h3 id="endDetails" style="color: #ccc;"></h3>
-    <button id="replayBtn" class="btn-primary" style="display: none; margin-top: 20px;">🔄 لعب من جديد</button>
-    <p id="waitingReplayMsg" style="display: none;">بانتظار المالك لإعادة اللعبة...</p>
+    <h2 id="endReasonText" style="color: #ccc;"></h2>
+    <h1 id="winnerText" style="font-size: 45px; margin: 10px 0;"></h1>
+    <h3 id="loserText" style="color: #ccc; margin-bottom: 25px;"></h3>
+    
+    <div style="background: #222; padding: 15px; border-radius: 8px; border: 1px dashed var(--danger);">
+      <h3>هوية المتخفي كانت:</h3>
+      <h2 id="endHiddenName" style="color: var(--danger); margin: 0;"></h2>
+    </div>
+
+    <button id="replayBtn" class="btn-primary" style="display: none; margin-top: 30px;">🔄 بدء لعبة جديدة</button>
+    <p id="waitingReplayMsg" style="display: none; margin-top: 20px;">بانتظار المالك لإعادة اللعبة...</p>
+  </div>
+
+  <div class="overlay" id="countdownOverlay">
+    <div id="countdownNumber">3</div>
+  </div>
+
+  <div class="overlay" id="roleRevealOverlay">
+    <div class="big-role-card" id="roleCardUI">
+      <div class="role-icon" id="roleIconUI">🎭</div>
+      <div class="role-title" id="roleTitleUI">الدور</div>
+      <div class="role-desc" id="roleDescUI">الشرح هنا</div>
+      <button class="btn-success" id="understoodBtn" style="width: 100%; margin-top: 15px;">👍 فهمت</button>
+      <p id="waitingOthersText" style="display: none; color: var(--warning); font-weight: bold; margin-top: 15px;">بانتظار باقي اللاعبين...</p>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect, update, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 🔴🔴 استبدل هذه البيانات ببيانات مشروعك في فايربيس 🔴🔴
+    // 🔴🔴 استبدل هذه البيانات ببيانات مشروعك 🔴🔴
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "ploska-ae755.firebaseapp.com",
@@ -138,22 +173,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // بنك الكلمات العشوائية
-    const WORDS_BANK = [
-      "مستشفى","مطار","ساعة","نظارة","جبل","شاطئ","سفينة","قطار","مكتبة","حديقة",
-      "قصر","خيمة","قهوة","مطعم","مفتاح","كاميرا","محفظة","عطر","ثلاجة","تلفزيون",
-      "قمر","شمس","كوكب","نار","جليد","غابة","صحراء","جسر","نفق","برج",
-      "سيف","درع","تاج","خاتم","ذهب","فضة","ألماس","حرير","قطن","صوف"
-    ];
+    const WORDS_BANK = ["مستشفى","مطار","ساعة","نظارة","جبل","شاطئ","سفينة","قطار","مكتبة","حديقة","قصر","خيمة","قهوة","مطعم","مفتاح","كاميرا","محفظة","عطر","ثلاجة","تلفزيون"];
 
-    // المتغيرات المحلية
     let myUid = localStorage.getItem('mutakhafti_uid');
     let currentRoom = localStorage.getItem('mutakhafti_room');
     let isOwner = false;
     let roomData = null;
     let timerInterval = null;
+    let lastState = null;
 
-    // عناصر الشاشة
     const screens = {
       login: document.getElementById('loginScreen'),
       lobby: document.getElementById('lobbyScreen'),
@@ -161,40 +189,47 @@
       end: document.getElementById('endScreen')
     };
 
-    const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 3000 });
-
     function switchScreen(screenName) {
       Object.values(screens).forEach(s => s.style.display = 'none');
-      screens[screenName].style.display = 'block';
+      if (screenName) screens[screenName].style.display = 'block';
     }
 
-    // دالة إنشاء كود
-    function generateRoomCode() {
-      return Math.random().toString(36).substr(2, 4).toUpperCase();
+    // العداد التنازلي المحلي البصري
+    function playVisualCountdown(callback) {
+      const overlay = document.getElementById('countdownOverlay');
+      const numEl = document.getElementById('countdownNumber');
+      overlay.style.display = 'flex';
+      let count = 3;
+      numEl.innerText = count;
+      
+      let iv = setInterval(() => {
+        count--;
+        if(count > 0) {
+          numEl.innerText = count;
+        } else {
+          clearInterval(iv);
+          overlay.style.display = 'none';
+          if(callback) callback();
+        }
+      }, 1000);
     }
 
-    // دالة الاتصال وتجهيز الغرفة
     async function joinRoom(name, code, asOwner) {
       currentRoom = code;
       isOwner = asOwner;
       
-      const playerRef = asOwner ? push(ref(db, `rooms/${code}/players`)) : null;
-      
-      // إذا كان لاعب جديد ينضم (وليس استرجاع جلسة)
       if (!myUid || asOwner || document.getElementById('playerName').value !== "") {
          let newRef = push(ref(db, `rooms/${code}/players`));
          myUid = newRef.key;
-         await set(newRef, { name: name, isOwner: asOwner, isAlive: true });
+         await set(newRef, { name: name, isOwner: asOwner, isAlive: true, understood: false });
          localStorage.setItem('mutakhafti_uid', myUid);
          localStorage.setItem('mutakhafti_room', code);
          onDisconnect(newRef).update({ connected: false });
       } else {
-         // محاولة استرجاع الاتصال
          await update(ref(db, `rooms/${code}/players/${myUid}`), { connected: true });
          onDisconnect(ref(db, `rooms/${code}/players/${myUid}`)).update({ connected: false });
       }
 
-      // مراقبة بيانات الغرفة
       onValue(ref(db, `rooms/${code}`), (snapshot) => {
         const data = snapshot.val();
         if (!data) {
@@ -204,25 +239,32 @@
           return;
         }
         roomData = data;
-        
-        // التحقق من صلاحيات المالك
         isOwner = data.players[myUid]?.isOwner || false;
-
         handleStateChange(data);
       });
     }
 
-    // إدارة حالات اللعبة
     function handleStateChange(data) {
       const status = data.status;
       const me = data.players[myUid];
-      if (!me) return; // تم الطرد أو غير موجود
+      if (!me) return;
+
+      const stateChanged = (status !== lastState);
+      lastState = status;
+
+      // إخفاء كل الـ Overlays افتراضياً
+      if(stateChanged && status !== 'role_reveal') {
+        document.getElementById('roleRevealOverlay').style.display = 'none';
+      }
+
+      // ==========================================
+      // إدارة الحالات (State Machine)
+      // ==========================================
 
       if (status === 'waiting') {
         switchScreen('lobby');
         document.getElementById('roomCodeDisplay').innerText = currentRoom;
         
-        // تحديث اللوبي
         const list = document.getElementById('lobbyPlayersList');
         list.innerHTML = '';
         let count = 0;
@@ -245,23 +287,141 @@
           document.getElementById('waitingHostMsg').style.display = 'block';
         }
       } 
+      
+      else if (status === 'starting_countdown' || status === 'next_round_countdown') {
+        if(stateChanged) {
+          switchScreen(null); // شاشة سوداء خلف العداد
+          playVisualCountdown(() => {
+            if (isOwner) {
+              if (status === 'starting_countdown') {
+                update(ref(db, `rooms/${currentRoom}/status`), 'role_reveal');
+              } else {
+                // تجهيز جولة جديدة بعد تصويت خاطئ
+                let usedWords = data.usedWords || [];
+                let availableWords = WORDS_BANK.filter(w => !usedWords.includes(w));
+                if(availableWords.length === 0) availableWords = WORDS_BANK;
+                let newWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+                usedWords.push(newWord);
+
+                update(ref(db, `rooms/${currentRoom}`), {
+                   status: 'qa',
+                   currentWord: newWord,
+                   usedWords: usedWords,
+                   endTime: Date.now() + (data.settings.qaTime * 1000)
+                });
+              }
+            }
+          });
+        }
+      }
+
+      else if (status === 'role_reveal') {
+        if (stateChanged) {
+          switchScreen(null);
+          const overlay = document.getElementById('roleRevealOverlay');
+          const card = document.getElementById('roleCardUI');
+          const icon = document.getElementById('roleIconUI');
+          const title = document.getElementById('roleTitleUI');
+          const desc = document.getElementById('roleDescUI');
+          const btn = document.getElementById('understoodBtn');
+          const waitText = document.getElementById('waitingOthersText');
+
+          overlay.style.display = 'flex';
+          btn.style.display = 'block';
+          waitText.style.display = 'none';
+
+          title.innerText = me.role;
+          if (me.role === 'الشايب') {
+            card.style.borderColor = 'var(--warning)'; icon.innerText = '👑';
+            desc.innerText = 'تعرف الكلمة وتجيب على أسئلة اللاعبين بذكاء.';
+          } else if (me.role === 'المتخفي') {
+            card.style.borderColor = 'var(--danger)'; icon.innerText = '🎭';
+            desc.innerText = 'تعرف الكلمة وتتظاهر بأنك مواطن. حاول إخفاء هويتك!';
+          } else {
+            card.style.borderColor = 'var(--success)'; icon.innerText = '👥';
+            desc.innerText = 'لا تعرف الكلمة. حاول معرفتها ثم اكتشاف من هو المتخفي.';
+          }
+        }
+
+        // إذا كان المالك، يراقب ما إذا كان الجميع قد ضغط "فهمت"
+        if (isOwner) {
+          let allReady = true;
+          for (let k in data.players) {
+            if (data.players[k].isAlive && !data.players[k].understood) allReady = false;
+          }
+          if (allReady && stateChanged === false) { 
+             // stateChanged === false تمنع الانتقال السريع قبل عرض الشاشة
+             update(ref(db, `rooms/${currentRoom}/status`), 'old_man_reveal');
+          }
+        }
+      }
+
+      else if (status === 'old_man_reveal') {
+        if(stateChanged) {
+          switchScreen(null);
+          let oldManName = "";
+          for(let k in data.players) { if(data.players[k].role === 'الشايب') oldManName = data.players[k].name; }
+          
+          Swal.fire({
+            title: 'اكتملت الأدوار!',
+            html: `الشايب في هذه الجولة هو:<br><span style="color:var(--warning); font-size:40px; font-weight:bold;">${oldManName} 👑</span>`,
+            background: '#1e1e1e', color: '#fff', showConfirmButton: false, timer: 4000,
+            backdrop: `rgba(0,0,0,0.9)`
+          });
+
+          if(isOwner) {
+             setTimeout(() => {
+                update(ref(db, `rooms/${currentRoom}`), {
+                   status: 'qa',
+                   endTime: Date.now() + (data.settings.qaTime * 1000)
+                });
+             }, 4000);
+          }
+        }
+      }
+
+      else if (status === 'voting_transition') {
+        if(stateChanged) {
+          clearInterval(timerInterval);
+          Swal.fire({
+            icon: 'success', title: '🎯 تم اكتشاف الكلمة!', text: 'جاري الانتقال لمرحلة التصويت...',
+            background: '#1e1e1e', color: '#fff', showConfirmButton: false, timer: 3000
+          });
+          if(isOwner) {
+             setTimeout(() => {
+                update(ref(db, `rooms/${currentRoom}`), {
+                   status: 'voting',
+                   endTime: Date.now() + (data.settings.voteTime * 1000)
+                });
+             }, 3000);
+          }
+        }
+      }
+
+      else if (status === 'wrong_vote_reveal') {
+        if(stateChanged) {
+          clearInterval(timerInterval);
+          switchScreen(null);
+          Swal.fire({
+            icon: 'error',
+            title: '❌ تصويت خاطئ!',
+            html: `<span style="color:var(--success); font-size:30px; font-weight:bold;">🛡️ ${data.lastKickedName}</span><br><br>كان مواطناً شريفاً. لقد تم إخراجه من اللعبة.`,
+            background: '#1e1e1e', color: '#fff', showConfirmButton: false, timer: 5000
+          });
+          
+          if(isOwner) {
+             setTimeout(() => { update(ref(db, `rooms/${currentRoom}/status`), 'next_round_countdown'); }, 5000);
+          }
+        }
+      }
+
       else if (status === 'qa' || status === 'voting') {
         switchScreen('game');
         
-        // عرض الشايب
         let oldManName = "";
-        for(let k in data.players) {
-           if(data.players[k].role === 'الشايب') oldManName = data.players[k].name;
-        }
+        for(let k in data.players) { if(data.players[k].role === 'الشايب') oldManName = data.players[k].name; }
         document.getElementById('oldManName').innerText = oldManName;
 
-        // عرض هويتي
-        document.getElementById('myRoleLabel').innerText = me.role;
-        if(me.role === 'الشايب') document.getElementById('myRoleBox').style.borderRightColor = 'var(--primary)';
-        else if(me.role === 'المتخفي') document.getElementById('myRoleBox').style.borderRightColor = 'var(--danger)';
-        else document.getElementById('myRoleBox').style.borderRightColor = 'var(--success)';
-
-        // عرض الكلمة للشايب والمتخفي فقط
         if(me.role === 'الشايب' || me.role === 'المتخفي') {
           document.getElementById('wordBox').style.display = 'block';
           document.getElementById('secretWord').innerText = data.currentWord;
@@ -277,38 +437,36 @@
           else document.getElementById('wordDiscoveredBtn').style.display = 'none';
 
           startTimer(data.endTime, 'qaTimer', () => {
-             // إذا انتهى الوقت في مرحلة الأسئلة: يفوز المواطنون
-             if(isOwner) endGame('citizens', 'انتهى الوقت ولم يتم اكتشاف الكلمة! نجا المواطنون وخسر المتخفي.');
+             // انتهاء وقت الأسئلة = فوز المواطنين وخسارة المتخفي
+             if(isOwner) {
+                update(ref(db, `rooms/${currentRoom}`), {
+                   status: 'ended', winner: 'citizens', endReason: 'timeout'
+                });
+             }
           });
         } 
         else if (status === 'voting') {
           document.getElementById('qaPhaseUI').style.display = 'none';
           document.getElementById('votePhaseUI').style.display = 'block';
-          document.getElementById('myVoteStatus').innerText = me.vote ? 'تم التصويت بنجاح' : '';
+          document.getElementById('myVoteStatus').innerText = me.vote ? 'تم تسجيل تصويتك' : '';
 
-          // بناء شبكة التصويت
           const grid = document.getElementById('votingGrid');
           grid.innerHTML = '';
           for(let k in data.players) {
             let p = data.players[k];
-            // لا يمكن التصويت على الشايب أو الأموات
             if(p.role !== 'الشايب') {
               let div = document.createElement('div');
               div.className = `player-card ${!p.isAlive ? 'dead' : ''} ${me.vote === k ? 'selected' : ''} ${(!me.isAlive || me.vote) ? 'disabled' : ''}`;
               div.innerText = p.name;
-              
-              if(p.isAlive && me.isAlive && !me.vote) {
-                 div.onclick = () => submitVote(k);
-              }
+              if(p.isAlive && me.isAlive && !me.vote) div.onclick = () => submitVote(k);
               grid.appendChild(div);
             }
           }
 
-          startTimer(data.endTime, 'voteTimer', () => {
-             if(isOwner) tallyVotes();
-          });
+          startTimer(data.endTime, 'voteTimer', () => { if(isOwner) tallyVotes(); });
         }
       }
+
       else if (status === 'ended') {
         switchScreen('end');
         clearInterval(timerInterval);
@@ -316,19 +474,27 @@
         let hiddenName = "";
         for(let k in data.players) { if(data.players[k].role === 'المتخفي') hiddenName = data.players[k].name; }
 
+        const reasonText = document.getElementById('endReasonText');
         const winText = document.getElementById('winnerText');
+        const loseText = document.getElementById('loserText');
+        
         if(data.winner === 'citizens') {
-           winText.innerText = '🎉 فاز المواطنون! والشايب!';
-           winText.style.color = 'var(--success)';
+           if (data.endReason === 'timeout') {
+              reasonText.innerText = '🏆 انتهى الوقت!';
+           } else {
+              reasonText.innerText = '🎯 تصويت صائب!';
+           }
+           winText.innerHTML = '🎉 فاز المواطنون والشايب!'; winText.style.color = 'var(--success)';
+           loseText.innerText = '❌ خسر المتخفي.';
+           
+           if(stateChanged) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } }); // احتفالية
         } else {
-           winText.innerText = '🩸 فاز المتخفي!';
-           winText.style.color = 'var(--danger)';
+           reasonText.innerText = '☠️ تمت تصفية المواطنين';
+           winText.innerText = '🩸 فاز المتخفي!'; winText.style.color = 'var(--danger)';
+           loseText.innerText = '❌ خسر المواطنون والشايب.';
         }
         
-        document.getElementById('endDetails').innerHTML = `
-          المتخفي كان: <span style="color:var(--danger)">${hiddenName}</span><br>
-          <span style="font-size:16px">${data.endReason}</span>
-        `;
+        document.getElementById('endHiddenName').innerText = hiddenName;
 
         if (isOwner) {
           document.getElementById('replayBtn').style.display = 'block';
@@ -340,75 +506,66 @@
       }
     }
 
-    // إدارة العداد الزمني الموحد
+    // زر "فهمت"
+    document.getElementById('understoodBtn').onclick = () => {
+      document.getElementById('understoodBtn').style.display = 'none';
+      document.getElementById('waitingOthersText').style.display = 'block';
+      update(ref(db, `rooms/${currentRoom}/players/${myUid}`), { understood: true });
+    };
+
     function startTimer(endTime, elementId, onExpire) {
       clearInterval(timerInterval);
       const el = document.getElementById(elementId);
-      
       timerInterval = setInterval(() => {
         let remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
         let m = String(Math.floor(remaining / 60)).padStart(2, '0');
         let s = String(remaining % 60).padStart(2, '0');
         el.innerText = `${m}:${s}`;
-        
-        if (remaining <= 0) {
-          clearInterval(timerInterval);
-          onExpire();
-        }
+        if (remaining <= 0) { clearInterval(timerInterval); onExpire(); }
       }, 1000);
     }
 
-    // بدء اللعبة وتوزيع الأدوار (للمالك)
+    // بدء اللعبة (للمالك)
     document.getElementById('startGameBtn').onclick = async () => {
       let pKeys = Object.keys(roomData.players);
-      let count = pKeys.length;
-      
-      if(count < 5 || count > 10) { Swal.fire('خطأ', 'العدد يجب أن يكون من 5 إلى 10 لاعبين', 'error'); return; }
+      // if(pKeys.length < 5 || pKeys.length > 10) { Swal.fire('خطأ', 'العدد يجب أن يكون من 5 إلى 10 لاعبين', 'error'); return; }
 
       const qaTime = parseInt(document.getElementById('qaTimeInput').value) || 120;
       const voteTime = parseInt(document.getElementById('voteTimeInput').value) || 45;
 
-      // خلط اللاعبين لتوزيع الأدوار
       pKeys.sort(() => Math.random() - 0.5);
 
       let updates = {};
       pKeys.forEach((k, i) => {
         updates[`rooms/${currentRoom}/players/${k}/isAlive`] = true;
         updates[`rooms/${currentRoom}/players/${k}/vote`] = null;
+        updates[`rooms/${currentRoom}/players/${k}/understood`] = false;
         if(i === 0) updates[`rooms/${currentRoom}/players/${k}/role`] = 'الشايب';
         else if(i === 1) updates[`rooms/${currentRoom}/players/${k}/role`] = 'المتخفي';
         else updates[`rooms/${currentRoom}/players/${k}/role`] = 'مواطن';
       });
 
-      // اختيار كلمة عشوائية
       const word = WORDS_BANK[Math.floor(Math.random() * WORDS_BANK.length)];
-      
-      updates[`rooms/${currentRoom}/status`] = 'qa';
+      updates[`rooms/${currentRoom}/status`] = 'starting_countdown';
       updates[`rooms/${currentRoom}/currentWord`] = word;
       updates[`rooms/${currentRoom}/usedWords`] = [word];
       updates[`rooms/${currentRoom}/settings`] = { qaTime, voteTime };
-      updates[`rooms/${currentRoom}/endTime`] = Date.now() + (qaTime * 1000);
       
       await update(ref(db), updates);
     };
 
-    // زر "تم اكتشاف الكلمة" (للشايب فقط)
+    // الشايب يضغط "تم اكتشاف الكلمة"
     document.getElementById('wordDiscoveredBtn').onclick = async () => {
-      const voteTime = roomData.settings.voteTime;
-      await update(ref(db, `rooms/${currentRoom}`), {
-        status: 'voting',
-        endTime: Date.now() + (voteTime * 1000)
-      });
+      await update(ref(db, `rooms/${currentRoom}/status`), 'voting_transition');
     };
 
-    // تسجيل التصويت
     async function submitVote(targetUid) {
       await set(ref(db, `rooms/${currentRoom}/players/${myUid}/vote`), targetUid);
     }
 
-    // فرز الأصوات والنتائج (للمالك فقط)
+    // فرز الأصوات
     async function tallyVotes() {
-      if(roomData.status !== 'voting') return; // لمنع التكرار
+      if(roomData.status !== 'voting') return;
       
       let votes = {};
       for(let k in roomData.players) {
@@ -416,15 +573,12 @@
         if(v) votes[v] = (votes[v] || 0) + 1;
       }
 
-      // إيجاد الأكثر تصويتاً
-      let maxVotes = 0;
-      let votedOutId = null;
+      let maxVotes = 0, votedOutId = null;
       for(let k in votes) {
         if(votes[k] > maxVotes) { maxVotes = votes[k]; votedOutId = k; }
       }
 
       if(!votedOutId) {
-         // لا أحد صوت! نختار عشوائي لتفادي التعليق
          let aliveCitizens = Object.keys(roomData.players).filter(k => roomData.players[k].isAlive && roomData.players[k].role !== 'الشايب');
          if(aliveCitizens.length > 0) votedOutId = aliveCitizens[0];
       }
@@ -433,16 +587,15 @@
       let votedName = roomData.players[votedOutId].name;
 
       if(votedRole === 'المتخفي') {
-         endGame('citizens', `تم اكتشاف المتخفي بنجاح! كان (${votedName})`);
+         update(ref(db, `rooms/${currentRoom}`), { status: 'ended', winner: 'citizens', endReason: 'voted_correct' });
       } else {
-         // تصويت خاطئ (خرج مواطن)
          let updates = {};
          updates[`rooms/${currentRoom}/players/${votedOutId}/isAlive`] = false;
-         
-         // مسح أصوات الجميع للجولة القادمة
-         for(let k in roomData.players) updates[`rooms/${currentRoom}/players/${k}/vote`] = null;
+         for(let k in roomData.players) {
+            updates[`rooms/${currentRoom}/players/${k}/vote`] = null;
+            updates[`rooms/${currentRoom}/players/${k}/understood`] = false;
+         }
 
-         // التحقق إذا فاز المتخفي (كل المواطنين ماتوا)
          let aliveCitizensCount = 0;
          for(let k in roomData.players) {
             if(k !== votedOutId && roomData.players[k].isAlive && roomData.players[k].role === 'مواطن') aliveCitizensCount++;
@@ -451,56 +604,31 @@
          if(aliveCitizensCount === 0) {
             updates[`rooms/${currentRoom}/status`] = 'ended';
             updates[`rooms/${currentRoom}/winner`] = 'hidden';
-            updates[`rooms/${currentRoom}/endReason`] = `تم إخراج جميع المواطنين! المتخفي يسيطر.`;
-            await update(ref(db), updates);
+            updates[`rooms/${currentRoom}/endReason`] = 'all_dead';
          } else {
-            // جولة جديدة بكلمة جديدة
-            let usedWords = roomData.usedWords || [];
-            let availableWords = WORDS_BANK.filter(w => !usedWords.includes(w));
-            if(availableWords.length === 0) availableWords = WORDS_BANK; // ريستارت للكلمات للضرورة
-            let newWord = availableWords[Math.floor(Math.random() * availableWords.length)];
-            usedWords.push(newWord);
-
-            updates[`rooms/${currentRoom}/status`] = 'qa';
-            updates[`rooms/${currentRoom}/currentWord`] = newWord;
-            updates[`rooms/${currentRoom}/usedWords`] = usedWords;
-            updates[`rooms/${currentRoom}/endTime`] = Date.now() + (roomData.settings.qaTime * 1000);
-            
-            await update(ref(db), updates);
-
-            // إشعار فوري لجميع اللاعبين
-            set(ref(db, `rooms/${currentRoom}/globalAlert`), Date.now()); // trigger
-            Toast.fire({ icon: 'error', title: `تصويت خاطئ! خرج المواطن: ${votedName}`, text: 'بدأت جولة جديدة بكلمة جديدة' });
+            updates[`rooms/${currentRoom}/lastKickedName`] = votedName;
+            updates[`rooms/${currentRoom}/status`] = 'wrong_vote_reveal';
          }
+         await update(ref(db), updates);
       }
     }
 
-    function endGame(winner, reason) {
-      update(ref(db, `rooms/${currentRoom}`), {
-        status: 'ended',
-        winner: winner,
-        endReason: reason
-      });
-    }
-
-    // زر الإعادة (للمالك)
     document.getElementById('replayBtn').onclick = async () => {
       let updates = {};
       updates[`rooms/${currentRoom}/status`] = 'waiting';
-      updates[`rooms/${currentRoom}/winner`] = null;
       for(let k in roomData.players) {
          updates[`rooms/${currentRoom}/players/${k}/role`] = null;
          updates[`rooms/${currentRoom}/players/${k}/isAlive`] = true;
          updates[`rooms/${currentRoom}/players/${k}/vote`] = null;
+         updates[`rooms/${currentRoom}/players/${k}/understood`] = false;
       }
       await update(ref(db), updates);
     };
 
-    // أزرار الدخول
     document.getElementById('createRoomBtn').onclick = () => {
       const name = document.getElementById('playerName').value.trim();
-      if(!name) { Toast.fire({ icon: 'warning', title: 'اكتب اسمك أولاً' }); return; }
-      const code = generateRoomCode();
+      if(!name) return;
+      const code = Math.random().toString(36).substr(2, 4).toUpperCase();
       set(ref(db, `rooms/${code}/status`), 'waiting');
       joinRoom(name, code, true);
     };
@@ -508,20 +636,14 @@
     document.getElementById('joinRoomBtn').onclick = () => {
       const name = document.getElementById('playerName').value.trim();
       const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
-      if(!name || code.length < 4) { Toast.fire({ icon: 'warning', title: 'تأكد من الاسم وكود الغرفة' }); return; }
+      if(!name || code.length < 4) return;
       joinRoom(name, code, false);
     };
 
-    // استعادة الجلسة تلقائياً عند تحديث الصفحة
     window.onload = () => {
-      if (myUid && currentRoom) {
-         // نعيد الدخول بدون اسم (سيأخذ الاسم من قاعدة البيانات)
-         joinRoom("", currentRoom, false); 
-      } else {
-         switchScreen('login');
-      }
+      if (myUid && currentRoom) joinRoom("", currentRoom, false); 
+      else switchScreen('login');
     };
-
   </script>
 </body>
 </html>
