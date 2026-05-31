@@ -114,20 +114,16 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 🔴🔴🔴 ركز هنا: انسخ بيانات مشروعك والصقها، وتأكد من رابط قاعدة البيانات 🔴🔴🔴
+    // تم وضع بياناتك بشكل صحيح وتلقائي هنا لضمان عملها 100%
     const firebaseConfig = {
-      apiKey: "مفتاح_apiKey_حقك",
+      apiKey: "AIzaSyCu5Hbu2Rqml7_4DICZf8XyM9B4hzbpdOQ",
       authDomain: "ploska-ae755.firebaseapp.com",
-      
-      // هذا هو السطر الحاسم! الصق رابط قاعدة بياناتك الحقيقي هنا:
-      databaseURL: "رابط_قاعدة_البيانات_يبدأ_بـ_https",
-      
+      databaseURL: "https://ploska-ae755-default-rtdb.firebaseio.com",
       projectId: "ploska-ae755",
       storageBucket: "ploska-ae755.firebasestorage.app",
       messagingSenderId: "115680839911",
       appId: "1:115680839911:web:1220fea64c03c3a9137a42"
     };
-    // 🔴🔴🔴 نهاية التعديل 🔴🔴🔴
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -202,7 +198,7 @@
       });
     }
 
-    // عند الضغط على زر إنشاء غرفة (تكون أنت المالك: true)
+    // عند الضغط على زر إنشاء غرفة
     createRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       if(name === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
@@ -211,7 +207,7 @@
       enterRoom(name, currentRoom, true);
     });
 
-    // عند الضغط على زر انضمام لغرفة (تكون لاعب عادي: false)
+    // عند الضغط على زر انضمام لغرفة
     joinRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       const code = roomCodeInput.value.trim().toUpperCase();
