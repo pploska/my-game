@@ -3,344 +3,525 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لعبة المؤامرة</title>
+  <title>لعبة المتخفي</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
-      --bg-dark: #0f0f11; --panel-bg: #1c1c21; --red: #c0392b; --green: #27ae60; --gold: #f1c40f;
+      --bg-color: #121212; --panel-bg: #1e1e1e; --primary: #3498db; 
+      --danger: #e74c3c; --success: #2ecc71; --warning: #f1c40f; --text: #ffffff;
     }
     body {
-      background-color: var(--bg-dark); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      text-align: center; margin: 0; padding: 20px;
+      background-color: var(--bg-color); color: var(--text); font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      text-align: center; margin: 0; padding: 15px; overflow-x: hidden;
     }
     .container {
-      background-color: var(--panel-bg); padding: 30px; border-radius: 15px; max-width: 500px;
-      margin: 30px auto; border: 1px solid #333; box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      background-color: var(--panel-bg); padding: 25px; border-radius: 12px; max-width: 600px;
+      margin: 20px auto; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
-    h1, h2 { color: var(--red); margin-bottom: 5px; text-shadow: 0 0 10px rgba(192,57,43,0.5); }
-    p { color: #bdc3c7; margin-bottom: 25px; line-height: 1.6; }
-    input {
-      padding: 12px; font-size: 16px; width: 80%; border-radius: 8px; border: 1px solid #555;
-      background-color: #111; color: white; margin-bottom: 15px; text-align: center;
+    h1 { color: var(--primary); margin-bottom: 10px; font-size: 32px; text-shadow: 0 0 10px rgba(52,152,219,0.4); }
+    h2 { color: var(--warning); margin-bottom: 20px; }
+    p { color: #cccccc; line-height: 1.6; }
+    input[type="text"], input[type="number"] {
+      padding: 12px; font-size: 16px; width: 85%; border-radius: 8px; border: 1px solid #444;
+      background-color: #2c2c2c; color: white; margin-bottom: 15px; text-align: center;
     }
-    input:focus { outline: none; border-color: var(--red); }
+    input:focus { outline: none; border-color: var(--primary); }
     button {
-      background-color: var(--red); color: white; border: none; padding: 12px 25px; font-size: 16px;
-      border-radius: 8px; cursor: pointer; width: 85%; transition: 0.3s; font-weight: bold; margin-bottom: 10px;
+      background-color: var(--primary); color: white; border: none; padding: 14px 25px; font-size: 18px;
+      border-radius: 8px; cursor: pointer; width: 90%; font-weight: bold; margin-bottom: 15px; transition: 0.2s;
     }
-    button:hover { background-color: #e74c3c; transform: scale(1.05); }
-    .btn-secondary { background-color: #2980b9; }
-    .btn-secondary:hover { background-color: #3498db; }
-    .btn-success { background-color: var(--green); }
+    button:hover { filter: brightness(1.1); transform: scale(1.02); }
+    .btn-danger { background-color: var(--danger); }
+    .btn-success { background-color: var(--success); }
+    .btn-warning { background-color: var(--warning); color: #000; }
     
-    /* لوحة اللعب */
-    .board { display: flex; justify-content: space-around; margin: 20px 0; padding: 15px; background: #000; border-radius: 10px; }
-    .card-slot { width: 45%; padding: 15px 0; border-radius: 8px; font-weight: bold; font-size: 20px; }
-    .slot-red { border: 2px solid var(--red); color: var(--red); }
-    .slot-green { border: 2px solid var(--green); color: var(--green); }
-    .fail-track { margin: 15px 0; color: var(--gold); font-size: 18px; }
+    /* العدادات والكلمة */
+    .timer-display { font-size: 48px; font-weight: bold; color: var(--danger); text-shadow: 0 0 15px rgba(231,76,60,0.5); margin: 20px 0; }
+    .word-box { background: #2c3e50; padding: 20px; border-radius: 10px; border: 2px dashed var(--primary); font-size: 28px; font-weight: bold; letter-spacing: 2px; margin: 20px 0; }
+    .role-box { background: #333; padding: 15px; border-radius: 8px; border-right: 5px solid var(--warning); font-size: 20px; margin-bottom: 20px; }
     
-    /* قائمة اللاعبين */
-    #playersList, #gamePlayersList { list-style: none; padding: 0; text-align: right; margin-top: 20px; }
-    #playersList li, #gamePlayersList li { background-color: #222; margin: 5px 0; padding: 12px; border-radius: 5px; border-right: 4px solid var(--red); display: flex; justify-content: space-between; align-items: center;}
-    .dead-player { opacity: 0.5; text-decoration: line-through; border-right-color: #555 !important; }
-    .role-card { margin-top: 20px; padding: 15px; border-radius: 10px; border: 2px dashed #555; background: #000; }
+    /* قائمة اللاعبين للتصويت */
+    .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .player-card { 
+      background: #2a2a2a; padding: 15px; border-radius: 8px; border: 1px solid #444; 
+      cursor: pointer; transition: 0.3s; font-size: 18px; font-weight: bold;
+    }
+    .player-card:hover:not(.dead):not(.disabled) { border-color: var(--primary); background: #34495e; }
+    .player-card.selected { background: var(--primary); border-color: #fff; }
+    .player-card.dead { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; background: #1a1a1a; border-color: #000; }
+    .player-card.disabled { cursor: not-allowed; opacity: 0.7; }
+    
+    #oldManDisplay { font-size: 22px; color: var(--warning); margin: 15px 0; font-weight: bold; background: #333; padding: 10px; border-radius: 8px; }
   </style>
 </head>
 <body>
 
   <div class="container" id="loginScreen">
-    <h1>🎭 المؤامرة</h1>
-    <p>الخداع، التحالفات، والبقاء للأذكى</p>
-    <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." required>
-    <hr style="border-color: #333; margin: 20px 0;">
+    <h1>🕵️ المتخفي</h1>
+    <p>حلل، استنتج، واكشف المتخفي قبل فوات الأوان!</p>
+    <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." maxlength="15" required>
+    <hr style="border-color: #333; margin: 25px 0;">
     <button id="createRoomBtn">✨ إنشاء غرفة جديدة</button>
-    <hr style="border-color: #333; margin: 20px 0;">
-    <input type="text" id="roomCodeInput" placeholder="كود الغرفة" maxlength="4" style="text-transform: uppercase;">
-    <button id="joinRoomBtn" class="btn-secondary">🔗 انضمام للغرفة</button>
+    <input type="text" id="roomCodeInput" placeholder="كود الغرفة للانضمام" maxlength="4" style="text-transform: uppercase;">
+    <button id="joinRoomBtn" class="btn-warning">🔗 انضمام للغرفة</button>
   </div>
 
   <div class="container" id="lobbyScreen" style="display: none;">
     <h2>غرفة الانتظار ⏳</h2>
-    <h1 style="color: var(--green); letter-spacing: 5px;" id="roomCodeDisplay">----</h1>
-    <p>شارك الكود. اللعبة تدعم (5 إلى 12 لاعب)</p>
-    <ul id="playersList"></ul>
-    <h3 id="playerCount" style="color: var(--gold);">العدد: 0</h3>
-    <button id="startGameBtn" class="btn-success" style="display: none;">🚀 بدء المؤامرة</button>
-    <p id="waitingMessage" style="display: none; color: #3498db;">بانتظار المالك لبدء اللعبة...</p>
+    <h1 id="roomCodeDisplay" style="color: var(--success); letter-spacing: 5px;">----</h1>
+    <p>العدد المطلوب (5 - 10 لاعبين)</p>
+    
+    <div id="hostSettings" style="display: none; background: #222; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <h3 style="margin-top: 0;">إعدادات الغرفة (للمالك)</h3>
+      <label>مدة الأسئلة (ثانية):</label>
+      <input type="number" id="qaTimeInput" value="120" min="30" max="300"><br>
+      <label>مدة التصويت (ثانية):</label>
+      <input type="number" id="voteTimeInput" value="45" min="15" max="120">
+    </div>
+
+    <ul id="lobbyPlayersList" style="list-style: none; padding: 0; text-align: right;"></ul>
+    <h3 id="playerCountLabel" style="color: var(--primary);">العدد: 0</h3>
+    
+    <button id="startGameBtn" class="btn-success" style="display: none;">🚀 بدء اللعبة</button>
+    <p id="waitingHostMsg" style="display: none; color: var(--warning);">في انتظار المالك لبدء اللعبة...</p>
   </div>
 
-  <div class="container" id="gameScreen" style="display: none; max-width: 800px;">
-    <h2>طاولة المؤامرة 🩸</h2>
+  <div class="container" id="gameScreen" style="display: none;">
+    <div id="oldManDisplay">الشايب: <span id="oldManName">---</span> 👑</div>
     
-    <div class="board">
-      <div class="card-slot slot-red">بطاقات حمراء<br><span id="redScore" style="font-size: 30px;">0</span> / 6</div>
-      <div class="card-slot slot-green">بطاقات خضراء<br><span id="greenScore" style="font-size: 30px;">0</span> / 5</div>
-    </div>
-    <div class="fail-track">فشل الحكومة: <span id="failScore">0</span> / 2</div>
-
-    <div class="role-card" id="myRoleDisplay">
-      <h3 id="myRoleTitle" style="margin: 0 0 10px 0;"></h3>
-      <p id="myRoleDesc" style="margin: 0; font-size: 14px;"></p>
-      <div id="spiesListDiv" style="color: #ff9999; margin-top: 10px; font-weight: bold;"></div>
+    <div class="role-box" id="myRoleBox">
+      هويتك: <span id="myRoleLabel" style="font-weight: bold;">---</span>
     </div>
 
-    <div id="actionArea" style="margin-top: 20px; padding: 15px; background: #2c3e50; border-radius: 10px; display: none;">
-      <h3 id="actionTitle" style="color: white; margin-top:0;"></h3>
-      <div id="actionContent"></div>
+    <div class="word-box" id="wordBox" style="display: none;">
+      الكلمة السرية: <span id="secretWord" style="color: var(--warning);">---</span>
     </div>
 
-    <h3 style="text-align: right; border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 30px;">اللاعبون</h3>
-    <ul id="gamePlayersList"></ul>
+    <div id="qaPhaseUI" style="display: none;">
+      <h3>مرحلة الأسئلة 🗣️</h3>
+      <p>اسألوا الشايب لمعرفة الكلمة السرية!</p>
+      <div class="timer-display" id="qaTimer">00:00</div>
+      <button id="wordDiscoveredBtn" class="btn-success" style="display: none;">🎯 تم اكتشاف الكلمة</button>
+    </div>
+
+    <div id="votePhaseUI" style="display: none;">
+      <h3 style="color: var(--danger);">مرحلة التصويت 🗳️</h3>
+      <p>من تعتقد أنه المتخفي؟ (اختر لاعباً)</p>
+      <div class="timer-display" id="voteTimer">00:00</div>
+      <div class="players-grid" id="votingGrid"></div>
+      <p id="myVoteStatus" style="color: var(--success); font-weight: bold; margin-top: 15px;"></p>
+    </div>
+  </div>
+
+  <div class="container" id="endScreen" style="display: none;">
+    <h1 id="winnerText" style="font-size: 40px;"></h1>
+    <h3 id="endDetails" style="color: #ccc;"></h3>
+    <button id="replayBtn" class="btn-primary" style="display: none; margin-top: 20px;">🔄 لعب من جديد</button>
+    <p id="waitingReplayMsg" style="display: none;">بانتظار المالك لإعادة اللعبة...</p>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect, update, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 🔴🔴🔴 ضع بيانات فايربيس الخاصة بك هنا 🔴🔴🔴
+    // 🔴🔴 استبدل هذه البيانات ببيانات مشروعك في فايربيس 🔴🔴
     const firebaseConfig = {
-      apiKey: "AIzaSyCu5Hbu2Rqml7_4DICZf8XyM9B4hzbpdOQ",
+      apiKey: "YOUR_API_KEY",
       authDomain: "ploska-ae755.firebaseapp.com",
       databaseURL: "https://ploska-ae755-default-rtdb.firebaseio.com",
       projectId: "ploska-ae755",
       storageBucket: "ploska-ae755.firebasestorage.app",
-      messagingSenderId: "115680839911",
-      appId: "1:115680839911:web:1220fea64c03c3a9137a42"
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // المتغيرات
-    let myKey = null, currentRoom = "", isOwner = false;
-    let gameData = {};
+    // بنك الكلمات العشوائية
+    const WORDS_BANK = [
+      "مستشفى","مطار","ساعة","نظارة","جبل","شاطئ","سفينة","قطار","مكتبة","حديقة",
+      "قصر","خيمة","قهوة","مطعم","مفتاح","كاميرا","محفظة","عطر","ثلاجة","تلفزيون",
+      "قمر","شمس","كوكب","نار","جليد","غابة","صحراء","جسر","نفق","برج",
+      "سيف","درع","تاج","خاتم","ذهب","فضة","ألماس","حرير","قطن","صوف"
+    ];
 
-    // دوال مساعدة
-    const uid = () => Math.random().toString(36).substr(2, 9);
-    const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 3000, timerProgressBar: true });
+    // المتغيرات المحلية
+    let myUid = localStorage.getItem('mutakhafti_uid');
+    let currentRoom = localStorage.getItem('mutakhafti_room');
+    let isOwner = false;
+    let roomData = null;
+    let timerInterval = null;
 
-    // الدخول للغرفة
-    function joinGame(name, code, ownerFlag) {
-      isOwner = ownerFlag;
+    // عناصر الشاشة
+    const screens = {
+      login: document.getElementById('loginScreen'),
+      lobby: document.getElementById('lobbyScreen'),
+      game: document.getElementById('gameScreen'),
+      end: document.getElementById('endScreen')
+    };
+
+    const Toast = Swal.mixin({ toast: true, position: 'top', showConfirmButton: false, timer: 3000 });
+
+    function switchScreen(screenName) {
+      Object.values(screens).forEach(s => s.style.display = 'none');
+      screens[screenName].style.display = 'block';
+    }
+
+    // دالة إنشاء كود
+    function generateRoomCode() {
+      return Math.random().toString(36).substr(2, 4).toUpperCase();
+    }
+
+    // دالة الاتصال وتجهيز الغرفة
+    async function joinRoom(name, code, asOwner) {
       currentRoom = code;
+      isOwner = asOwner;
       
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('lobbyScreen').style.display = 'block';
-      document.getElementById('roomCodeDisplay').innerText = code;
+      const playerRef = asOwner ? push(ref(db, `rooms/${code}/players`)) : null;
       
-      if(isOwner) {
-        document.getElementById('startGameBtn').style.display = 'block';
+      // إذا كان لاعب جديد ينضم (وليس استرجاع جلسة)
+      if (!myUid || asOwner || document.getElementById('playerName').value !== "") {
+         let newRef = push(ref(db, `rooms/${code}/players`));
+         myUid = newRef.key;
+         await set(newRef, { name: name, isOwner: asOwner, isAlive: true });
+         localStorage.setItem('mutakhafti_uid', myUid);
+         localStorage.setItem('mutakhafti_room', code);
+         onDisconnect(newRef).update({ connected: false });
       } else {
-        document.getElementById('waitingMessage').style.display = 'block';
+         // محاولة استرجاع الاتصال
+         await update(ref(db, `rooms/${code}/players/${myUid}`), { connected: true });
+         onDisconnect(ref(db, `rooms/${code}/players/${myUid}`)).update({ connected: false });
       }
 
-      const playerRef = push(ref(db, `rooms/${code}/players`));
-      myKey = playerRef.key;
-      set(playerRef, { name: name, isOwner: isOwner, isAlive: true });
-      onDisconnect(playerRef).remove();
-
-      // مراقبة الغرفة
+      // مراقبة بيانات الغرفة
       onValue(ref(db, `rooms/${code}`), (snapshot) => {
         const data = snapshot.val();
-        if(!data) return;
-        gameData = data;
-
-        // تحديث قائمة اللوبي
-        if(data.status === 'waiting') {
-          const pList = document.getElementById('playersList');
-          pList.innerHTML = '';
-          let count = 0;
-          for(let k in data.players) {
-            count++;
-            pList.innerHTML += `<li>${data.players[k].name} ${data.players[k].isOwner ? '👑' : ''}</li>`;
-          }
-          document.getElementById('playerCount').innerText = `العدد: ${count}`;
+        if (!data) {
+          localStorage.removeItem('mutakhafti_uid');
+          localStorage.removeItem('mutakhafti_room');
+          switchScreen('login');
+          return;
         }
+        roomData = data;
         
-        // الانتقال للعب
-        if(data.status && data.status !== 'waiting') {
-          document.getElementById('lobbyScreen').style.display = 'none';
-          document.getElementById('gameScreen').style.display = 'block';
-          updateGameUI();
-        }
+        // التحقق من صلاحيات المالك
+        isOwner = data.players[myUid]?.isOwner || false;
+
+        handleStateChange(data);
       });
     }
 
-    document.getElementById('createRoomBtn').onclick = () => {
-      const name = document.getElementById('playerName').value;
-      if(!name) return;
-      const code = Math.random().toString(36).substr(2, 4).toUpperCase();
-      set(ref(db, `rooms/${code}/status`), 'waiting');
-      joinGame(name, code, true);
-    };
+    // إدارة حالات اللعبة
+    function handleStateChange(data) {
+      const status = data.status;
+      const me = data.players[myUid];
+      if (!me) return; // تم الطرد أو غير موجود
 
-    document.getElementById('joinRoomBtn').onclick = () => {
-      const name = document.getElementById('playerName').value;
-      const code = document.getElementById('roomCodeInput').value.toUpperCase();
-      if(!name || code.length < 4) return;
-      joinGame(name, code, false);
-    };
+      if (status === 'waiting') {
+        switchScreen('lobby');
+        document.getElementById('roomCodeDisplay').innerText = currentRoom;
+        
+        // تحديث اللوبي
+        const list = document.getElementById('lobbyPlayersList');
+        list.innerHTML = '';
+        let count = 0;
+        for (let key in data.players) {
+          count++;
+          let p = data.players[key];
+          list.innerHTML += `<li style="padding: 10px; background: #222; margin: 5px 0; border-radius: 5px; border-right: 4px solid var(--primary);">
+            ${p.name} ${p.isOwner ? '👑' : ''} ${p.connected === false ? '(مفقود الاتصال)' : ''}
+          </li>`;
+        }
+        document.getElementById('playerCountLabel').innerText = `العدد: ${count}`;
 
-    // خوارزمية بدء اللعبة (توزيع الأدوار وبناء الكومة)
+        if (isOwner) {
+          document.getElementById('hostSettings').style.display = 'block';
+          document.getElementById('startGameBtn').style.display = 'block';
+          document.getElementById('waitingHostMsg').style.display = 'none';
+        } else {
+          document.getElementById('hostSettings').style.display = 'none';
+          document.getElementById('startGameBtn').style.display = 'none';
+          document.getElementById('waitingHostMsg').style.display = 'block';
+        }
+      } 
+      else if (status === 'qa' || status === 'voting') {
+        switchScreen('game');
+        
+        // عرض الشايب
+        let oldManName = "";
+        for(let k in data.players) {
+           if(data.players[k].role === 'الشايب') oldManName = data.players[k].name;
+        }
+        document.getElementById('oldManName').innerText = oldManName;
+
+        // عرض هويتي
+        document.getElementById('myRoleLabel').innerText = me.role;
+        if(me.role === 'الشايب') document.getElementById('myRoleBox').style.borderRightColor = 'var(--primary)';
+        else if(me.role === 'المتخفي') document.getElementById('myRoleBox').style.borderRightColor = 'var(--danger)';
+        else document.getElementById('myRoleBox').style.borderRightColor = 'var(--success)';
+
+        // عرض الكلمة للشايب والمتخفي فقط
+        if(me.role === 'الشايب' || me.role === 'المتخفي') {
+          document.getElementById('wordBox').style.display = 'block';
+          document.getElementById('secretWord').innerText = data.currentWord;
+        } else {
+          document.getElementById('wordBox').style.display = 'none';
+        }
+
+        if (status === 'qa') {
+          document.getElementById('qaPhaseUI').style.display = 'block';
+          document.getElementById('votePhaseUI').style.display = 'none';
+          
+          if(me.role === 'الشايب') document.getElementById('wordDiscoveredBtn').style.display = 'block';
+          else document.getElementById('wordDiscoveredBtn').style.display = 'none';
+
+          startTimer(data.endTime, 'qaTimer', () => {
+             // إذا انتهى الوقت في مرحلة الأسئلة: يفوز المواطنون
+             if(isOwner) endGame('citizens', 'انتهى الوقت ولم يتم اكتشاف الكلمة! نجا المواطنون وخسر المتخفي.');
+          });
+        } 
+        else if (status === 'voting') {
+          document.getElementById('qaPhaseUI').style.display = 'none';
+          document.getElementById('votePhaseUI').style.display = 'block';
+          document.getElementById('myVoteStatus').innerText = me.vote ? 'تم التصويت بنجاح' : '';
+
+          // بناء شبكة التصويت
+          const grid = document.getElementById('votingGrid');
+          grid.innerHTML = '';
+          for(let k in data.players) {
+            let p = data.players[k];
+            // لا يمكن التصويت على الشايب أو الأموات
+            if(p.role !== 'الشايب') {
+              let div = document.createElement('div');
+              div.className = `player-card ${!p.isAlive ? 'dead' : ''} ${me.vote === k ? 'selected' : ''} ${(!me.isAlive || me.vote) ? 'disabled' : ''}`;
+              div.innerText = p.name;
+              
+              if(p.isAlive && me.isAlive && !me.vote) {
+                 div.onclick = () => submitVote(k);
+              }
+              grid.appendChild(div);
+            }
+          }
+
+          startTimer(data.endTime, 'voteTimer', () => {
+             if(isOwner) tallyVotes();
+          });
+        }
+      }
+      else if (status === 'ended') {
+        switchScreen('end');
+        clearInterval(timerInterval);
+        
+        let hiddenName = "";
+        for(let k in data.players) { if(data.players[k].role === 'المتخفي') hiddenName = data.players[k].name; }
+
+        const winText = document.getElementById('winnerText');
+        if(data.winner === 'citizens') {
+           winText.innerText = '🎉 فاز المواطنون! والشايب!';
+           winText.style.color = 'var(--success)';
+        } else {
+           winText.innerText = '🩸 فاز المتخفي!';
+           winText.style.color = 'var(--danger)';
+        }
+        
+        document.getElementById('endDetails').innerHTML = `
+          المتخفي كان: <span style="color:var(--danger)">${hiddenName}</span><br>
+          <span style="font-size:16px">${data.endReason}</span>
+        `;
+
+        if (isOwner) {
+          document.getElementById('replayBtn').style.display = 'block';
+          document.getElementById('waitingReplayMsg').style.display = 'none';
+        } else {
+          document.getElementById('replayBtn').style.display = 'none';
+          document.getElementById('waitingReplayMsg').style.display = 'block';
+        }
+      }
+    }
+
+    // إدارة العداد الزمني الموحد
+    function startTimer(endTime, elementId, onExpire) {
+      clearInterval(timerInterval);
+      const el = document.getElementById(elementId);
+      
+      timerInterval = setInterval(() => {
+        let remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+        let m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        let s = String(remaining % 60).padStart(2, '0');
+        el.innerText = `${m}:${s}`;
+        
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          onExpire();
+        }
+      }, 1000);
+    }
+
+    // بدء اللعبة وتوزيع الأدوار (للمالك)
     document.getElementById('startGameBtn').onclick = async () => {
-      const snap = await get(ref(db, `rooms/${currentRoom}/players`));
-      const players = snap.val();
-      const pKeys = Object.keys(players);
-      const count = pKeys.length;
+      let pKeys = Object.keys(roomData.players);
+      let count = pKeys.length;
+      
+      if(count < 5 || count > 10) { Swal.fire('خطأ', 'العدد يجب أن يكون من 5 إلى 10 لاعبين', 'error'); return; }
 
-      // if(count < 5 || count > 12) { Swal.fire('خطأ', 'العدد يجب أن يكون من 5 إلى 12', 'error'); return; }
+      const qaTime = parseInt(document.getElementById('qaTimeInput').value) || 120;
+      const voteTime = parseInt(document.getElementById('voteTimeInput').value) || 45;
 
-      // خلط اللاعبين
+      // خلط اللاعبين لتوزيع الأدوار
       pKeys.sort(() => Math.random() - 0.5);
 
-      // تحديد عدد المجرمين
-      let crimCount = 2;
-      if(count >= 8 && count <= 11) crimCount = 3;
-      if(count === 12) crimCount = 4;
-
       let updates = {};
-      
-      // توزيع الأدوار
       pKeys.forEach((k, i) => {
-        if(i === 0) updates[`rooms/${currentRoom}/players/${k}/role`] = 'المجرم الأساسي';
-        else if (i < crimCount) updates[`rooms/${currentRoom}/players/${k}/role`] = 'مساعد مجرم';
+        updates[`rooms/${currentRoom}/players/${k}/isAlive`] = true;
+        updates[`rooms/${currentRoom}/players/${k}/vote`] = null;
+        if(i === 0) updates[`rooms/${currentRoom}/players/${k}/role`] = 'الشايب';
+        else if(i === 1) updates[`rooms/${currentRoom}/players/${k}/role`] = 'المتخفي';
         else updates[`rooms/${currentRoom}/players/${k}/role`] = 'مواطن';
       });
 
-      // بناء كومة البطاقات
-      let deck = [];
-      let redCount = (count <= 8) ? 11 : (count <= 10) ? 13 : 15;
-      for(let i=0; i<redCount; i++) deck.push('R');
-      for(let i=0; i<6; i++) deck.push('G');
-      deck.sort(() => Math.random() - 0.5);
-
-      // إعدادات الطاولة
-      updates[`rooms/${currentRoom}/board/red`] = 0;
-      updates[`rooms/${currentRoom}/board/green`] = 0;
-      updates[`rooms/${currentRoom}/board/fail`] = 0;
-      updates[`rooms/${currentRoom}/deck`] = deck;
-      updates[`rooms/${currentRoom}/turnOrder`] = pKeys; // ترتيب اللعب
-      updates[`rooms/${currentRoom}/currentTurnIndex`] = 0; 
+      // اختيار كلمة عشوائية
+      const word = WORDS_BANK[Math.floor(Math.random() * WORDS_BANK.length)];
       
-      // إعلان الرئيس الأول
-      updates[`rooms/${currentRoom}/status`] = 'nomination'; // مرحلة الترشيح
-      updates[`rooms/${currentRoom}/currentPresident`] = pKeys[0];
-
+      updates[`rooms/${currentRoom}/status`] = 'qa';
+      updates[`rooms/${currentRoom}/currentWord`] = word;
+      updates[`rooms/${currentRoom}/usedWords`] = [word];
+      updates[`rooms/${currentRoom}/settings`] = { qaTime, voteTime };
+      updates[`rooms/${currentRoom}/endTime`] = Date.now() + (qaTime * 1000);
+      
       await update(ref(db), updates);
+    };
 
-      // إشعار فخم للجميع
-      set(ref(db, `rooms/${currentRoom}/globalAlert`), {
-        title: `تم تعيين ${players[pKeys[0]].name} رئيساً للجولة`,
-        text: 'بانتظار الرئيس لاختيار مستشار',
-        icon: 'info',
-        id: uid()
+    // زر "تم اكتشاف الكلمة" (للشايب فقط)
+    document.getElementById('wordDiscoveredBtn').onclick = async () => {
+      const voteTime = roomData.settings.voteTime;
+      await update(ref(db, `rooms/${currentRoom}`), {
+        status: 'voting',
+        endTime: Date.now() + (voteTime * 1000)
       });
     };
 
-    // تحديث الشاشة بناءً على حالة اللعبة
-    let lastAlertId = null;
-    function updateGameUI() {
-      const data = gameData;
-      const me = data.players[myKey];
+    // تسجيل التصويت
+    async function submitVote(targetUid) {
+      await set(ref(db, `rooms/${currentRoom}/players/${myUid}/vote`), targetUid);
+    }
 
-      // 1. الإشعارات العامة (تظهر مرة واحدة للكل)
-      if(data.globalAlert && data.globalAlert.id !== lastAlertId) {
-        Swal.fire({
-          title: data.globalAlert.title,
-          text: data.globalAlert.text,
-          icon: data.globalAlert.icon,
-          background: '#1c1c21',
-          color: '#fff',
-          confirmButtonColor: '#c0392b'
-        });
-        lastAlertId = data.globalAlert.id;
+    // فرز الأصوات والنتائج (للمالك فقط)
+    async function tallyVotes() {
+      if(roomData.status !== 'voting') return; // لمنع التكرار
+      
+      let votes = {};
+      for(let k in roomData.players) {
+        let v = roomData.players[k].vote;
+        if(v) votes[v] = (votes[v] || 0) + 1;
       }
 
-      // 2. تحديث العدادات
-      document.getElementById('redScore').innerText = data.board.red || 0;
-      document.getElementById('greenScore').innerText = data.board.green || 0;
-      document.getElementById('failScore').innerText = data.board.fail || 0;
+      // إيجاد الأكثر تصويتاً
+      let maxVotes = 0;
+      let votedOutId = null;
+      for(let k in votes) {
+        if(votes[k] > maxVotes) { maxVotes = votes[k]; votedOutId = k; }
+      }
 
-      // 3. عرض دوري السري والمعرفة
-      document.getElementById('myRoleTitle').innerText = me.role;
-      const spiesDiv = document.getElementById('spiesListDiv');
-      spiesDiv.innerHTML = '';
-      
-      if(me.role !== 'مواطن') {
-        document.getElementById('myRoleDisplay').style.borderColor = 'var(--red)';
-        
-        let known = [];
-        let pCount = Object.keys(data.players).length;
-        
-        for(let k in data.players) {
-          if(k !== myKey && data.players[k].role !== 'مواطن') {
-            // نظام المعرفة المعقد
-            if(pCount === 5) { /* لا يعرفون بعض */ }
-            else if (pCount >= 6 && pCount <= 10) known.push(`${data.players[k].name} (${data.players[k].role})`);
-            else if (pCount === 11 && me.role === 'مساعد مجرم' && data.players[k].role === 'المجرم الأساسي') known.push(`${data.players[k].name} (المجرم الأساسي)`);
-            // لضيق المساحة البرمجية تم تبسيط 12 لاعب
-            else if (pCount === 12) known.push(`${data.players[k].name} (${data.players[k].role})`); 
-          }
-        }
-        if(known.length > 0) spiesDiv.innerHTML = 'تعرف على: <br>' + known.join('<br>');
+      if(!votedOutId) {
+         // لا أحد صوت! نختار عشوائي لتفادي التعليق
+         let aliveCitizens = Object.keys(roomData.players).filter(k => roomData.players[k].isAlive && roomData.players[k].role !== 'الشايب');
+         if(aliveCitizens.length > 0) votedOutId = aliveCitizens[0];
+      }
+
+      let votedRole = roomData.players[votedOutId].role;
+      let votedName = roomData.players[votedOutId].name;
+
+      if(votedRole === 'المتخفي') {
+         endGame('citizens', `تم اكتشاف المتخفي بنجاح! كان (${votedName})`);
       } else {
-        document.getElementById('myRoleDisplay').style.borderColor = 'var(--green)';
-      }
+         // تصويت خاطئ (خرج مواطن)
+         let updates = {};
+         updates[`rooms/${currentRoom}/players/${votedOutId}/isAlive`] = false;
+         
+         // مسح أصوات الجميع للجولة القادمة
+         for(let k in roomData.players) updates[`rooms/${currentRoom}/players/${k}/vote`] = null;
 
-      // 4. تحديث قائمة اللاعبين وإبراز الرئيس
-      const gList = document.getElementById('gamePlayersList');
-      gList.innerHTML = '';
-      for(let k in data.players) {
-        const p = data.players[k];
-        let tags = '';
-        if(data.currentPresident === k) tags += '<span style="background:var(--gold); color:#000; padding:2px 5px; border-radius:3px;">الرئيس</span> ';
-        if(data.currentChancellor === k) tags += '<span style="background:#3498db; color:#fff; padding:2px 5px; border-radius:3px;">المستشار</span>';
-        
-        gList.innerHTML += `<li class="${p.isAlive ? '' : 'dead-player'}">
-          ${p.name} <div>${tags}</div>
-        </li>`;
-      }
+         // التحقق إذا فاز المتخفي (كل المواطنين ماتوا)
+         let aliveCitizensCount = 0;
+         for(let k in roomData.players) {
+            if(k !== votedOutId && roomData.players[k].isAlive && roomData.players[k].role === 'مواطن') aliveCitizensCount++;
+         }
 
-      // 5. التحكم بمنطقة الإجراءات (الترشيح)
-      const actionArea = document.getElementById('actionArea');
-      const actionTitle = document.getElementById('actionTitle');
-      const actionContent = document.getElementById('actionContent');
-      
-      actionArea.style.display = 'none';
+         if(aliveCitizensCount === 0) {
+            updates[`rooms/${currentRoom}/status`] = 'ended';
+            updates[`rooms/${currentRoom}/winner`] = 'hidden';
+            updates[`rooms/${currentRoom}/endReason`] = `تم إخراج جميع المواطنين! المتخفي يسيطر.`;
+            await update(ref(db), updates);
+         } else {
+            // جولة جديدة بكلمة جديدة
+            let usedWords = roomData.usedWords || [];
+            let availableWords = WORDS_BANK.filter(w => !usedWords.includes(w));
+            if(availableWords.length === 0) availableWords = WORDS_BANK; // ريستارت للكلمات للضرورة
+            let newWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            usedWords.push(newWord);
 
-      if(data.status === 'nomination' && data.currentPresident === myKey) {
-        actionArea.style.display = 'block';
-        actionTitle.innerText = 'أنت الرئيس: اختر مستشارك';
-        actionContent.innerHTML = '';
-        
-        for(let k in data.players) {
-          if(k !== myKey && data.players[k].isAlive) {
-            let btn = document.createElement('button');
-            btn.innerText = data.players[k].name;
-            btn.onclick = () => nominateChancellor(k, data.players[k].name);
-            actionContent.appendChild(btn);
-          }
-        }
+            updates[`rooms/${currentRoom}/status`] = 'qa';
+            updates[`rooms/${currentRoom}/currentWord`] = newWord;
+            updates[`rooms/${currentRoom}/usedWords`] = usedWords;
+            updates[`rooms/${currentRoom}/endTime`] = Date.now() + (roomData.settings.qaTime * 1000);
+            
+            await update(ref(db), updates);
+
+            // إشعار فوري لجميع اللاعبين
+            set(ref(db, `rooms/${currentRoom}/globalAlert`), Date.now()); // trigger
+            Toast.fire({ icon: 'error', title: `تصويت خاطئ! خرج المواطن: ${votedName}`, text: 'بدأت جولة جديدة بكلمة جديدة' });
+         }
       }
     }
 
-    // دالة ترشيح المستشار (ترسل للفايربيس وتغير الحالة للتصويت)
-    async function nominateChancellor(chancellorKey, chancellorName) {
+    function endGame(winner, reason) {
+      update(ref(db, `rooms/${currentRoom}`), {
+        status: 'ended',
+        winner: winner,
+        endReason: reason
+      });
+    }
+
+    // زر الإعادة (للمالك)
+    document.getElementById('replayBtn').onclick = async () => {
       let updates = {};
-      updates[`rooms/${currentRoom}/currentChancellor`] = chancellorKey;
-      updates[`rooms/${currentRoom}/status`] = 'voting'; // الانتقال لمرحلة التصويت
-      
-      // إرسال إشعار للكل
-      updates[`rooms/${currentRoom}/globalAlert`] = {
-        title: 'اكتمل تشكيل الحكومة',
-        text: `الرئيس: ${gameData.players[myKey].name} | المستشار: ${chancellorName}\n(الرجاء الاستعداد للتصويت)`,
-        icon: 'warning',
-        id: uid()
-      };
-      
+      updates[`rooms/${currentRoom}/status`] = 'waiting';
+      updates[`rooms/${currentRoom}/winner`] = null;
+      for(let k in roomData.players) {
+         updates[`rooms/${currentRoom}/players/${k}/role`] = null;
+         updates[`rooms/${currentRoom}/players/${k}/isAlive`] = true;
+         updates[`rooms/${currentRoom}/players/${k}/vote`] = null;
+      }
       await update(ref(db), updates);
-    }
+    };
+
+    // أزرار الدخول
+    document.getElementById('createRoomBtn').onclick = () => {
+      const name = document.getElementById('playerName').value.trim();
+      if(!name) { Toast.fire({ icon: 'warning', title: 'اكتب اسمك أولاً' }); return; }
+      const code = generateRoomCode();
+      set(ref(db, `rooms/${code}/status`), 'waiting');
+      joinRoom(name, code, true);
+    };
+
+    document.getElementById('joinRoomBtn').onclick = () => {
+      const name = document.getElementById('playerName').value.trim();
+      const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
+      if(!name || code.length < 4) { Toast.fire({ icon: 'warning', title: 'تأكد من الاسم وكود الغرفة' }); return; }
+      joinRoom(name, code, false);
+    };
+
+    // استعادة الجلسة تلقائياً عند تحديث الصفحة
+    window.onload = () => {
+      if (myUid && currentRoom) {
+         // نعيد الدخول بدون اسم (سيأخذ الاسم من قاعدة البيانات)
+         joinRoom("", currentRoom, false); 
+      } else {
+         switchScreen('login');
+      }
+    };
+
   </script>
 </body>
 </html>
