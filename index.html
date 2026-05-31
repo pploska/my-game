@@ -25,29 +25,14 @@
     h1 { color: #e74c3c; margin-bottom: 5px;}
     p { color: #bdc3c7; margin-bottom: 25px;}
     input {
-      padding: 12px;
-      font-size: 16px;
-      width: 80%;
-      border-radius: 8px;
-      border: 1px solid #555;
-      background-color: #333;
-      color: white;
-      margin-bottom: 15px;
-      text-align: center;
+      padding: 12px; font-size: 16px; width: 80%; border-radius: 8px; border: 1px solid #555;
+      background-color: #333; color: white; margin-bottom: 15px; text-align: center;
     }
     input:focus { outline: none; border-color: #e74c3c; }
     button {
-      background-color: #c0392b;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 85%;
-      transition: 0.3s;
-      font-weight: bold;
-      margin-bottom: 10px;
+      background-color: #c0392b; color: white; border: none; padding: 12px 25px;
+      font-size: 16px; border-radius: 8px; cursor: pointer; width: 85%;
+      transition: 0.3s; font-weight: bold; margin-bottom: 10px;
     }
     button:hover { background-color: #e74c3c; transform: scale(1.05); }
     .btn-secondary { background-color: #2980b9; }
@@ -56,36 +41,25 @@
     .btn-success:hover { background-color: #2ecc71; transform: scale(1.02); }
     
     #roomCodeDisplay {
-      color: #2ecc71;
-      font-size: 24px;
-      letter-spacing: 3px;
-      margin: 15px 0;
-      background: #111;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px dashed #2ecc71;
+      color: #2ecc71; font-size: 24px; letter-spacing: 3px; margin: 15px 0;
+      background: #111; padding: 10px; border-radius: 8px; border: 1px dashed #2ecc71;
     }
     
     /* تصميم قائمة اللاعبين */
     #playersList { list-style: none; padding: 0; font-size: 20px; text-align: right; }
     #playersList li { background-color: #333; margin: 5px 0; padding: 10px; border-radius: 5px; border-right: 4px solid #2ecc71; }
+    .owner-item { background-color: #2c3e50 !important; border-right: 4px solid #f1c40f !important; margin-bottom: 20px !important; }
+    .owner-badge { background-color: #f1c40f; color: #000; font-size: 12px; padding: 3px 8px; border-radius: 5px; margin-right: 10px; font-weight: bold; vertical-align: middle; }
     
-    /* تصميم خاص لمالك الغرفة */
-    .owner-item { 
-      background-color: #2c3e50 !important; 
-      border-right: 4px solid #f1c40f !important; 
-      margin-bottom: 20px !important;
+    /* تصميم بطاقات اللعب السرية */
+    #roleCard {
+      padding: 25px; border-radius: 12px; margin-top: 25px; display: none;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
-    .owner-badge {
-      background-color: #f1c40f;
-      color: #000;
-      font-size: 12px;
-      padding: 3px 8px;
-      border-radius: 5px;
-      margin-right: 10px;
-      font-weight: bold;
-      vertical-align: middle;
-    }
+    .role-spy { background-color: #8B0000; border: 2px solid #e74c3c; }
+    .role-citizen { background-color: #1A5276; border: 2px solid #3498db; }
+    .role-title { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+    .spies-list { color: #ffcccc; font-size: 18px; margin-top: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -115,15 +89,19 @@
 
   <div class="container" id="gameScreen" style="display: none; border-color: #2ecc71; box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);">
     <h1 style="color: #2ecc71;">بدأت المؤامرة! 🎭</h1>
-    <p>هنا ستكون طاولة اللعب وتوزيع البطاقات</p>
-    <h3 id="myRoleDisplay" style="color: #f1c40f;">جارٍ تجهيز اللعبة...</h3>
+    <p>إليك بطاقة هويتك السرية. لا ترها لأحد!</p>
+    
+    <div id="roleCard">
+      <div class="role-title" id="myRoleTitle"></div>
+      <p id="myRoleDesc"></p>
+      <div id="otherSpiesDiv" class="spies-list" style="display: none;"></div>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, push, onValue, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, set, push, onValue, onDisconnect, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // بياناتك الصحيحة
     const firebaseConfig = {
       apiKey: "AIzaSyCu5Hbu2Rqml7_4DICZf8XyM9B4hzbpdOQ",
       authDomain: "ploska-ae755.firebaseapp.com",
@@ -137,7 +115,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ربط العناصر
+    // العناصر
     const createRoomBtn = document.getElementById('createRoomBtn');
     const joinRoomBtn = document.getElementById('joinRoomBtn');
     const nameInput = document.getElementById('playerName');
@@ -154,29 +132,60 @@
     const startGameBtn = document.getElementById('startGameBtn');
     const waitingMessage = document.getElementById('waitingMessage');
 
-    let myPlayerRef = null;
-    let currentRoom = "";
-    let isLocalOwner = false;
-    let totalPlayers = 0;
+    const roleCard = document.getElementById('roleCard');
+    const myRoleTitle = document.getElementById('myRoleTitle');
+    const myRoleDesc = document.getElementById('myRoleDesc');
+    const otherSpiesDiv = document.getElementById('otherSpiesDiv');
 
-    // دالة إنشاء كود
+    let myPlayerRef = null;
+    let myPlayerKey = null;
+    let currentRoom = "";
+    let roomPlayersData = {};
+
     function generateRoomCode() {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       let code = '';
-      for (let i = 0; i < 4; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
+      for (let i = 0; i < 4; i++) { code += chars.charAt(Math.floor(Math.random() * chars.length)); }
       return code;
     }
 
-    // دالة دخول الغرفة
+    function updateGameUI() {
+      const myData = roomPlayersData[myPlayerKey];
+      if (!myData || !myData.role) return;
+
+      roleCard.style.display = 'block';
+      
+      if (myData.role === 'متآمر') {
+        roleCard.className = 'role-spy';
+        myRoleTitle.innerText = '🔪 أنت متآمر';
+        myRoleDesc.innerText = 'مهمتك هي خداع الآخرين والسيطرة على اللعبة. تعاون مع زملائك!';
+        
+        let spies = [];
+        for (let key in roomPlayersData) {
+          if (key !== myPlayerKey && roomPlayersData[key].role === 'متآمر') {
+            spies.push(roomPlayersData[key].name);
+          }
+        }
+        
+        otherSpiesDiv.style.display = 'block';
+        if (spies.length > 0) {
+          otherSpiesDiv.innerHTML = '<strong>زملائك المتآمرون:</strong><br>' + spies.join(' ، ');
+        } else {
+          otherSpiesDiv.innerHTML = 'أنت المتآمر الوحيد في هذه الجولة!';
+        }
+      } else {
+        roleCard.className = 'role-citizen';
+        myRoleTitle.innerText = '🛡️ أنت مواطن صالح';
+        myRoleDesc.innerText = 'ابحث عن الخونة المتآمرين ولا تثق بأي شخص! حاول كشفهم قبل فوات الأوان.';
+        otherSpiesDiv.style.display = 'none';
+      }
+    }
+
     function enterRoom(name, roomCode, isOwner) {
-      isLocalOwner = isOwner;
       loginScreen.style.display = 'none';
       lobbyScreen.style.display = 'block';
       roomCodeDisplay.innerText = 'كود الغرفة: ' + roomCode;
       
-      // إظهار زر البدء للمالك فقط، ورسالة الانتظار للضيوف
       if (isOwner) {
         startGameBtn.style.display = 'block';
         waitingMessage.style.display = 'none';
@@ -185,74 +194,86 @@
         waitingMessage.style.display = 'block';
       }
 
-      // إضافة اللاعب
       const roomRef = ref(db, 'rooms/' + roomCode + '/players');
       myPlayerRef = push(roomRef);
+      myPlayerKey = myPlayerRef.key;
+      
       set(myPlayerRef, { name: name, isOwner: isOwner });
       onDisconnect(myPlayerRef).remove();
 
-      // تحديث قائمة اللاعبين
       onValue(roomRef, (snapshot) => {
+        roomPlayersData = snapshot.val() || {};
         let count = 0;
         let ownerHTML = '';
         let othersHTML = '';
 
-        snapshot.forEach((childSnapshot) => {
-          const player = childSnapshot.val();
+        for (let key in roomPlayersData) {
+          const player = roomPlayersData[key];
           count++;
           if (player.isOwner) {
             ownerHTML = `<li class="owner-item">👑 ${player.name} <span class="owner-badge">مالك الغرفة</span></li>`;
           } else {
             othersHTML += `<li>👤 ${player.name}</li>`;
           }
-        });
+        }
 
         playersList.innerHTML = ownerHTML + othersHTML;
         playerCount.innerText = 'العدد الحالي: ' + count;
-        totalPlayers = count;
+
+        // تحديث شاشة اللعب إذا كنا داخل اللعبة
+        if (gameScreen.style.display === 'block') {
+          updateGameUI();
+        }
       });
 
-      // مراقبة "حالة اللعبة" (عشان لو المالك ضغط ستارت، الكل يدخل)
       const gameStateRef = ref(db, 'rooms/' + roomCode + '/status');
       onValue(gameStateRef, (snapshot) => {
         if (snapshot.val() === 'playing') {
           lobbyScreen.style.display = 'none';
           gameScreen.style.display = 'block';
+          updateGameUI();
         }
       });
     }
 
-    // زر الإنشاء
     createRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
-      if(name === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
-      
+      if(name === "") { alert("الرجاء كتابة اسمك!"); return; }
       currentRoom = generateRoomCode();
-      
-      // تهيئة حالة الغرفة إلى "waiting"
       set(ref(db, 'rooms/' + currentRoom + '/status'), 'waiting');
       enterRoom(name, currentRoom, true);
     });
 
-    // زر الانضمام
     joinRoomBtn.addEventListener('click', () => {
       const name = nameInput.value.trim();
       const code = roomCodeInput.value.trim().toUpperCase();
-      
-      if(name === "") { alert("الرجاء كتابة اسمك أولاً!"); return; }
-      if(code === "" || code.length < 4) { alert("الرجاء كتابة كود الغرفة بشكل صحيح!"); return; }
-      
+      if(name === "") { alert("الرجاء كتابة اسمك!"); return; }
+      if(code.length < 4) { alert("الكود غير صحيح!"); return; }
       currentRoom = code;
       enterRoom(name, currentRoom, false);
     });
 
-    // زر بدء اللعبة (للمالك فقط)
+    // زر بدء اللعبة: يوزع الأدوار عشوائياً وينقل الجميع
     startGameBtn.addEventListener('click', () => {
-      // اختياري: نمنع بدء اللعبة إذا العدد أقل من 5 (عطلتها حالياً عشان تقدر تجربها لحالك)
-      // if (totalPlayers < 5) { alert("يجب أن يكون العدد 5 لاعبين على الأقل!"); return; }
+      let keys = Object.keys(roomPlayersData);
       
-      // تغيير حالة الغرفة إلى playing (هذا الأمر سينقل الجميع فوراً)
-      set(ref(db, 'rooms/' + currentRoom + '/status'), 'playing');
+      // خلط اللاعبين بطريقة احترافية (Fisher-Yates)
+      for (let i = keys.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [keys[i], keys[j]] = [keys[j], keys[i]];
+      }
+
+      // تحديد عدد المتآمرين (متآمر واحد لكل 3 لاعبين كحد أدنى)
+      let spyCount = Math.max(1, Math.floor(keys.length / 3)); 
+      
+      let updates = {};
+      keys.forEach((key, index) => {
+        // أول مجموعة بعد الخلط يأخذون متآمر، والبقية مواطنين
+        updates['rooms/' + currentRoom + '/players/' + key + '/role'] = (index < spyCount) ? 'متآمر' : 'مواطن';
+      });
+      
+      updates['rooms/' + currentRoom + '/status'] = 'playing';
+      update(ref(db), updates);
     });
 
   </script>
