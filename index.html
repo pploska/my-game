@@ -290,7 +290,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect, update, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // بيانات فايربيس الخاصة بك (كما هي بدون تغيير)
+    // بيانات فايربيس الخاصة بك
     const firebaseConfig = {
       apiKey: "AIzaSyCu5Hbu2Rqml7_4DICZf8XyM9B4hzbpdOQ",
       authDomain: "ploska-ae755.firebaseapp.com",
@@ -306,8 +306,9 @@
 
     const WORDS_BANK = ["مستشفى","مطار","ساعة","نظارة","جبل","شاطئ","سفينة","قطار","مكتبة","حديقة","قصر","خيمة","قهوة","مطعم","مفتاح","كاميرا","محفظة","عطر","ثلاجة","تلفزيون"];
 
-    let myUid = localStorage.getItem('mutakhafti_uid');
-    let currentRoom = localStorage.getItem('mutakhafti_room');
+    // 💡 التعديل هنا: استخدام sessionStorage بدلاً من localStorage للحفاظ على جلستك مؤقتاً ومسحها عند إغلاق التبويب كلياً
+    let myUid = sessionStorage.getItem('mutakhafti_uid');
+    let currentRoom = sessionStorage.getItem('mutakhafti_room');
     let isOwner = false;
     let roomData = null;
     let timerInterval = null;
@@ -342,8 +343,8 @@
           if(myUid && currentRoom) {
              update(ref(db, `rooms/${currentRoom}/players/${myUid}`), { connected: false, isAlive: false });
           }
-          localStorage.removeItem('mutakhafti_uid');
-          localStorage.removeItem('mutakhafti_room');
+          sessionStorage.removeItem('mutakhafti_uid');
+          sessionStorage.removeItem('mutakhafti_room');
           location.reload();
         }
       });
@@ -376,8 +377,8 @@
          let newRef = push(ref(db, `rooms/${code}/players`));
          myUid = newRef.key;
          await set(newRef, { name: name, isOwner: asOwner, isAlive: true, understood: false });
-         localStorage.setItem('mutakhafti_uid', myUid);
-         localStorage.setItem('mutakhafti_room', code);
+         sessionStorage.setItem('mutakhafti_uid', myUid);
+         sessionStorage.setItem('mutakhafti_room', code);
          onDisconnect(newRef).update({ connected: false });
       } else {
          await update(ref(db, `rooms/${code}/players/${myUid}`), { connected: true });
@@ -389,8 +390,8 @@
       onValue(ref(db, `rooms/${code}`), (snapshot) => {
         const data = snapshot.val();
         if (!data) {
-          localStorage.removeItem('mutakhafti_uid');
-          localStorage.removeItem('mutakhafti_room');
+          sessionStorage.removeItem('mutakhafti_uid');
+          sessionStorage.removeItem('mutakhafti_room');
           document.getElementById('homeBtn').style.display = 'none';
           switchScreen('login');
           return;
