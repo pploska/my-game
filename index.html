@@ -30,10 +30,10 @@
     body {
       background-color: var(--bg-dark);
       
-      /* 💡 هنا التعديل المطلوب: قراءة صورتك bg.jpg مع طبقة تعتيم نيون خفيفة جداً لضمان وضوح الكلمات */
+      /* تم تغيير اسم الصورة حسب طلبك مع التعتيم الخفيف */
       background-image: 
         linear-gradient(rgba(5, 5, 10, 0.8), rgba(15, 15, 25, 0.85)),
-        url('bg.jpg'); 
+        url('image_f1447b.jpg'); 
         
       background-size: cover;          /* تجعل الصورة تغطي كامل الشاشة */
       background-position: center;     /* تمركز الصورة في المنتصف */
@@ -115,31 +115,43 @@
       box-shadow: 0 0 20px var(--primary-glow); background-color: rgba(0, 0, 0, 0.7);
     }
 
-    /* الأزرار الخرافية */
+    /* الأزرار الخرافية (شفافة وزجاجية) */
     button {
-      background: linear-gradient(135deg, #00b4db, #0083b0); 
-      color: white; border: none; padding: 15px 25px; font-size: 18px; font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, rgba(0, 180, 219, 0.2), rgba(0, 131, 176, 0.4)); 
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 180, 219, 0.5);
+      color: white; padding: 15px 25px; font-size: 18px; font-family: 'Cairo', sans-serif;
       border-radius: 12px; cursor: pointer; width: 90%; font-weight: 900; margin-bottom: 15px; 
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       position: relative; overflow: hidden; letter-spacing: 1px;
     }
     button::before {
       content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
       transition: all 0.5s;
     }
     button:hover::before { left: 100%; }
-    button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--primary-glow); }
+    button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--primary-glow); background: linear-gradient(135deg, rgba(0, 180, 219, 0.4), rgba(0, 131, 176, 0.6)); }
     
-    .btn-danger { background: linear-gradient(135deg, #ff0055, #cc0044); }
-    .btn-danger:hover { box-shadow: 0 8px 25px var(--danger-glow); }
+    .btn-danger { 
+      background: linear-gradient(135deg, rgba(255, 0, 85, 0.2), rgba(204, 0, 68, 0.4)); 
+      border-color: rgba(255, 0, 85, 0.5); 
+    }
+    .btn-danger:hover { box-shadow: 0 8px 25px var(--danger-glow); background: linear-gradient(135deg, rgba(255, 0, 85, 0.4), rgba(204, 0, 68, 0.6)); }
     
-    .btn-success { background: linear-gradient(135deg, #00b09b, #96c93d); }
-    .btn-success:hover { box-shadow: 0 8px 25px rgba(0, 255, 102, 0.4); }
+    .btn-success { 
+      background: linear-gradient(135deg, rgba(0, 176, 155, 0.2), rgba(150, 201, 61, 0.4)); 
+      border-color: rgba(0, 255, 102, 0.4); 
+    }
+    .btn-success:hover { box-shadow: 0 8px 25px rgba(0, 255, 102, 0.4); background: linear-gradient(135deg, rgba(0, 176, 155, 0.4), rgba(150, 201, 61, 0.6));}
     
-    .btn-warning { background: linear-gradient(135deg, #f7b733, #fc4a1a); color: #fff; }
-    .btn-warning:hover { box-shadow: 0 8px 25px rgba(255, 234, 0, 0.4); }
+    .btn-warning { 
+      background: linear-gradient(135deg, rgba(247, 183, 51, 0.2), rgba(252, 74, 26, 0.4)); 
+      border-color: rgba(255, 234, 0, 0.5); color: #fff; 
+    }
+    .btn-warning:hover { box-shadow: 0 8px 25px rgba(255, 234, 0, 0.4); background: linear-gradient(135deg, rgba(247, 183, 51, 0.4), rgba(252, 74, 26, 0.6));}
     
     /* زر العودة للرئيسية */
     .home-btn {
@@ -227,12 +239,15 @@
     <h1 id="roomCodeDisplay" style="color: var(--primary); letter-spacing: 8px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); display: inline-block; text-shadow: 0 0 15px var(--primary-glow);">----</h1>
     <p>العدد المطلوب (5 - 10 لاعبين)</p>
     
-    <div id="hostSettings" style="display: none; background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1);">
-      <h3 style="margin-top: 0; color: var(--primary); font-weight: 900;">⚙️ إعدادات المالك</h3>
-      <label style="font-weight: 700; color: #ccc;">مدة الأسئلة (ثانية):</label>
-      <input type="number" id="qaTimeInput" value="120" min="30" max="300" style="margin-top: 10px;"><br>
-      <label style="font-weight: 700; color: #ccc;">مدة التصويت (ثانية):</label>
-      <input type="number" id="voteTimeInput" value="45" min="15" max="120" style="margin-top: 10px;">
+    <div id="hostControls" style="display: none; margin-bottom: 25px;">
+      <button id="toggleSettingsBtn" class="btn-warning" style="width: auto; padding: 8px 20px; font-size: 16px; margin-bottom: 0;">⚙️ الإعدادات</button>
+      
+      <div id="hostSettings" style="display: none; background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 12px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px);">
+        <label style="font-weight: 700; color: #ccc;">مدة الأسئلة (ثانية):</label>
+        <input type="number" id="qaTimeInput" value="120" min="30" max="300" style="margin-top: 10px; width: 60%;"><br>
+        <label style="font-weight: 700; color: #ccc;">مدة التصويت (ثانية):</label>
+        <input type="number" id="voteTimeInput" value="45" min="15" max="120" style="margin-top: 10px; width: 60%; margin-bottom: 0;">
+      </div>
     </div>
 
     <ul id="lobbyPlayersList" style="list-style: none; padding: 0; text-align: right;"></ul>
@@ -439,11 +454,11 @@
         document.getElementById('playerCountLabel').innerText = `العدد الحالي: ${count}`;
 
         if (isOwner) {
-          document.getElementById('hostSettings').style.display = 'block';
+          document.getElementById('hostControls').style.display = 'block';
           document.getElementById('startGameBtn').style.display = 'block';
           document.getElementById('waitingHostMsg').style.display = 'none';
         } else {
-          document.getElementById('hostSettings').style.display = 'none';
+          document.getElementById('hostControls').style.display = 'none';
           document.getElementById('startGameBtn').style.display = 'none';
           document.getElementById('waitingHostMsg').style.display = 'block';
         }
@@ -787,6 +802,12 @@
       const code = document.getElementById('roomCodeInput').value.trim().toUpperCase();
       if(!name || code.length < 4) return;
       joinRoom(name, code, false);
+    };
+
+    // زر إظهار وإخفاء الإعدادات للمالك
+    document.getElementById('toggleSettingsBtn').onclick = () => {
+      const settingsDiv = document.getElementById('hostSettings');
+      settingsDiv.style.display = settingsDiv.style.display === 'none' ? 'block' : 'none';
     };
 
     window.onload = () => {
