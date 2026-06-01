@@ -25,13 +25,20 @@
     }
     
     /* ========================================= */
-    /* خلفية سايبربانك سينمائية */
+    /* خلفية سايبربانك سينمائية مع صورتك الخاصة */
     /* ========================================= */
     body {
       background-color: var(--bg-dark);
+      
+      /* 💡 هنا التعديل المطلوب: قراءة صورتك bg.jpg مع طبقة تعتيم نيون خفيفة جداً لضمان وضوح الكلمات */
       background-image: 
-        radial-gradient(circle at top right, rgba(0, 243, 255, 0.1), transparent 40%),
-        radial-gradient(circle at bottom left, rgba(255, 0, 60, 0.1), transparent 40%);
+        linear-gradient(rgba(5, 5, 10, 0.8), rgba(15, 15, 25, 0.85)),
+        url('bg.jpg'); 
+        
+      background-size: cover;          /* تجعل الصورة تغطي كامل الشاشة */
+      background-position: center;     /* تمركز الصورة في المنتصف */
+      background-attachment: fixed;    /* تثبيت الخلفية عند التمرير لجعلها سينمائية */
+      
       color: var(--text); 
       font-family: 'Cairo', Tahoma, Arial, sans-serif;
       text-align: center; 
@@ -306,7 +313,7 @@
 
     const WORDS_BANK = ["مستشفى","مطار","ساعة","نظارة","جبل","شاطئ","سفينة","قطار","مكتبة","حديقة","قصر","خيمة","قهوة","مطعم","مفتاح","كاميرا","محفظة","عطر","ثلاجة","تلفزيون"];
 
-    // 💡 التعديل هنا: استخدام sessionStorage بدلاً من localStorage للحفاظ على جلستك مؤقتاً ومسحها عند إغلاق التبويب كلياً
+    // استخدام sessionStorage للحفاظ على جلستك مؤقتاً ومسحها عند إغلاق التبويب كلياً
     let myUid = sessionStorage.getItem('mutakhafti_uid');
     let currentRoom = sessionStorage.getItem('mutakhafti_room');
     let isOwner = false;
