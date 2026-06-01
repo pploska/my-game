@@ -4,216 +4,274 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لعبة المتخفي</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
-      --bg-color: #0f0c29; --panel-bg: rgba(20, 20, 25, 0.85); --primary: #3498db; 
-      --danger: #e74c3c; --success: #2ecc71; --warning: #f1c40f; --text: #ffffff;
+      --bg-dark: #05050a;
+      --panel-bg: rgba(15, 15, 25, 0.65);
+      --primary: #00f3ff;
+      --primary-glow: rgba(0, 243, 255, 0.5);
+      --danger: #ff003c;
+      --danger-glow: rgba(255, 0, 60, 0.5);
+      --success: #00ff66;
+      --warning: #ffea00;
+      --text: #e0e0e0;
     }
     
     /* ========================================= */
-    /* خلفية حركية وكونية (ديناميكية) */
+    /* خلفية سايبربانك سينمائية */
     /* ========================================= */
-    @keyframes moveGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
     body {
-      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #050505);
-      background-size: 400% 400%;
-      animation: moveGradient 15s ease infinite;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at top right, rgba(0, 243, 255, 0.1), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(255, 0, 60, 0.1), transparent 40%);
       color: var(--text); 
-      font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
       text-align: center; 
       margin: 0; 
       padding: 15px; 
       overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    /* طبقة الصورة مع زووم بطيء سينمائي */
-    @keyframes cinematicZoom {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.1); }
-    }
-    .bg-image-layer {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), url('bg.jpg');
-      background-size: cover; background-position: center;
-      z-index: -2; opacity: 0.9;
-      animation: cinematicZoom 30s infinite alternate ease-in-out;
+    /* شبكة رقمية في الخلفية */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-image: 
+        linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: -2;
     }
 
-    /* طبقة النجوم اللامعة */
-    @keyframes twinkleStars {
-      0% { opacity: 0.2; transform: translateY(0); }
-      100% { opacity: 0.8; transform: translateY(-10px); }
+    /* طبقة النجوم / الجزيئات اللامعة */
+    @keyframes floatParticles {
+      0% { background-position: 0px 0px; }
+      100% { background-position: 100px -100px; }
     }
     .stars-layer {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background-image: 
-        radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-        radial-gradient(3px 3px at 50px 160px, #ddd, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0)),
-        radial-gradient(3px 3px at 160px 120px, #ddd, rgba(0,0,0,0));
+      background-image: radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0,0,0,0)),
+                        radial-gradient(2px 2px at 80px 120px, var(--primary), rgba(0,0,0,0));
       background-repeat: repeat;
-      background-size: 200px 200px;
+      background-size: 150px 150px;
       z-index: -1;
-      animation: twinkleStars 5s infinite alternate ease-in-out;
+      opacity: 0.3;
+      animation: floatParticles 20s linear infinite;
     }
     /* ========================================= */
 
+    /* تصميم الحاويات الزجاجي (Glassmorphism) */
     .container {
-      background-color: var(--panel-bg); padding: 25px; border-radius: 15px; max-width: 600px;
-      margin: 40px auto 20px auto; box-shadow: 0 0 30px rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.1); relative; z-index: 10;
+      background: var(--panel-bg); 
+      padding: 35px 25px; 
+      border-radius: 20px; 
+      max-width: 550px;
+      margin: 50px auto; 
+      box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0, 243, 255, 0.05); 
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(0, 243, 255, 0.15); 
+      position: relative; 
+      z-index: 10;
+      animation: fadeInUp 0.6s ease-out;
     }
-    h1 { color: var(--primary); margin-bottom: 10px; font-size: 32px; text-shadow: 0 0 15px rgba(52,152,219,0.6); }
-    h2 { color: var(--warning); margin-bottom: 20px; }
-    p { color: #cccccc; line-height: 1.6; font-weight: bold; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 { color: var(--text); margin-bottom: 10px; font-size: 38px; font-weight: 900; letter-spacing: 1px; }
+    h1 span.highlight { color: var(--primary); text-shadow: 0 0 20px var(--primary-glow); }
+    h2 { color: var(--warning); margin-bottom: 20px; font-weight: 700; }
+    p { color: #b3b3b3; line-height: 1.6; font-size: 16px; font-weight: 600; }
+
+    /* حقول الإدخال الاحترافية */
     input[type="text"], input[type="number"] {
-      padding: 12px; font-size: 16px; width: 85%; border-radius: 8px; border: 1px solid #444;
-      background-color: rgba(30, 30, 30, 0.8); color: white; margin-bottom: 15px; text-align: center;
+      padding: 15px; font-size: 16px; font-family: 'Cairo', sans-serif; font-weight: 700;
+      width: 85%; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
+      background-color: rgba(0, 0, 0, 0.5); color: var(--text); 
+      margin-bottom: 20px; text-align: center; transition: all 0.3s ease;
     }
-    input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 10px rgba(52,152,219,0.5); }
+    input:focus { 
+      outline: none; border-color: var(--primary); 
+      box-shadow: 0 0 20px var(--primary-glow); background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    /* الأزرار الخرافية */
     button {
-      background-color: var(--primary); color: white; border: none; padding: 14px 25px; font-size: 18px;
-      border-radius: 8px; cursor: pointer; width: 90%; font-weight: bold; margin-bottom: 15px; transition: 0.3s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      background: linear-gradient(135deg, #00b4db, #0083b0); 
+      color: white; border: none; padding: 15px 25px; font-size: 18px; font-family: 'Cairo', sans-serif;
+      border-radius: 12px; cursor: pointer; width: 90%; font-weight: 900; margin-bottom: 15px; 
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      position: relative; overflow: hidden; letter-spacing: 1px;
     }
-    button:hover { filter: brightness(1.2); transform: translateY(-2px); }
-    .btn-danger { background-color: var(--danger); }
-    .btn-success { background-color: var(--success); }
-    .btn-warning { background-color: var(--warning); color: #000; }
+    button::before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: all 0.5s;
+    }
+    button:hover::before { left: 100%; }
+    button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--primary-glow); }
+    
+    .btn-danger { background: linear-gradient(135deg, #ff0055, #cc0044); }
+    .btn-danger:hover { box-shadow: 0 8px 25px var(--danger-glow); }
+    
+    .btn-success { background: linear-gradient(135deg, #00b09b, #96c93d); }
+    .btn-success:hover { box-shadow: 0 8px 25px rgba(0, 255, 102, 0.4); }
+    
+    .btn-warning { background: linear-gradient(135deg, #f7b733, #fc4a1a); color: #fff; }
+    .btn-warning:hover { box-shadow: 0 8px 25px rgba(255, 234, 0, 0.4); }
     
     /* زر العودة للرئيسية */
     .home-btn {
-      position: fixed; top: 15px; left: 15px; background: rgba(231, 76, 60, 0.85); color: white;
-      border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; z-index: 1000;
-      font-weight: bold; font-size: 16px; box-shadow: 0 0 15px rgba(231,76,60,0.5); backdrop-filter: blur(5px);
-      transition: 0.3s;
+      position: fixed; top: 20px; left: 20px; width: auto;
+      background: rgba(255, 0, 60, 0.15); color: var(--danger); border: 1px solid var(--danger);
+      padding: 8px 18px; border-radius: 30px; z-index: 1000; font-size: 15px;
+      backdrop-filter: blur(10px); box-shadow: none;
     }
-    .home-btn:hover { background: #c0392b; transform: scale(1.05); }
+    .home-btn:hover { background: var(--danger); color: #fff; box-shadow: 0 0 20px var(--danger-glow); }
 
-    .timer-display { font-size: 55px; font-weight: bold; color: var(--danger); text-shadow: 0 0 25px rgba(231,76,60,0.8); margin: 20px 0; }
-    .word-box { background: rgba(44, 62, 80, 0.9); padding: 20px; border-radius: 10px; border: 2px dashed var(--primary); font-size: 28px; font-weight: bold; letter-spacing: 2px; margin: 20px 0; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+    .timer-display { font-size: 65px; font-weight: 900; color: var(--danger); text-shadow: 0 0 30px var(--danger-glow); margin: 25px 0; font-family: monospace; }
     
-    .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+    .word-box { 
+      background: rgba(0, 0, 0, 0.6); padding: 25px; border-radius: 15px; 
+      border: 2px solid var(--primary); font-size: 32px; font-weight: 900; 
+      letter-spacing: 2px; margin: 25px 0; box-shadow: 0 0 30px var(--primary-glow) inset; 
+    }
+    
+    /* بطاقات اللاعبين للتصويت */
+    .players-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; }
     .player-card { 
-      background: rgba(42, 42, 42, 0.9); padding: 15px; border-radius: 8px; border: 1px solid #555; 
-      cursor: pointer; transition: 0.3s; font-size: 18px; font-weight: bold;
+      background: rgba(30, 30, 40, 0.8); padding: 18px; border-radius: 12px; border: 1px solid #333; 
+      cursor: pointer; transition: all 0.3s; font-size: 18px; font-weight: 700; color: #fff;
+      position: relative; overflow: hidden;
     }
-    .player-card:hover:not(.dead):not(.disabled) { border-color: var(--primary); background: rgba(52, 73, 94, 0.9); transform: scale(1.02); }
-    .player-card.selected { background: var(--primary); border-color: #fff; box-shadow: 0 0 15px var(--primary); }
-    .player-card.dead { opacity: 0.4; text-decoration: line-through; cursor: not-allowed; background: rgba(26, 26, 26, 0.9); border-color: #000; }
-    .player-card.disabled { cursor: not-allowed; opacity: 0.7; }
+    .player-card:hover:not(.dead):not(.disabled) { 
+      border-color: var(--primary); background: rgba(0, 243, 255, 0.1); 
+      transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    }
+    .player-card.selected { 
+      background: var(--primary); color: #000; border-color: #fff; 
+      box-shadow: 0 0 25px var(--primary-glow); transform: scale(1.05); z-index: 2;
+    }
+    .player-card.dead { opacity: 0.3; text-decoration: line-through; cursor: not-allowed; background: rgba(10, 10, 10, 0.9); border-color: #000; }
+    .player-card.disabled { cursor: not-allowed; opacity: 0.6; }
     
-    #oldManDisplay { font-size: 22px; color: var(--warning); margin: 15px 0; font-weight: bold; background: rgba(0, 0, 0, 0.6); padding: 10px; border-radius: 8px; border: 1px solid rgba(241,196,15,0.3); }
+    #oldManDisplay { 
+      font-size: 24px; color: var(--warning); margin: 15px 0; font-weight: 900; 
+      background: linear-gradient(90deg, transparent, rgba(255, 234, 0, 0.15), transparent); 
+      padding: 15px; border-radius: 10px; border-bottom: 2px solid var(--warning); 
+    }
 
+    /* الشاشات المنبثقة (Overlays) */
     .overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9); z-index: 9999; backdrop-filter: blur(10px);
+      background: rgba(0,0,0,0.85); z-index: 9999; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       display: none; flex-direction: column; justify-content: center; align-items: center;
     }
-    #countdownNumber { font-size: 200px; font-weight: bold; color: var(--warning); text-shadow: 0 0 60px var(--warning); animation: pulse 1s infinite; margin: 0; }
-    @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.8; } }
+    
+    #countdownNumber { 
+      font-size: 250px; font-weight: 900; color: var(--primary); 
+      text-shadow: 0 0 80px var(--primary-glow); animation: heartbeat 1s infinite; margin: 0; font-family: monospace;
+    }
+    @keyframes heartbeat { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 120px var(--primary-glow); } 100% { transform: scale(0.8); opacity: 0.5; } }
     
     .big-role-card {
-      background: rgba(20, 20, 25, 0.95); padding: 35px; border-radius: 15px; border: 3px solid #555;
-      width: 85%; max-width: 400px; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.9);
+      background: var(--panel-bg); padding: 40px; border-radius: 25px; border: 2px solid var(--primary);
+      width: 90%; max-width: 450px; text-align: center; box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 0 30px var(--primary-glow);
+      animation: fadeInUp 0.5s ease;
     }
-    .role-icon { font-size: 70px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
-    .role-title { font-size: 38px; font-weight: bold; margin-bottom: 15px; }
-    .role-desc { font-size: 20px; color: #ddd; margin-bottom: 30px; line-height: 1.6; }
+    .role-icon { font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(255,255,255,0.4)); }
+    .role-title { font-size: 42px; font-weight: 900; margin-bottom: 15px; letter-spacing: 1px; }
+    .role-desc { font-size: 22px; color: #ccc; margin-bottom: 35px; line-height: 1.8; font-weight: 600; }
   </style>
 </head>
 <body>
 
-  <!-- الطبقات الخلفية الحركية -->
-  <div class="bg-image-layer"></div>
   <div class="stars-layer"></div>
 
-  <!-- زر العودة للرئيسية (يظهر بعد الدخول) -->
   <button id="homeBtn" class="home-btn" style="display: none;">🚪 خروج</button>
 
-  <!-- شاشة الدخول -->
   <div class="container" id="loginScreen">
-    <h1>🕵️ المتخفي</h1>
+    <h1>🕵️ <span class="highlight">المتخفي</span></h1>
     <p>حلل، استنتج، واكشف المتخفي قبل فوات الأوان!</p>
+    <br>
     <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." maxlength="15" required>
-    <hr style="border-color: rgba(255,255,255,0.1); margin: 25px 0;">
+    <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
     <button id="createRoomBtn">✨ إنشاء غرفة جديدة</button>
-    <input type="text" id="roomCodeInput" placeholder="كود الغرفة للانضمام" maxlength="4" style="text-transform: uppercase;">
+    <input type="text" id="roomCodeInput" placeholder="كود الغرفة للانضمام" maxlength="4" style="text-transform: uppercase; margin-top: 15px;">
     <button id="joinRoomBtn" class="btn-warning">🔗 انضمام للغرفة</button>
   </div>
 
-  <!-- شاشة الانتظار (اللوبي) -->
   <div class="container" id="lobbyScreen" style="display: none;">
     <h2>غرفة الانتظار ⏳</h2>
-    <h1 id="roomCodeDisplay" style="color: var(--success); letter-spacing: 5px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; display: inline-block;">----</h1>
+    <h1 id="roomCodeDisplay" style="color: var(--primary); letter-spacing: 8px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); display: inline-block; text-shadow: 0 0 15px var(--primary-glow);">----</h1>
     <p>العدد المطلوب (5 - 10 لاعبين)</p>
     
-    <div id="hostSettings" style="display: none; background: rgba(0, 0, 0, 0.4); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #444;">
-      <h3 style="margin-top: 0; color: var(--primary);">إعدادات الغرفة (للمالك)</h3>
-      <label>مدة الأسئلة (ثانية):</label>
-      <input type="number" id="qaTimeInput" value="120" min="30" max="300"><br>
-      <label>مدة التصويت (ثانية):</label>
-      <input type="number" id="voteTimeInput" value="45" min="15" max="120">
+    <div id="hostSettings" style="display: none; background: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.1);">
+      <h3 style="margin-top: 0; color: var(--primary); font-weight: 900;">⚙️ إعدادات المالك</h3>
+      <label style="font-weight: 700; color: #ccc;">مدة الأسئلة (ثانية):</label>
+      <input type="number" id="qaTimeInput" value="120" min="30" max="300" style="margin-top: 10px;"><br>
+      <label style="font-weight: 700; color: #ccc;">مدة التصويت (ثانية):</label>
+      <input type="number" id="voteTimeInput" value="45" min="15" max="120" style="margin-top: 10px;">
     </div>
 
     <ul id="lobbyPlayersList" style="list-style: none; padding: 0; text-align: right;"></ul>
-    <h3 id="playerCountLabel" style="color: var(--warning); background: rgba(0,0,0,0.6); padding: 8px; border-radius: 5px; display: inline-block;">العدد: 0</h3>
+    <h3 id="playerCountLabel" style="color: var(--warning); background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 8px; display: inline-block; margin-top: 15px;">العدد: 0</h3>
     
-    <button id="startGameBtn" class="btn-success" style="display: none; margin-top: 15px;">🚀 بدء اللعبة</button>
-    <p id="waitingHostMsg" style="display: none; color: var(--warning); background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; margin-top: 15px;">في انتظار المالك لبدء اللعبة...</p>
+    <button id="startGameBtn" class="btn-success" style="display: none; margin-top: 25px; font-size: 22px;">🚀 بدء اللعبة الان</button>
+    <p id="waitingHostMsg" style="display: none; color: var(--warning); background: rgba(255,234,0,0.1); padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(255,234,0,0.3); font-weight: 700;">في انتظار المالك لبدء اللعبة...</p>
   </div>
 
-  <!-- شاشة اللعب الرئيسية -->
   <div class="container" id="gameScreen" style="display: none;">
-    <div id="oldManDisplay">الشايب: <span id="oldManName">---</span> 👑</div>
+    <div id="oldManDisplay">الشايب: <span id="oldManName" style="color: #fff; text-shadow: 0 0 10px #fff;">---</span> 👑</div>
 
     <div class="word-box" id="wordBox" style="display: none;">
-      الكلمة السرية: <span id="secretWord" style="color: var(--warning);">---</span>
+      الكلمة السرية:<br><span id="secretWord" style="color: var(--primary); font-size: 45px; text-shadow: 0 0 20px var(--primary-glow); display: block; margin-top: 10px;">---</span>
     </div>
 
-    <!-- مرحلة الأسئلة -->
     <div id="qaPhaseUI" style="display: none;">
-      <h3 style="color: var(--primary);">مرحلة الأسئلة 🗣️</h3>
-      <p>اسألوا الشايب لمعرفة الكلمة السرية!</p>
+      <h3 style="color: var(--primary); font-size: 28px; font-weight: 900;">مرحلة الأسئلة 🗣️</h3>
+      <p style="font-size: 18px;">اسألوا الشايب لمعرفة الكلمة السرية!</p>
       <div class="timer-display" id="qaTimer">00:00</div>
-      <button id="wordDiscoveredBtn" class="btn-success" style="display: none;">🎯 تم اكتشاف الكلمة</button>
+      <button id="wordDiscoveredBtn" class="btn-success" style="display: none; padding: 20px; font-size: 22px;">🎯 تم اكتشاف الكلمة</button>
     </div>
 
-    <!-- مرحلة التصويت -->
     <div id="votePhaseUI" style="display: none;">
-      <h3 style="color: var(--danger);">مرحلة التصويت 🗳️</h3>
-      <p>من تعتقد أنه المتخفي؟ (اختر لاعباً)</p>
+      <h3 style="color: var(--danger); font-size: 28px; font-weight: 900;">مرحلة التصويت 🗳️</h3>
+      <p style="font-size: 18px;">من تعتقد أنه المتخفي؟ (اختر لاعباً)</p>
       <div class="timer-display" id="voteTimer">00:00</div>
       <div class="players-grid" id="votingGrid"></div>
-      <p id="myVoteStatus" style="color: var(--success); font-weight: bold; margin-top: 15px;"></p>
+      <p id="myVoteStatus" style="color: var(--success); font-weight: 900; margin-top: 20px; font-size: 20px; text-shadow: 0 0 10px rgba(0,255,102,0.5);"></p>
     </div>
   </div>
 
-  <!-- شاشة النهاية والنتائج الاحتفالية -->
   <div class="container" id="endScreen" style="display: none;">
-    <h2 id="endReasonText" style="color: #ccc;"></h2>
-    <h1 id="winnerText" style="font-size: 45px; margin: 10px 0; text-shadow: 0 0 20px rgba(255,255,255,0.3);"></h1>
-    <h3 id="loserText" style="color: #aaa; margin-bottom: 25px;"></h3>
+    <h2 id="endReasonText" style="color: #ccc; font-size: 28px;"></h2>
+    <h1 id="winnerText" style="font-size: 45px; margin: 15px 0; text-shadow: 0 0 30px rgba(255,255,255,0.3); font-weight: 900;"></h1>
+    <h3 id="loserText" style="color: #888; margin-bottom: 30px; font-size: 22px;"></h3>
     
-    <div style="background: rgba(0, 0, 0, 0.6); padding: 20px; border-radius: 8px; border: 2px dashed var(--danger);">
-      <h3 style="margin-top: 0;">هوية المتخفي كانت:</h3>
-      <h2 id="endHiddenName" style="color: var(--danger); margin: 0; font-size: 35px; text-shadow: 0 0 10px rgba(231,76,60,0.5);"></h2>
+    <div style="background: rgba(0, 0, 0, 0.8); padding: 30px; border-radius: 15px; border: 2px dashed var(--danger); box-shadow: inset 0 0 20px rgba(255,0,60,0.3);">
+      <h3 style="margin-top: 0; color: #fff;">هوية المتخفي كانت:</h3>
+      <h2 id="endHiddenName" style="color: var(--danger); margin: 0; font-size: 45px; font-weight: 900; text-shadow: 0 0 20px var(--danger-glow);"></h2>
     </div>
 
-    <button id="replayBtn" class="btn-primary" style="display: none; margin-top: 30px;">🔄 بدء لعبة جديدة</button>
-    <p id="waitingReplayMsg" style="display: none; margin-top: 20px; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px;">بانتظار المالك لإعادة اللعبة...</p>
+    <button id="replayBtn" style="display: none; margin-top: 35px; padding: 20px; font-size: 22px;">🔄 بدء جولة جديدة</button>
+    <p id="waitingReplayMsg" style="display: none; margin-top: 25px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; font-size: 18px; font-weight: 700;">بانتظار المالك لإعادة اللعبة...</p>
   </div>
 
-  <!-- ================= المشاهد والانتقالات ================= -->
-  
   <div class="overlay" id="countdownOverlay">
     <div id="countdownNumber">3</div>
   </div>
@@ -223,18 +281,16 @@
       <div class="role-icon" id="roleIconUI">🎭</div>
       <div class="role-title" id="roleTitleUI">الدور</div>
       <div class="role-desc" id="roleDescUI">الشرح هنا</div>
-      <button class="btn-success" id="understoodBtn" style="width: 100%; margin-top: 15px; padding: 15px; font-size: 20px;">👍 فهمت الدور</button>
-      <p id="waitingOthersText" style="display: none; color: var(--warning); font-weight: bold; margin-top: 15px;">بانتظار باقي اللاعبين...</p>
+      <button class="btn-success" id="understoodBtn" style="width: 100%; margin-top: 20px; padding: 20px; font-size: 22px;">👍 فهمت الدور</button>
+      <p id="waitingOthersText" style="display: none; color: var(--warning); font-weight: 900; font-size: 20px; margin-top: 20px;">بانتظار باقي اللاعبين...</p>
     </div>
   </div>
-
-  <!-- ================================================================= -->
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, onDisconnect, update, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // 🔴🔴 بيانات فايربيس الخاصة بك 🔴🔴
+    // بيانات فايربيس الخاصة بك (كما هي بدون تغيير)
     const firebaseConfig = {
       apiKey: "AIzaSyCu5Hbu2Rqml7_4DICZf8XyM9B4hzbpdOQ",
       authDomain: "ploska-ae755.firebaseapp.com",
@@ -276,11 +332,11 @@
         text: 'سيتم خروجك من الغرفة الحالية والعودة للرئيسية.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#e74c3c',
-        cancelButtonColor: '#34495e',
+        confirmButtonColor: '#ff003c',
+        cancelButtonColor: '#333',
         confirmButtonText: 'نعم، خروج',
         cancelButtonText: 'إلغاء',
-        background: '#1e1e1e', color: '#fff'
+        background: '#0a0a12', color: '#fff'
       }).then((result) => {
         if (result.isConfirmed) {
           if(myUid && currentRoom) {
@@ -367,8 +423,9 @@
         for (let key in data.players) {
           count++;
           let p = data.players[key];
-          list.innerHTML += `<li style="padding: 12px; background: rgba(0,0,0,0.5); margin: 8px 0; border-radius: 8px; border-right: 4px solid var(--primary); font-size: 18px;">
-            ${p.name} ${p.isOwner ? '👑' : ''} ${p.connected === false ? '<span style="color:#e74c3c; font-size:14px;">(مفقود الاتصال)</span>' : ''}
+          list.innerHTML += `<li style="padding: 15px; background: rgba(0, 0, 0, 0.4); margin: 10px 0; border-radius: 10px; border-right: 5px solid var(--primary); font-size: 20px; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
+            <span>${p.name} ${p.isOwner ? '👑' : ''}</span>
+            ${p.connected === false ? '<span style="color:var(--danger); font-size:14px; background: rgba(255,0,60,0.1); padding: 5px 10px; border-radius: 5px;">مفقود الاتصال</span>' : ''}
           </li>`;
         }
         document.getElementById('playerCountLabel').innerText = `العدد الحالي: ${count}`;
@@ -425,13 +482,16 @@
 
           title.innerText = me.role;
           if (me.role === 'الشايب') {
-            card.style.borderColor = 'var(--warning)'; icon.innerText = '👑';
+            card.style.borderColor = 'var(--warning)'; card.style.boxShadow = '0 0 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(255, 234, 0, 0.2)';
+            icon.innerText = '👑';
             desc.innerText = 'تعرف الكلمة وتجيب على أسئلة اللاعبين بذكاء. ساعدهم يكتشفونها!';
           } else if (me.role === 'المتخفي') {
-            card.style.borderColor = 'var(--danger)'; icon.innerText = '🎭';
+            card.style.borderColor = 'var(--danger)'; card.style.boxShadow = '0 0 60px rgba(0,0,0,0.9), inset 0 0 30px var(--danger-glow)';
+            icon.innerText = '🎭';
             desc.innerText = 'أنت المتخفي! تعرف الكلمة، تظاهر بأنك مواطن وحاول إبعاد الشبهات عنك.';
           } else {
-            card.style.borderColor = 'var(--success)'; icon.innerText = '👥';
+            card.style.borderColor = 'var(--success)'; card.style.boxShadow = '0 0 60px rgba(0,0,0,0.9), inset 0 0 30px rgba(0, 255, 102, 0.2)';
+            icon.innerText = '👥';
             desc.innerText = 'أنت مواطن صالح. لا تعرف الكلمة، مهمتك معرفتها ثم الإطاحة بالمتخفي!';
           }
         }
@@ -455,8 +515,8 @@
           
           Swal.fire({
             title: 'اكتملت الأدوار!',
-            html: `الشايب في هذه الجولة هو:<br><br><span style="color:var(--warning); font-size:50px; font-weight:bold; text-shadow: 0 0 20px var(--warning);">${oldManName} 👑</span>`,
-            background: '#121212', color: '#fff', showConfirmButton: false, timer: 4500,
+            html: `<div style="font-family:'Cairo'; font-size:22px;">الشايب في هذه الجولة هو:</div><br><span style="color:var(--warning); font-size:55px; font-weight:900; text-shadow: 0 0 30px var(--warning);">${oldManName} 👑</span>`,
+            background: '#0a0a12', color: '#fff', showConfirmButton: false, timer: 4500,
             backdrop: `rgba(0,0,0,0.95)`
           });
 
@@ -475,7 +535,7 @@
           clearInterval(timerInterval);
           Swal.fire({
             icon: 'success', title: '🎯 تم اكتشاف الكلمة!', text: 'استعدوا لمرحلة التصويت وتحديد المتخفي...',
-            background: '#121212', color: '#fff', showConfirmButton: false, timer: 3500
+            background: '#0a0a12', color: '#fff', showConfirmButton: false, timer: 3500
           });
           if(isOwner) {
              setTimeout(() => {
@@ -494,8 +554,8 @@
           Swal.fire({
             icon: 'error',
             title: '❌ تصويت خاطئ!',
-            html: `<span style="color:var(--success); font-size:35px; font-weight:bold;">🛡️ ${data.lastKickedName}</span><br><br>كان مواطناً شريفاً. لقد تم إخراجه من اللعبة.`,
-            background: '#121212', color: '#fff', showConfirmButton: false, timer: 5000
+            html: `<span style="color:var(--success); font-size:40px; font-weight:900; text-shadow: 0 0 20px rgba(0,255,102,0.5);">🛡️ ${data.lastKickedName}</span><br><br><div style="font-size:20px; color:#ccc;">كان مواطناً شريفاً. لقد تم إخراجه من اللعبة.</div>`,
+            background: '#0a0a12', color: '#fff', showConfirmButton: false, timer: 5000
           });
           
           if(isOwner) {
@@ -570,13 +630,13 @@
            if (data.endReason === 'timeout') reasonText.innerText = '🏆 انتهى الوقت!';
            else reasonText.innerText = '🎯 تصويت صائب!';
            
-           winText.innerHTML = '🎉 فاز المواطنون والشايب!'; winText.style.color = 'var(--success)';
+           winText.innerHTML = '🎉 فاز المواطنون والشايب!'; winText.style.color = 'var(--success)'; winText.style.textShadow = '0 0 30px rgba(0,255,102,0.5)';
            loseText.innerText = '❌ خسر المتخفي.';
            
-           if(stateChanged) confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+           if(stateChanged) confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 }, colors: ['#00ff66', '#00f3ff', '#ffffff'] });
         } else {
            reasonText.innerText = '☠️ تمت تصفية المواطنين';
-           winText.innerText = '🩸 فاز المتخفي!'; winText.style.color = 'var(--danger)';
+           winText.innerText = '🩸 فاز المتخفي!'; winText.style.color = 'var(--danger)'; winText.style.textShadow = '0 0 30px var(--danger-glow)';
            loseText.innerText = '❌ خسر المواطنون والشايب.';
         }
         
