@@ -44,7 +44,6 @@
       background-size: 40px 40px; z-index: -2;
     }
 
-    /* زر العودة للرئيسية */
     .home-btn {
       position: fixed; top: 15px; right: 15px; background: rgba(255, 0, 60, 0.15);
       color: #ff4d6d; border: 1px solid rgba(255, 0, 60, 0.5); padding: 8px 15px;
@@ -53,7 +52,6 @@
     }
     .home-btn:hover { background: var(--danger); color: #fff; box-shadow: 0 0 15px var(--danger-glow); }
 
-    /* الحاويات الزجاجية */
     .container {
       background: var(--panel-bg); padding: 30px; border-radius: 20px; 
       max-width: 600px; margin: 60px auto 40px; 
@@ -87,14 +85,12 @@
     }
     input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
 
-    /* شريط المعلومات العلوي */
     .top-bar {
       position: fixed; top: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
       padding: 10px 20px; display: flex; justify-content: space-around; align-items: center; z-index: 100;
       border-bottom: 1px solid rgba(0, 243, 255, 0.3); font-weight: bold; font-size: 14px;
     }
 
-    /* زر وسجل الأحداث القابل للطي */
     .log-toggle-btn {
       position: fixed; left: 10px; top: 60px; z-index: 101; background: rgba(10,10,20,0.8);
       border: 1px solid var(--primary); color: #fff; padding: 8px 12px; border-radius: 10px;
@@ -110,7 +106,6 @@
     .log-item { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .log-item span { color: var(--primary); font-weight: bold; }
 
-    /* ساحة اللعب الوسطى */
     .game-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 50px; padding: 20px; padding-bottom: 150px; }
     
     .decks-container { display: flex; gap: 20px; margin-bottom: 20px; margin-top: 30px; }
@@ -123,7 +118,6 @@
     .deck-card:hover:not(.disabled) { transform: translateY(-10px); box-shadow: 0 15px 25px var(--primary-glow); }
     .deck-card.disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; border-color: #555; color: #777;}
 
-    /* 📦 تصميم الصناديق الحقيقية */
     .player-boxes-area {
       position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
       background: rgba(0,0,0,0.65); padding: 15px; border-radius: 20px; backdrop-filter: blur(10px);
@@ -169,17 +163,14 @@
     .mini-box::before { height: 8px; border-width: 2px; }
     .mini-box::after { left: 6px; right: 6px; border-width: 1px;}
 
-    /* شاشات */
     .screen { display: none; width: 100%; }
     .active-screen { display: block; }
   </style>
 </head>
 <body>
 
-  <!-- زر العودة للرئيسية -->
   <button id="homeBtn" class="home-btn" style="display: none;">🚪 خروج</button>
 
-  <!-- شريط المعلومات -->
   <div class="top-bar" id="topBar" style="display: none;">
     <div>الجولة: <span id="roundUi" class="highlight">1</span></div>
     <div>الدور: <span id="turnUi" style="color: var(--warning);">---</span></div>
@@ -187,11 +178,9 @@
     <button id="callBtn" class="btn-danger" style="padding: 5px 15px; margin:0; font-size:12px; display:none;">إنهاء الجولة 🛑</button>
   </div>
 
-  <!-- سجل الأحداث (قابل للطي) -->
   <button class="log-toggle-btn" id="logToggleBtn" style="display: none;">📜 سجل الأحداث</button>
   <div class="log-panel" id="actionLog"></div>
 
-  <!-- شاشة الدخول -->
   <div class="container screen active-screen" id="loginScreen">
     <h1>📦 <span class="highlight">الصناديق الغامضة</span></h1>
     <p>ذاكرة قوية، خداع ذكي، وأقل مجموع يكسب!</p><br>
@@ -202,7 +191,6 @@
     <button id="joinRoomBtn" class="btn-warning">🔗 انضمام</button>
   </div>
 
-  <!-- اللوبي -->
   <div class="container screen" id="lobbyScreen">
     <h2>غرفة الانتظار ⏳</h2>
     <h1 id="roomCodeDisplay" style="color: var(--primary); letter-spacing: 5px;">----</h1>
@@ -214,13 +202,10 @@
     <p id="waitingMsg" style="display:none; color:var(--warning);">بانتظار المالك لبدء اللعبة...</p>
   </div>
 
-  <!-- ساحة اللعب -->
   <div class="screen" id="gameScreen">
     <div class="game-area">
-      <!-- خصومك -->
       <div class="opponent-area" id="opponentsArea"></div>
 
-      <!-- المنتصف (السحب) -->
       <div class="decks-container">
         <div class="deck-card" id="reserveDeck">📦<br>صندوق احتياطي</div>
         <div class="deck-card" id="actionDeck" style="border-color: var(--warning); color: var(--warning);">🃏<br>بطاقة أكشن</div>
@@ -229,7 +214,6 @@
       <div id="centerMessage" style="font-size: 16px; font-weight: bold; color: var(--primary); text-shadow: 0 0 10px rgba(0,255,255,0.5); height: 25px;"></div>
     </div>
 
-    <!-- صناديق اللاعب -->
     <div class="player-boxes-area" id="myBoxesArea">
       <div style="color: #fff; font-weight: bold; margin-bottom: 5px; font-size: 14px;">صناديقي</div>
       <div class="boxes-grid" id="myBoxesGrid"></div>
@@ -237,7 +221,6 @@
     </div>
   </div>
 
-  <!-- شاشة النهاية -->
   <div class="container screen" id="endScreen">
     <h1 id="endTitle">نتائج الجولة 📊</h1>
     <div id="resultsList" style="text-align: right; margin-bottom: 20px;"></div>
@@ -279,12 +262,10 @@
       push(ref(db, `rooms/${currentRoom}/log`), { text: msg, time: Date.now() });
     }
 
-    // زر سجل الأحداث
     document.getElementById('logToggleBtn').onclick = () => {
       document.getElementById('actionLog').classList.toggle('open');
     };
 
-    // زر الخروج للرئيسية
     document.getElementById('homeBtn').onclick = () => {
       Swal.fire({
         title: 'مغادرة الغرفة؟',
@@ -299,9 +280,7 @@
         backdrop: `rgba(0,0,0,0.8)`
       }).then((result) => {
         if (result.isConfirmed) {
-          if(myUid && currentRoom) {
-             update(ref(db, `rooms/${currentRoom}/players/${myUid}`), { connected: false });
-          }
+          if(myUid && currentRoom) update(ref(db, `rooms/${currentRoom}/players/${myUid}`), { connected: false });
           sessionStorage.removeItem('boxgame_uid');
           sessionStorage.removeItem('boxgame_room');
           location.reload();
@@ -314,7 +293,6 @@
       isOwner = asOwner;
       document.getElementById('homeBtn').style.display = 'block';
       
-      // إصلاح مشكلة التحديث (الاحتفاظ بالجلسة)
       if (!myUid || asOwner || document.getElementById('playerName').value !== "") {
          let newRef = push(ref(db, `rooms/${code}/players`));
          myUid = newRef.key;
@@ -339,9 +317,10 @@
     function renderState(data) {
       const status = data.status;
       const me = data.players[myUid];
+      const prog = data.actionProgress || { self: false, other: false };
+      const act = data.actionState;
       if (!me) return;
 
-      // تحديث السجل
       if(data.log) {
         const logPanel = document.getElementById('actionLog');
         logPanel.innerHTML = '';
@@ -374,23 +353,28 @@
         document.getElementById('topBar').style.display = 'flex';
         document.getElementById('logToggleBtn').style.display = 'block';
         
-        // بناء الخصوم
         const oppArea = document.getElementById('opponentsArea');
         oppArea.innerHTML = '';
         for (let k in data.players) {
           if (k === myUid) continue;
           let p = data.players[k];
           let connStatus = p.connected === false ? '<span style="color:#ff003c; font-size:10px;"> (مفقود)</span>' : '';
+          
+          let oppPointer = (data.currentTurn === myUid && (act === 'peek_other' || act === 'peek_both') && !prog.other) ? 'pointer' : 'default';
+
           let pDiv = document.createElement('div');
           pDiv.className = 'opponent-card';
           pDiv.innerHTML = `<div style="color:#fff; font-size:12px; margin-bottom:5px; font-weight:bold;">${p.name}${connStatus}</div>
           <div class="op-boxes">
-            ${p.boxes.map(b => `<div class="box-item mini-box ${b.deleted ? 'empty' : ''}"></div>`).join('')}
+            ${p.boxes.map((b, i) => `
+              <div class="box-item mini-box ${b.deleted ? 'empty' : ''} ${b.revealedTo === myUid ? 'open' : ''}" 
+                   onclick="revealOpponentBox('${k}', ${i})" style="cursor: ${!b.deleted ? oppPointer : 'not-allowed'}">
+                   <div class="box-value" style="font-size:16px;">${b.revealedTo === myUid ? b.value : ''}</div>
+              </div>`).join('')}
           </div>`;
           oppArea.appendChild(pDiv);
         }
 
-        // بناء صناديق اللاعب الحالي
         const myGrid = document.getElementById('myBoxesGrid');
         myGrid.innerHTML = '';
         me.boxes.forEach((box, i) => {
@@ -405,7 +389,7 @@
           controls.className = 'box-controls';
 
           if (!box.deleted) {
-              if (status === 'init_peek' || (status === 'playing' && data.currentTurn === myUid && data.actionState === 'peek_self')) {
+              if (status === 'init_peek') {
                  let revBtn = document.createElement('button');
                  revBtn.className = 'mini-btn btn-reveal'; revBtn.innerText = '👁️';
                  revBtn.onclick = () => revealMyBox(i);
@@ -416,11 +400,18 @@
 
                  controls.appendChild(revBtn);
                  controls.appendChild(hidBtn);
-              } else if (status === 'playing' && data.currentTurn === myUid && data.actionState === 'replace_box') {
-                 let repBtn = document.createElement('button');
-                 repBtn.className = 'mini-btn btn-swap'; repBtn.innerText = '🔄';
-                 repBtn.onclick = () => replaceMyBox(i);
-                 controls.appendChild(repBtn);
+              } else if (status === 'playing' && data.currentTurn === myUid) {
+                 if ((act === 'peek_self' || act === 'peek_both') && !prog.self) {
+                    let revBtn = document.createElement('button');
+                    revBtn.className = 'mini-btn btn-reveal'; revBtn.innerText = '👁️ كشف';
+                    revBtn.onclick = () => revealMyBox(i);
+                    controls.appendChild(revBtn);
+                 } else if (act === 'replace_box') {
+                    let repBtn = document.createElement('button');
+                    repBtn.className = 'mini-btn btn-swap'; repBtn.innerText = '🔄 تبديل';
+                    repBtn.onclick = () => replaceMyBox(i);
+                    controls.appendChild(repBtn);
+                 }
               }
           }
 
@@ -429,16 +420,10 @@
           myGrid.appendChild(bWrapper);
         });
 
-        // زر الجاهزية في مرحلة الحفظ
         const readyBtn = document.getElementById('readyPeekBtn');
-        if (status === 'init_peek') {
-           if (!me.isReady) readyBtn.style.display = 'block';
-           else readyBtn.style.display = 'none';
-        } else {
-           readyBtn.style.display = 'none';
-        }
+        if (status === 'init_peek') readyBtn.style.display = me.isReady ? 'none' : 'block';
+        else readyBtn.style.display = 'none';
 
-        // تفقد انتهاء الحفظ للمالك
         if (status === 'init_peek' && isOwner) {
             let allReady = true;
             for (let k in data.players) {
@@ -446,14 +431,13 @@
             }
             if (allReady) {
                 update(ref(db, `rooms/${currentRoom}`), { status: 'playing' });
-                addLog('🎲 انتهى وقت الحفظ، بدأ اللعب الحقيقي!');
+                addLog('🎲 اكتمل الحفظ، بدأ اللعب الحقيقي!');
             }
         }
 
-        // حالة الأوراق
         const resDeck = document.getElementById('reserveDeck');
         const actDeck = document.getElementById('actionDeck');
-        if (status === 'playing' && data.currentTurn === myUid && !data.actionState) {
+        if (status === 'playing' && data.currentTurn === myUid && !act) {
             resDeck.classList.remove('disabled'); actDeck.classList.remove('disabled');
         } else {
             resDeck.classList.add('disabled'); actDeck.classList.add('disabled');
@@ -468,7 +452,7 @@
           
           if (data.currentTurn === myUid && status === 'playing') {
             document.getElementById('callBtn').style.display = 'block';
-            if (!data.actionState) document.getElementById('centerMessage').innerText = 'دورك! اختر صندوق احتياطي أو بطاقة.';
+            if (!act) document.getElementById('centerMessage').innerText = 'دورك! اختر صندوق احتياطي أو بطاقة.';
           } else {
             document.getElementById('callBtn').style.display = 'none';
             document.getElementById('centerMessage').innerText = status === 'init_peek' ? (me.isReady ? 'بانتظار البقية...' : 'اكشف صندوقين ثم اضغط جاهز') : `انتظر دور ${turnName}...`;
@@ -501,48 +485,79 @@
       }
     }
 
-    // -- أزرار الكشف والإخفاء والتبديل --
+    window.revealOpponentBox = async function(oppUid, idx) {
+        if (roomData.status !== 'playing' || roomData.currentTurn !== myUid) return;
+        let act = roomData.actionState;
+        let prog = roomData.actionProgress || { self: false, other: false };
+        let p = roomData.players[oppUid];
+        if (p.boxes[idx].deleted) return;
+
+        if ((act === 'peek_other' || act === 'peek_both') && !prog.other) {
+            await update(ref(db, `rooms/${currentRoom}/actionProgress/other`), true);
+            await update(ref(db, `rooms/${currentRoom}/players/${oppUid}/boxes/${idx}`), { revealedTo: myUid });
+
+            setTimeout(async () => {
+                await update(ref(db, `rooms/${currentRoom}/players/${oppUid}/boxes/${idx}/revealedTo`), null);
+                checkBothDone();
+            }, 2500);
+        }
+    };
+
     window.revealMyBox = async function(idx) {
         let me = roomData.players[myUid];
+        let act = roomData.actionState;
+        let prog = roomData.actionProgress || { self: false, other: false };
+
         if (roomData.status === 'init_peek') {
             let peeks = me.peekedBoxes || [];
             if (!peeks.includes(idx)) {
                 if (peeks.length >= 2) {
-                    Swal.fire({icon: 'error', title: 'تنبيه', text: 'لا يمكنك كشف أكثر من صندوقين في البداية!', toast: true, position: 'top', showConfirmButton: false, timer: 2000, background: '#111', color:'#fff'});
+                    Swal.fire({icon: 'error', title: 'تنبيه', text: 'كحد أقصى صندوقين!', toast: true, position: 'top', showConfirmButton: false, timer: 2000, background: '#111', color:'#fff'});
                     return;
                 }
                 peeks.push(idx);
                 await update(ref(db, `rooms/${currentRoom}/players/${myUid}`), { peekedBoxes: peeks });
             }
             await update(ref(db, `rooms/${currentRoom}/players/${myUid}/boxes/${idx}`), { revealed: true });
-        } else if (roomData.actionState === 'peek_self') {
-            let currentlyRevealed = me.boxes.some(b => b.revealed);
-            if (currentlyRevealed) {
-                Swal.fire({icon: 'warning', title: 'تنبيه', text: 'اخفِ الصندوق المفتوح أولاً!', toast: true, position: 'top', showConfirmButton: false, timer: 2000, background: '#111', color:'#fff'});
-                return;
-            }
+        } 
+        else if (roomData.status === 'playing' && (act === 'peek_self' || act === 'peek_both') && !prog.self) {
+            await update(ref(db, `rooms/${currentRoom}/actionProgress/self`), true);
             await update(ref(db, `rooms/${currentRoom}/players/${myUid}/boxes/${idx}`), { revealed: true });
+
+            setTimeout(async () => {
+                await update(ref(db, `rooms/${currentRoom}/players/${myUid}/boxes/${idx}/revealed`), false);
+                checkBothDone();
+            }, 2500);
         }
     };
 
     window.hideMyBox = async function(idx) {
         await update(ref(db, `rooms/${currentRoom}/players/${myUid}/boxes/${idx}`), { revealed: false });
-        if (roomData.actionState === 'peek_self') {
-            // إنهاء الدور بعد الإخفاء في مرحلة اللعب
-            await update(ref(db, `rooms/${currentRoom}/actionState`), null);
-            nextTurn();
-        }
     };
 
     window.replaceMyBox = async function(idx) {
         let newVal = roomData.drawnBoxValue;
         await update(ref(db, `rooms/${currentRoom}/players/${myUid}/boxes/${idx}`), { value: newVal, revealed: false });
         await update(ref(db, `rooms/${currentRoom}/actionState`), null);
-        addLog(`🔄 <span>${roomData.players[myUid].name}</span> استبدل صندوقه بصندوق احتياطي.`);
+        addLog(`🔄 <span>${roomData.players[myUid].name}</span> استبدل صندوقه.`);
         nextTurn();
     };
 
-    // زر الجاهزية لمرحلة الحفظ
+    window.checkBothDone = async function() {
+        let act = roomData.actionState;
+        let prog = roomData.actionProgress || { self: false, other: false };
+        let shouldEnd = false;
+        
+        if (act === 'peek_self' && prog.self) shouldEnd = true;
+        if (act === 'peek_other' && prog.other) shouldEnd = true;
+        if (act === 'peek_both' && prog.self && prog.other) shouldEnd = true;
+
+        if (shouldEnd && act !== 'done') {
+            await update(ref(db, `rooms/${currentRoom}/actionState`), 'done');
+            nextTurn();
+        }
+    };
+
     document.getElementById('readyPeekBtn').onclick = async () => {
         let updates = {};
         roomData.players[myUid].boxes.forEach((b, i) => {
@@ -552,42 +567,51 @@
         await update(ref(db), updates);
     };
 
-    // -- سحب الصندوق والبطاقة --
     document.getElementById('reserveDeck').onclick = async () => {
       if (roomData.status !== 'playing' || roomData.currentTurn !== myUid || roomData.actionState) return;
       let val = Math.floor(Math.random() * 14);
       await update(ref(db, `rooms/${currentRoom}`), { actionState: 'replace_box', drawnBoxValue: val });
       document.getElementById('centerMessage').innerText = `سحبت الرقم (${val}). اختر صندوق للتبديل!`;
-      addLog(`📦 <span>${roomData.players[myUid].name}</span> سحب صندوقاً احتياطياً...`);
+      addLog(`📦 <span>${roomData.players[myUid].name}</span> سحب صندوقاً احتياطياً.`);
     };
 
     document.getElementById('actionDeck').onclick = async () => {
       if (roomData.status !== 'playing' || roomData.currentTurn !== myUid || roomData.actionState) return;
       
-      let actions = ['peek_self', 'delete_self'];
+      let actions = ['peek_self', 'peek_other', 'peek_both', 'delete_self'];
       let act = actions[Math.floor(Math.random() * actions.length)];
       
+      let updates = {
+          [`rooms/${currentRoom}/actionState`]: act,
+          [`rooms/${currentRoom}/actionProgress`]: { self: false, other: false }
+      };
+
       if (act === 'peek_self') {
-        await update(ref(db, `rooms/${currentRoom}`), { actionState: 'peek_self' });
-        document.getElementById('centerMessage').innerText = `بطاقة كشف: اضغط (👁️) لصندوقك ثم (🙈) للإنهاء.`;
-        addLog(`🃏 <span>${roomData.players[myUid].name}</span> سحب بطاقة كشف صندوق.`);
+        document.getElementById('centerMessage').innerText = `بطاقة: اكشف صندوقك. (اضغط على 👁️ تحت صندوقك)`;
+        addLog(`🃏 <span>${roomData.players[myUid].name}</span> سحب بطاقة: اكشف صندوقك.`);
+      } else if (act === 'peek_other') {
+        document.getElementById('centerMessage').innerText = `بطاقة: اكشف صندوق خصم. (اضغط على صندوق خصم)`;
+        addLog(`🃏 <span>${roomData.players[myUid].name}</span> سحب بطاقة: اكشف صندوق خصم.`);
+      } else if (act === 'peek_both') {
+        document.getElementById('centerMessage').innerText = `بطاقة: اكشف صندوقك وصندوق خصم.`;
+        addLog(`🃏 <span>${roomData.players[myUid].name}</span> سحب بطاقة: اكشف صندوقك وصندوق خصم.`);
       } else {
-        await update(ref(db, `rooms/${currentRoom}`), { actionState: 'processing_auto' });
+        updates[`rooms/${currentRoom}/actionState`] = 'processing_auto';
         let myBoxes = roomData.players[myUid].boxes;
         let validIds = [0,1,2,3].filter(i => !myBoxes[i].deleted);
         if(validIds.length > 1) {
           let rId = validIds[Math.floor(Math.random() * validIds.length)];
-          await update(ref(db, `rooms/${currentRoom}/players/${myUid}/boxes/${rId}`), { deleted: true });
+          updates[`rooms/${currentRoom}/players/${myUid}/boxes/${rId}/deleted`] = true;
           addLog(`💥 <span>${roomData.players[myUid].name}</span> سحب بطاقة حذف وتخلص من صندوق!`);
         }
-        await update(ref(db, `rooms/${currentRoom}/actionState`), null);
         setTimeout(() => nextTurn(), 2000);
       }
+      await update(ref(db), updates);
     };
 
     document.getElementById('callBtn').onclick = async () => {
       await update(ref(db, `rooms/${currentRoom}`), { calledBy: myUid });
-      addLog(`🚨 <span>${roomData.players[myUid].name}</span> فعّل إنهاء الجولة! دور أخير للجميع.`);
+      addLog(`🚨 <span>${roomData.players[myUid].name}</span> فعّل إنهاء الجولة!`);
       nextTurn();
     };
 
@@ -604,12 +628,11 @@
          let updates = {};
          updates[`rooms/${currentRoom}/currentTurn`] = nextUid;
          updates[`rooms/${currentRoom}/actionState`] = null; 
+         updates[`rooms/${currentRoom}/actionProgress`] = null;
          await update(ref(db), updates);
-         addLog(`📣 انتقل الدور إلى <span>${roomData.players[nextUid].name}</span>`);
       }
     }
 
-    // -- منطق البوت --
     let botTimeout = null;
     function handleBotTurn(botUid) {
       clearTimeout(botTimeout);
@@ -623,18 +646,29 @@
            let newVal = Math.floor(Math.random() * 14);
            let replaceId = validIds[Math.floor(Math.random() * validIds.length)];
            await update(ref(db, `rooms/${currentRoom}/players/${botUid}/boxes/${replaceId}`), { value: newVal });
-           addLog(`🤖 <span>${p.name}</span> سحب صندوقاً وبدّل أحد صناديقه.`);
+           addLog(`🤖 <span>${p.name}</span> استبدل أحد صناديقه.`);
+           setTimeout(() => { if (isOwner && roomData.currentTurn === botUid) nextTurn(); }, 1500);
         } else {
-           addLog(`🤖 <span>${p.name}</span> استخدم بطاقة كشف صندوق.`);
+           let actions = ['peek_self', 'peek_other', 'peek_both', 'delete_self'];
+           let act = actions[Math.floor(Math.random() * actions.length)];
+           if (act === 'peek_self') addLog(`🤖 <span>${p.name}</span> كشف أحد صناديقه.`);
+           else if (act === 'peek_other') addLog(`🤖 <span>${p.name}</span> كشف صندوق لاعب آخر.`);
+           else if (act === 'peek_both') addLog(`🤖 <span>${p.name}</span> كشف صندوقه وصندوق لاعب آخر.`);
+           else {
+             if(validIds.length > 1) {
+                let rId = validIds[Math.floor(Math.random() * validIds.length)];
+                await update(ref(db, `rooms/${currentRoom}/players/${botUid}/boxes/${rId}/deleted`), true);
+                addLog(`🤖 <span>${p.name}</span> استخدم بطاقة حذف!`);
+             }
+           }
+           
+           let currentSum = p.boxes.filter(b=>!b.deleted).reduce((a,b)=>a+b.value, 0);
+           if (currentSum < 15 && !roomData.calledBy && Math.random() > 0.7) {
+              await update(ref(db, `rooms/${currentRoom}`), { calledBy: botUid });
+              addLog(`🚨 <span>${p.name}</span> أنهى الجولة!`);
+           }
+           setTimeout(() => { if (isOwner && roomData.currentTurn === botUid) nextTurn(); }, 2500);
         }
-        
-        let currentSum = p.boxes.filter(b=>!b.deleted).reduce((a,b)=>a+b.value, 0);
-        if (currentSum < 15 && !roomData.calledBy && Math.random() > 0.7) {
-           await update(ref(db, `rooms/${currentRoom}`), { calledBy: botUid });
-           addLog(`🚨 <span>${p.name}</span> أنهى الجولة!`);
-        }
-        
-        setTimeout(() => { if (isOwner && roomData.currentTurn === botUid) nextTurn(); }, 1500);
       }, 3000);
     }
 
@@ -685,7 +719,6 @@
       addLog('🚀 بدأت الجولة! اكشف صندوقين لمعرفة أرقامك، ثم اضغط على زر (أنا جاهز).');
     }
 
-    // استرجاع الجلسة عند فتح الصفحة أو التحديث
     window.onload = () => {
       if (myUid && currentRoom) joinRoom("", currentRoom, false); 
       else switchScreen('loginScreen');
