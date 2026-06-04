@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Locker Room - CSS Art</title>
+  <title>لعبة الصناديق الغامضة - الدخول</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  
   <style>
     * {
       margin: 0;
@@ -14,236 +18,221 @@
     body {
       width: 100vw;
       height: 100vh;
-      background-color: #030303; 
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      /* تم ربط الصورة bg.jpg مع طبقة تعتيم خفيفة جداً على الأطراف لإبراز القوائم */
+      background-image: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.5) 100%), url('bg.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #050505; 
+      font-family: 'Segoe UI', 'Cairo', sans-serif;
       display: flex;
       align-items: center; 
+      justify-content: space-between;
       overflow: hidden;
-      position: relative;
+      color: #fff;
     }
 
-    /* إضاءة الغرفة */
-    .room-lighting {
-      position: absolute;
-      top: -10%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 800px;
-      height: 800px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 70%);
-      pointer-events: none;
-      z-index: 1;
+    /* ========================================= */
+    /* القائمة الجانبية (يسار الشاشة) */
+    /* ========================================= */
+    .menu-container {
+      margin-left: 8%; 
+      display: flex;
+      flex-direction: column;
+      gap: 20px; 
+      z-index: 10;
     }
-    
-    .lamp {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 15px;
-      background: #111;
-      border-radius: 0 0 30px 30px;
-      border-bottom: 2px solid #333;
-      z-index: 2;
+
+    .menu-item {
+      font-size: 35px;
+      font-weight: 700;
+      color: #666;
+      cursor: pointer;
+      position: relative;
+      display: inline-block;
+      width: fit-content;
+      transition: color 0.3s ease, transform 0.3s ease;
+      letter-spacing: 1px;
     }
-    .lamp::after {
+
+    .menu-item::after {
       content: '';
       position: absolute;
       bottom: -5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 5px;
-      background: #fff;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(144, 238, 144, 0.2) 0%, rgba(144, 238, 144, 1) 50%, rgba(144, 238, 144, 0.2) 100%);
+      box-shadow: 0 0 12px 2px rgba(144, 238, 144, 0.6);
       border-radius: 50%;
-      box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.6);
+      opacity: 0; 
+      transform: scaleX(0.3); 
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    /* الشعار الذهبي */
-    .saudi-emblem {
-      position: absolute;
-      top: 12%;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #917c4b; 
-      text-align: center;
-      z-index: 2;
-      opacity: 0.7;
-      text-shadow: 0 5px 15px rgba(0,0,0,0.8);
-    }
-    .palm-tree {
-      font-size: 45px;
-      line-height: 1;
-      margin-bottom: -15px;
-      display: block;
-      filter: drop-shadow(0 2px 2px #000);
-    }
-    .swords {
-      font-size: 35px;
-      letter-spacing: -10px;
-      display: block;
-      filter: drop-shadow(0 2px 2px #000);
+    .menu-item:hover, .menu-item.active {
+      color: #ffffff; 
+      transform: translateX(10px); /* حركة خفيفة لليمين عند التأشير */
     }
 
-    /* رسمة اللاعب والدكة */
-    .scene-container {
-      position: absolute;
-      bottom: 10%;
-      left: 50%;
-      transform: translateX(-50%);
+    .menu-item:hover::after, .menu-item.active::after {
+      opacity: 1; 
+      transform: scaleX(1); 
+    }
+
+    /* ========================================= */
+    /* حاوية تسجيل الدخول (يمين الشاشة) */
+    /* ========================================= */
+    .login-form-container {
+      margin-right: 10%;
+      background: rgba(10, 10, 15, 0.4);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
       width: 400px;
-      height: 400px;
-      z-index: 5;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(144, 238, 144, 0.05);
+      
+      /* الإخفاء الافتراضي */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(50px);
+      transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+      
+      /* تحويل النصوص للعربية */
+      direction: rtl;
+      text-align: right;
     }
 
-    .bench {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 320px;
-      height: 25px;
-      background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
-      border-top: 2px solid #333;
-      border-radius: 5px;
-      box-shadow: 0 20px 30px rgba(0,0,0,0.9);
+    /* كلاس الظهور */
+    .login-form-container.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
     }
-    .bench-leg {
-      position: absolute;
-      bottom: -40px;
-      width: 15px;
-      height: 40px;
-      background: #0a0a0a;
-      box-shadow: inset -2px 0 5px #000;
-    }
-    .bench-leg.left { left: 30px; }
-    .bench-leg.right { right: 30px; }
 
-    .head {
-      position: absolute;
-      bottom: 250px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70px;
-      height: 75px;
-      background: #080808;
-      border-radius: 40% 40% 50% 50%;
-      box-shadow: inset -5px -10px 15px #000, 0 5px 10px rgba(0,0,0,0.8);
-      z-index: 10;
+    .login-form-container h2 {
+      font-family: 'Cairo', sans-serif;
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #fff;
+      font-weight: 900;
     }
-    .head::before, .head::after {
-      content: '';
-      position: absolute;
-      background: #080808;
-      border-radius: 50%;
+    .login-form-container h2 span {
+      color: #90ee90;
+      text-shadow: 0 0 15px rgba(144, 238, 144, 0.5);
     }
-    .head::before { width: 30px; height: 30px; top: -5px; left: -10px; box-shadow: 10px -5px 0 #080808, 40px -2px 0 #080808, 60px 10px 0 #080808; }
-    .head::after { width: 25px; height: 25px; bottom: 10px; left: -12px; box-shadow: 75px 5px 0 #080808; }
 
-    .torso {
-      position: absolute;
-      bottom: 75px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 160px;
-      height: 185px;
-      background: linear-gradient(135deg, #0e3d23 0%, #082917 100%);
-      border-radius: 50px 50px 20px 20px;
-      box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 15px 20px rgba(0,0,0,0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-top: 35px;
-      z-index: 8;
-    }
-    
-    .shirt-logo {
-      color: #917c4b;
-      font-size: 10px;
-      margin-bottom: 5px;
-      opacity: 0.8;
-    }
-    .shirt-name {
-      color: #917c4b;
+    input {
+      width: 100%;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
       font-size: 16px;
       font-weight: 700;
-      letter-spacing: 1px;
-      margin-bottom: -5px;
-      opacity: 0.9;
+      transition: all 0.3s ease;
     }
-    .shirt-number {
-      color: #917c4b;
-      font-size: 80px;
+    input:focus {
+      outline: none;
+      border-color: #90ee90;
+      box-shadow: 0 0 15px rgba(144, 238, 144, 0.3);
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 18px;
       font-weight: 900;
-      font-family: 'Arial Black', Impact, sans-serif;
-      line-height: 1;
-      opacity: 0.9;
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-create {
+      background: linear-gradient(135deg, rgba(144, 238, 144, 0.2), rgba(34, 139, 34, 0.5));
+      color: #fff;
+      border: 1px solid rgba(144, 238, 144, 0.5);
+    }
+    .btn-create:hover {
+      background: linear-gradient(135deg, rgba(144, 238, 144, 0.4), rgba(34, 139, 34, 0.7));
+      box-shadow: 0 5px 20px rgba(144, 238, 144, 0.4);
+      transform: translateY(-2px);
     }
 
-    .arm {
-      position: absolute;
-      bottom: 100px;
-      width: 40px;
-      height: 150px;
-      background: linear-gradient(to bottom, #0e3d23 40%, #5c4033 40%); 
-      border-radius: 20px;
-      z-index: 7;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+    .btn-join {
+      background: rgba(255, 255, 255, 0.05);
+      color: #ccc;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .arm.left {
-      left: 95px;
-      transform: rotate(15deg);
-    }
-    .arm.right {
-      right: 95px;
-      transform: rotate(-15deg);
+    .btn-join:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: #fff;
+      transform: translateY(-2px);
     }
 
-    .leg {
-      position: absolute;
-      bottom: 40px;
-      width: 55px;
-      height: 80px;
-      background: linear-gradient(to bottom, #082917, #04140b);
-      border-radius: 10px;
-      z-index: 6;
-      box-shadow: inset 0 -10px 20px rgba(0,0,0,0.8);
-    }
-    .leg.left { left: 135px; transform: rotate(5deg); }
-    .leg.right { right: 135px; transform: rotate(-5deg); }
   </style>
 </head>
 <body>
 
-  <div class="lamp"></div>
-  <div class="room-lighting"></div>
-
-  <div class="saudi-emblem">
-    <span class="palm-tree">🌴</span>
-    <span class="swords">⚔️</span>
+  <div class="menu-container">
+    <div class="menu-item" id="loginMenuBtn">Login</div>
+    <div class="menu-item" id="signupMenuBtn">Sign up</div>
   </div>
 
-  <div class="scene-container">
-    <div class="head"></div>
+  <div class="login-form-container" id="loginForm">
+    <h2>أهلاً بك في <span>الصناديق</span></h2>
     
-    <div class="arm left"></div>
-    <div class="arm right"></div>
+    <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." autocomplete="off">
+    <input type="text" id="roomCode" placeholder="كود الغرفة (للانضمام فقط)" style="text-transform: uppercase;" autocomplete="off">
     
-    <div class="torso">
-      <div class="shirt-logo">🌴⚔️</div>
-      <div class="shirt-name">ploska</div>
-      <div class="shirt-number">10</div>
+    <div class="btn-group">
+      <button class="btn-create" id="createBtn">✨ إنشاء غرفة جديدة</button>
+      <button class="btn-join" id="joinBtn">🔗 انضمام للغرفة</button>
     </div>
-    
-    <div class="leg left"></div>
-    <div class="leg right"></div>
-
-    <div class="bench"></div>
-    <div class="bench-leg left"></div>
-    <div class="bench-leg right"></div>
   </div>
+
+  <script>
+    // التحكم في ظهور وإخفاء حقول تسجيل الدخول بحركة سينمائية
+    const loginMenuBtn = document.getElementById('loginMenuBtn');
+    const signupMenuBtn = document.getElementById('signupMenuBtn');
+    const loginForm = document.getElementById('loginForm');
+
+    loginMenuBtn.addEventListener('click', () => {
+      // تفعيل زر القائمة
+      loginMenuBtn.classList.add('active');
+      signupMenuBtn.classList.remove('active');
+      
+      // إظهار النموذج
+      loginForm.classList.add('show');
+    });
+
+    signupMenuBtn.addEventListener('click', () => {
+      // تفعيل زر القائمة (كمثال مستقبلي)
+      signupMenuBtn.classList.add('active');
+      loginMenuBtn.classList.remove('active');
+      
+      // إخفاء النموذج الحالي
+      loginForm.classList.remove('show');
+    });
+  </script>
 
 </body>
 </html>
