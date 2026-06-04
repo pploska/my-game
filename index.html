@@ -19,25 +19,25 @@
 
     body {
       width: 100vw;
-      height: 100vh;
+      min-height: 100vh;
       background-image: 
         radial-gradient(circle at 100% 100%, #050505 0%, #050505 5%, transparent 15%),
-        linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.6) 100%), 
+        linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.8) 100%), 
         url('bg.jpg');
       background-size: cover;
-      background-position: top center;
+      background-position: center top;
       background-repeat: no-repeat;
       background-color: #050505; 
       font-family: 'Segoe UI', 'Cairo', sans-serif;
       display: flex;
       align-items: center; 
       justify-content: space-between;
-      overflow: hidden;
+      overflow-x: hidden;
       color: #fff;
     }
 
     /* ========================================= */
-    /* القائمة الجانبية (يسار الشاشة) */
+    /* القائمة الجانبية */
     /* ========================================= */
     .menu-container {
       margin-left: 8%; 
@@ -69,39 +69,39 @@
     .menu-item:hover, .menu-item.active { color: #ffffff; transform: translateX(10px); }
     .menu-item:hover::after, .menu-item.active::after { opacity: 1; transform: scaleX(1); }
 
-    /* ألوان خاصة لبعض القوائم */
     .logout-item:hover, .logout-item.active { color: #ff4d6d; }
     .logout-item::after { background: linear-gradient(90deg, rgba(255, 77, 109, 0.2) 0%, rgba(255, 77, 109, 1) 50%, rgba(255, 77, 109, 0.2) 100%); box-shadow: 0 0 12px 2px rgba(255, 77, 109, 0.6); }
 
     /* ========================================= */
-    /* حاوية النماذج (يمين الشاشة) */
+    /* حاوية النماذج */
     /* ========================================= */
     .forms-wrapper {
       margin-right: 10%;
       position: relative;
       width: 400px;
-      height: 450px; /* تثبيت الارتفاع عشان الحقول ما تتحرك كثير */
+      height: 450px; 
+      z-index: 10;
     }
 
     .glass-panel {
       position: absolute;
-      top: 50%;
-      right: 0;
+      top: 0;
+      left: 0;
       width: 100%;
-      background: rgba(10, 10, 15, 0.4);
-      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      background: rgba(10, 10, 15, 0.5);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       padding: 40px;
       border-radius: 20px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(144, 238, 144, 0.05);
       
       opacity: 0; visibility: hidden;
-      transform: translateY(-50%) translateX(50px);
+      transform: translateX(50px);
       transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
       direction: rtl; text-align: right;
     }
 
-    .glass-panel.show { opacity: 1; visibility: visible; transform: translateY(-50%) translateX(0); }
+    .glass-panel.show { opacity: 1; visibility: visible; transform: translateX(0); }
 
     .glass-panel h2 { font-family: 'Cairo', sans-serif; font-size: 28px; margin-bottom: 25px; color: #fff; font-weight: 900; }
     .glass-panel h2 span { color: #90ee90; text-shadow: 0 0 15px rgba(144, 238, 144, 0.5); }
@@ -128,23 +128,68 @@
     .btn-secondary { background: rgba(255, 255, 255, 0.05); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.2); }
     .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: #fff; transform: translateY(-2px); }
 
+    /* ========================================= */
+    /* التوافق مع شاشات الجوال والأجهزة الذكية */
+    /* ========================================= */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 40px;
+        background-image: 
+          linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.9) 100%), 
+          url('bg.jpg');
+      }
+
+      .menu-container {
+        margin: 0 auto 30px auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        width: 90%;
+      }
+
+      .menu-item {
+        font-size: 22px;
+      }
+      
+      .menu-item:hover, .menu-item.active { 
+        transform: translateY(-5px); /* تغيير الحركة للأعلى بدل اليمين في الجوال */
+      }
+
+      .forms-wrapper {
+        margin: 0 auto;
+        width: 90%;
+        max-width: 400px;
+      }
+
+      .glass-panel {
+        padding: 30px 20px;
+        transform: translateY(30px); /* تغيير اتجاه الحركة للظهور */
+      }
+      
+      .glass-panel.show { transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
+  <!-- القائمة الجانبية -->
   <div class="menu-container">
-    <div class="menu-item logged-out-menu active" onclick="switchTab('loginPanel', this)">Login</div>
+    <div class="menu-item logged-out-menu" onclick="switchTab('loginPanel', this)">Login</div>
     <div class="menu-item logged-out-menu" onclick="switchTab('signupPanel', this)">Sign up</div>
 
     <div class="menu-item logged-in-menu" style="display: none;" onclick="switchTab('createGamePanel', this)">إنشاء لعبة</div>
     <div class="menu-item logged-in-menu" style="display: none;" onclick="switchTab('joinGamePanel', this)">انضمام إلى لعبة</div>
     <div class="menu-item logged-in-menu" style="display: none;" onclick="switchTab('rulesPanel', this)">شرح اللعبة</div>
-    <div class="menu-item logged-in-menu logout-item" style="display: none; margin-top: 30px;" onclick="handleLogout()">تسجيل خروج</div>
+    <div class="menu-item logged-in-menu logout-item" style="display: none;" onclick="handleLogout()">تسجيل خروج</div>
   </div>
 
+  <!-- حاوية النماذج -->
   <div class="forms-wrapper">
     
-    <div class="glass-panel show" id="loginPanel">
+    <div class="glass-panel" id="loginPanel">
       <h2>تسجيل <span>الدخول</span></h2>
       <input type="email" id="loginEmail" placeholder="البريد الإلكتروني..." autocomplete="off">
       <input type="password" id="loginPass" placeholder="الرقم السري..." autocomplete="off">
@@ -190,52 +235,40 @@
   </div>
 
   <script>
-    // --- نظام قواعد البيانات المحلي (للتجربة) ---
-    // جلب المستخدمين المحفوظين أو إنشاء مصفوفة فارغة
     let usersDB = JSON.parse(localStorage.getItem('myGameUsers')) || [];
 
-    // --- دالة التبديل بين النوافذ والقوائم ---
     function switchTab(panelId, menuItemElement) {
-      // إخفاء كل النوافذ
-      document.querySelectorAll('.glass-panel').forEach(panel => {
-        panel.classList.remove('show');
-      });
-      // إزالة التفعيل من كل القوائم
-      document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-      });
+      document.querySelectorAll('.glass-panel').forEach(panel => panel.classList.remove('show'));
+      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
 
-      // إظهار النافذة المطلوبة وتفعيل القائمة
       document.getElementById(panelId).classList.add('show');
       if(menuItemElement) menuItemElement.classList.add('active');
     }
 
-    // --- دالة تغيير حالة الواجهة (زائر / مسجل دخول) ---
     function updateUIState() {
       const currentUser = localStorage.getItem('currentUser');
       const loggedOutMenus = document.querySelectorAll('.logged-out-menu');
       const loggedInMenus = document.querySelectorAll('.logged-in-menu');
 
+      // تفريغ الشاشة من أي نافذة نشطة
+      document.querySelectorAll('.glass-panel').forEach(panel => panel.classList.remove('show'));
+      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+
       if (currentUser) {
-        // حالة مسجل الدخول
         loggedOutMenus.forEach(el => el.style.display = 'none');
         loggedInMenus.forEach(el => el.style.display = 'block');
-        // فتح نافذة إنشاء اللعبة افتراضياً
-        switchTab('createGamePanel', loggedInMenus[0]);
         
-        // ترحيب
+        // فتح نافذة إنشاء اللعبة تلقائياً إذا كان مسجل دخول
+        switchTab('createGamePanel', loggedInMenus[0]);
         const userName = JSON.parse(currentUser).name;
         document.querySelector('#createGamePanel h2').innerHTML = `أهلاً بك <span>${userName}</span>`;
       } else {
-        // حالة الزائر
         loggedInMenus.forEach(el => el.style.display = 'none');
         loggedOutMenus.forEach(el => el.style.display = 'block');
-        // فتح نافذة الدخول افتراضياً
-        switchTab('loginPanel', loggedOutMenus[0]);
+        // تم إزالة الكود الذي كان يفتح نافذة تسجيل الدخول تلقائياً
       }
     }
 
-    // --- نظام إنشاء الحساب ---
     function handleSignup() {
       const name = document.getElementById('regName').value.trim();
       const email = document.getElementById('regEmail').value.trim();
@@ -246,28 +279,21 @@
         return;
       }
 
-      // التحقق من الإيميل إذا كان مسجل مسبقاً
       const exists = usersDB.find(u => u.email === email);
       if (exists) {
         Swal.fire({ icon: 'warning', title: 'عفواً', text: 'هذا الإيميل مسجل مسبقاً!', background: '#111', color: '#fff' });
         return;
       }
 
-      // حفظ المستخدم
       const newUser = { name, email, pass };
       usersDB.push(newUser);
       localStorage.setItem('myGameUsers', JSON.stringify(usersDB));
-      
-      // تسجيل الدخول مباشرة بعد الإنشاء
       localStorage.setItem('currentUser', JSON.stringify(newUser));
       
       Swal.fire({ icon: 'success', title: 'تم!', text: 'تم إنشاء الحساب بنجاح.', background: '#111', color: '#fff', timer: 1500, showConfirmButton: false })
-      .then(() => {
-        updateUIState();
-      });
+      .then(() => updateUIState());
     }
 
-    // --- نظام تسجيل الدخول ---
     function handleLogin() {
       const email = document.getElementById('loginEmail').value.trim();
       const pass = document.getElementById('loginPass').value.trim();
@@ -277,28 +303,22 @@
         return;
       }
 
-      // البحث عن المستخدم
       const user = usersDB.find(u => u.email === email && u.pass === pass);
 
       if (user) {
-        // نجاح الدخول
         localStorage.setItem('currentUser', JSON.stringify(user));
         updateUIState();
       } else {
-        // فشل الدخول
         Swal.fire({ icon: 'error', title: 'بيانات خاطئة', text: 'الإيميل أو الرقم السري غير صحيح.', background: '#111', color: '#fff' });
       }
     }
 
-    // --- نظام تسجيل الخروج ---
     function handleLogout() {
       localStorage.removeItem('currentUser');
       updateUIState();
     }
 
-    // تشغيل الدالة عند فتح الصفحة للتحقق من حالة اللاعب
     window.onload = updateUIState;
-
   </script>
 
 </body>
