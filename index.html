@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login UI</title>
+  <title>Login UI - CSS Art</title>
   <style>
     * {
       margin: 0;
@@ -14,36 +14,243 @@
     body {
       width: 100vw;
       height: 100vh;
-      background-image: url('94139353-0f30-4521-9c9c-560fd54c4c47.jpeg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-color: #050505; 
+      background-color: #030303; /* ظلام الغرفة */
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       align-items: center; 
+      overflow: hidden;
+      position: relative;
     }
 
+    /* ========================================= */
+    /* 1. إضاءة الغرفة (Spotlight) والخلفية */
+    /* ========================================= */
+    .room-lighting {
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .lamp {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 15px;
+      background: #111;
+      border-radius: 0 0 30px 30px;
+      border-bottom: 2px solid #333;
+      z-index: 2;
+    }
+    .lamp::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 5px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.6);
+    }
+
+    /* ========================================= */
+    /* 2. شعار السيفين والنخلة الذهبي على الجدار */
+    /* ========================================= */
+    .saudi-emblem {
+      position: absolute;
+      top: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #917c4b; /* لون ذهبي باهت */
+      text-align: center;
+      z-index: 2;
+      opacity: 0.7;
+      text-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    }
+    .palm-tree {
+      font-size: 45px;
+      line-height: 1;
+      margin-bottom: -15px;
+      display: block;
+      filter: drop-shadow(0 2px 2px #000);
+    }
+    .swords {
+      font-size: 35px;
+      letter-spacing: -10px;
+      display: block;
+      filter: drop-shadow(0 2px 2px #000);
+    }
+
+    /* ========================================= */
+    /* 3. رسمة اللاعب الجالس (CSS Art) */
+    /* ========================================= */
+    .scene-container {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 400px;
+      z-index: 5;
+    }
+
+    /* الدكة (Bench) */
+    .bench {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 25px;
+      background: linear-gradient(to bottom, #1a1a1a, #0a0a0a);
+      border-top: 2px solid #333;
+      border-radius: 5px;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.9);
+    }
+    .bench-leg {
+      position: absolute;
+      bottom: -40px;
+      width: 15px;
+      height: 40px;
+      background: #0a0a0a;
+      box-shadow: inset -2px 0 5px #000;
+    }
+    .bench-leg.left { left: 30px; }
+    .bench-leg.right { right: 30px; }
+
+    /* اللاعب: الرأس (الشعر الكثيف) */
+    .head {
+      position: absolute;
+      bottom: 250px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 75px;
+      background: #080808;
+      border-radius: 40% 40% 50% 50%;
+      box-shadow: inset -5px -10px 15px #000, 0 5px 10px rgba(0,0,0,0.8);
+      z-index: 10;
+    }
+    /* تأثير خصلات الشعر */
+    .head::before, .head::after {
+      content: '';
+      position: absolute;
+      background: #080808;
+      border-radius: 50%;
+    }
+    .head::before { width: 30px; height: 30px; top: -5px; left: -10px; box-shadow: 10px -5px 0 #080808, 40px -2px 0 #080808, 60px 10px 0 #080808; }
+    .head::after { width: 25px; height: 25px; bottom: 10px; left: -12px; box-shadow: 75px 5px 0 #080808; }
+
+    /* اللاعب: الجذع (التيشيرت الأخضر) */
+    .torso {
+      position: absolute;
+      bottom: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px;
+      height: 185px;
+      background: linear-gradient(135deg, #0e3d23 0%, #082917 100%);
+      border-radius: 50px 50px 20px 20px;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 15px 20px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 35px;
+      z-index: 8;
+    }
+    
+    /* تفاصيل التيشيرت (الاسم والرقم) */
+    .shirt-logo {
+      color: #917c4b;
+      font-size: 10px;
+      margin-bottom: 5px;
+      opacity: 0.8;
+    }
+    .shirt-name {
+      color: #917c4b;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: -5px;
+      opacity: 0.9;
+    }
+    .shirt-number {
+      color: #917c4b;
+      font-size: 80px;
+      font-weight: 900;
+      font-family: 'Arial Black', Impact, sans-serif;
+      line-height: 1;
+      opacity: 0.9;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    }
+
+    /* اللاعب: الأذرع (منسدلة للأسفل بحزن/تفكير) */
+    .arm {
+      position: absolute;
+      bottom: 100px;
+      width: 40px;
+      height: 150px;
+      background: linear-gradient(to bottom, #0e3d23 40%, #5c4033 40%); /* أكمام التيشيرت + لون البشرة الداكن بالظل */
+      border-radius: 20px;
+      z-index: 7;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+    }
+    .arm.left {
+      left: 95px;
+      transform: rotate(15deg);
+    }
+    .arm.right {
+      right: 95px;
+      transform: rotate(-15deg);
+    }
+
+    /* اللاعب: الأرجل (الشورت) */
+    .leg {
+      position: absolute;
+      bottom: 40px;
+      width: 55px;
+      height: 80px;
+      background: linear-gradient(to bottom, #082917, #04140b);
+      border-radius: 10px;
+      z-index: 6;
+      box-shadow: inset 0 -10px 20px rgba(0,0,0,0.8);
+    }
+    .leg.left { left: 135px; transform: rotate(5deg); }
+    .leg.right { right: 135px; transform: rotate(-5deg); }
+
+
+    /* ========================================= */
+    /* 4. القائمة الجانبية (Login / Sign up) */
+    /* ========================================= */
     .menu-container {
       margin-left: 8%; 
       display: flex;
       flex-direction: column;
       gap: 15px; 
+      z-index: 20; /* عشان تكون فوق الرسمة دايماً */
     }
 
     .menu-item {
       font-size: 32px;
       font-weight: 700;
-      color: #666; /* اللون الطبيعي لكل الكلمات */
+      color: #666;
       cursor: pointer;
       position: relative;
       display: inline-block;
       width: fit-content;
-      transition: color 0.3s ease; /* نعومة في تغير لون الكلمة */
+      transition: color 0.3s ease;
       letter-spacing: 1px;
     }
 
-    /* تجهيز الخط الأخضر ووضعه في حالة الإخفاء كافتراضي */
     .menu-item::after {
       content: '';
       position: absolute;
@@ -54,28 +261,51 @@
       background: linear-gradient(90deg, rgba(144, 238, 144, 0.2) 0%, rgba(144, 238, 144, 1) 50%, rgba(144, 238, 144, 0.2) 100%);
       box-shadow: 0 0 10px 1px rgba(144, 238, 144, 0.6);
       border-radius: 50%;
-      
-      /* الإخفاء والتصغير المبدئي */
       opacity: 0; 
       transform: scaleX(0.5); 
-      transition: opacity 0.3s ease, transform 0.3s ease; /* نعومة في الظهور والتمدد */
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
 
-    /* التأثير عند وضع الماوس (Hover) */
     .menu-item:hover {
-      color: #ffffff; /* تنور الكلمة بالأبيض */
+      color: #ffffff; 
     }
-
-    /* ظهور الخط الأخضر وتمدده عند وضع الماوس */
     .menu-item:hover::after {
       opacity: 1; 
       transform: scaleX(1); 
     }
+
   </style>
 </head>
 <body>
 
-  <!-- القائمة الجانبية (شلت كلاس active عشان تصير كلها تفاعلية) -->
+  <div class="lamp"></div>
+  <div class="room-lighting"></div>
+
+  <div class="saudi-emblem">
+    <span class="palm-tree">🌴</span>
+    <span class="swords">⚔️</span>
+  </div>
+
+  <div class="scene-container">
+    <div class="head"></div>
+    
+    <div class="arm left"></div>
+    <div class="arm right"></div>
+    
+    <div class="torso">
+      <div class="shirt-logo">🌴⚔️</div>
+      <div class="shirt-name">ploska</div>
+      <div class="shirt-number">22</div>
+    </div>
+    
+    <div class="leg left"></div>
+    <div class="leg right"></div>
+
+    <div class="bench"></div>
+    <div class="bench-leg left"></div>
+    <div class="bench-leg right"></div>
+  </div>
+
   <div class="menu-container">
     <div class="menu-item">Login</div>
     <div class="menu-item">Sign up</div>
