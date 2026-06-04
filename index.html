@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login UI</title>
   <style>
-    /* تفريغ الهوامش وتجهيز الشاشة بالكامل */
     * {
       margin: 0;
       padding: 0;
@@ -15,68 +14,70 @@
     body {
       width: 100vw;
       height: 100vh;
-      /* استخدام نفس الصورة اللي أرفقتها كخلفية */
       background-image: url('94139353-0f30-4521-9c9c-560fd54c4c47.jpeg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      background-color: #050505; /* لون بديل في حال تأخرت الصورة */
+      background-color: #050505; 
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
-      align-items: center; /* توسيط القائمة عمودياً */
+      align-items: center; 
     }
 
-    /* حاوية القائمة الجانبية */
     .menu-container {
-      margin-left: 8%; /* إبعاد القائمة عن الحافة اليسرى */
+      margin-left: 8%; 
       display: flex;
       flex-direction: column;
-      gap: 15px; /* المسافة بين الكلمات */
+      gap: 15px; 
     }
 
-    /* تنسيق الكلمات في القائمة */
     .menu-item {
       font-size: 32px;
       font-weight: 700;
-      color: #666; /* لون رمادي باهت للعناصر غير النشطة */
+      color: #666; /* اللون الطبيعي لكل الكلمات */
       cursor: pointer;
       position: relative;
       display: inline-block;
       width: fit-content;
-      transition: color 0.3s ease;
+      transition: color 0.3s ease; /* نعومة في تغير لون الكلمة */
       letter-spacing: 1px;
     }
 
-    /* تأثير المرور بالماوس على العنصر غير النشط */
-    .menu-item:hover:not(.active) {
-      color: #aaa;
-    }
-
-    /* تنسيق العنصر النشط (Login) */
-    .menu-item.active {
-      color: #ffffff; /* أبيض ساطع */
-    }
-
-    /* الخط الأخضر المتوهج تحت العنصر النشط */
-    .menu-item.active::after {
+    /* تجهيز الخط الأخضر ووضعه في حالة الإخفاء كافتراضي */
+    .menu-item::after {
       content: '';
       position: absolute;
       bottom: -4px;
       left: 0;
       width: 100%;
       height: 2px;
-      /* تدرج لوني يعطي تأثير التلاشي من الأطراف */
       background: linear-gradient(90deg, rgba(144, 238, 144, 0.2) 0%, rgba(144, 238, 144, 1) 50%, rgba(144, 238, 144, 0.2) 100%);
-      box-shadow: 0 0 10px 1px rgba(144, 238, 144, 0.6); /* التوهج */
+      box-shadow: 0 0 10px 1px rgba(144, 238, 144, 0.6);
       border-radius: 50%;
+      
+      /* الإخفاء والتصغير المبدئي */
+      opacity: 0; 
+      transform: scaleX(0.5); 
+      transition: opacity 0.3s ease, transform 0.3s ease; /* نعومة في الظهور والتمدد */
+    }
+
+    /* التأثير عند وضع الماوس (Hover) */
+    .menu-item:hover {
+      color: #ffffff; /* تنور الكلمة بالأبيض */
+    }
+
+    /* ظهور الخط الأخضر وتمدده عند وضع الماوس */
+    .menu-item:hover::after {
+      opacity: 1; 
+      transform: scaleX(1); 
     }
   </style>
 </head>
 <body>
 
-  <!-- القائمة الجانبية -->
+  <!-- القائمة الجانبية (شلت كلاس active عشان تصير كلها تفاعلية) -->
   <div class="menu-container">
-    <div class="menu-item active">Login</div>
+    <div class="menu-item">Login</div>
     <div class="menu-item">Sign up</div>
   </div>
 
