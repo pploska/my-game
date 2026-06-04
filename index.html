@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لعبة الصناديق الغامضة - الدخول</title>
+  <title>Login UI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
@@ -18,8 +18,8 @@
     body {
       width: 100vw;
       height: 100vh;
-      /* تم ربط الصورة bg.jpg مع طبقة تعتيم خفيفة جداً على الأطراف لإبراز القوائم */
-      background-image: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.5) 100%), url('bg.jpg');
+      /* الخلفية مع تعتيم خفيف لإبراز القوائم */
+      background-image: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.6) 100%), url('bg.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -72,7 +72,7 @@
 
     .menu-item:hover, .menu-item.active {
       color: #ffffff; 
-      transform: translateX(10px); /* حركة خفيفة لليمين عند التأشير */
+      transform: translateX(10px); 
     }
 
     .menu-item:hover::after, .menu-item.active::after {
@@ -94,18 +94,15 @@
       width: 400px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(144, 238, 144, 0.05);
       
-      /* الإخفاء الافتراضي */
       opacity: 0;
       visibility: hidden;
       transform: translateX(50px);
       transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
       
-      /* تحويل النصوص للعربية */
       direction: rtl;
       text-align: right;
     }
 
-    /* كلاس الظهور */
     .login-form-container.show {
       opacity: 1;
       visibility: visible;
@@ -198,38 +195,31 @@
   </div>
 
   <div class="login-form-container" id="loginForm">
-    <h2>أهلاً بك في <span>الصناديق</span></h2>
+    <h2>تسجيل <span>الدخول</span></h2>
     
     <input type="text" id="playerName" placeholder="اكتب اسمك هنا..." autocomplete="off">
-    <input type="text" id="roomCode" placeholder="كود الغرفة (للانضمام فقط)" style="text-transform: uppercase;" autocomplete="off">
+    <input type="text" id="roomCode" placeholder="كود الغرفة (للانضمام)" style="text-transform: uppercase;" autocomplete="off">
     
     <div class="btn-group">
-      <button class="btn-create" id="createBtn">✨ إنشاء غرفة جديدة</button>
-      <button class="btn-join" id="joinBtn">🔗 انضمام للغرفة</button>
+      <button class="btn-create" id="createBtn">إنشاء غرفة</button>
+      <button class="btn-join" id="joinBtn">انضمام</button>
     </div>
   </div>
 
   <script>
-    // التحكم في ظهور وإخفاء حقول تسجيل الدخول بحركة سينمائية
     const loginMenuBtn = document.getElementById('loginMenuBtn');
     const signupMenuBtn = document.getElementById('signupMenuBtn');
     const loginForm = document.getElementById('loginForm');
 
     loginMenuBtn.addEventListener('click', () => {
-      // تفعيل زر القائمة
       loginMenuBtn.classList.add('active');
       signupMenuBtn.classList.remove('active');
-      
-      // إظهار النموذج
       loginForm.classList.add('show');
     });
 
     signupMenuBtn.addEventListener('click', () => {
-      // تفعيل زر القائمة (كمثال مستقبلي)
       signupMenuBtn.classList.add('active');
       loginMenuBtn.classList.remove('active');
-      
-      // إخفاء النموذج الحالي
       loginForm.classList.remove('show');
     });
   </script>
