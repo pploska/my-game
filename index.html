@@ -1,324 +1,416 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Locker Room UI - Game Portal</title>
+  <title>Locker Room - Saudi Team</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --bg-dark: #050505;
+      --panel-bg: rgba(15, 15, 15, 0.7);
+      --input-bg: rgba(255, 255, 255, 0.03);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary-green: #2d5a3f;
+      --primary-green-hover: #3a7551;
+      --text-main: #ffffff;
+      --text-muted: #8b8b8b;
+      --glow-green: rgba(74, 222, 128, 0.3);
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      width: 100vw;
-      min-height: 100vh;
+      width: 100vw; min-height: 100vh;
       background-image: 
-        radial-gradient(circle at 100% 100%, #050505 0%, #050505 5%, transparent 15%),
-        linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.8) 100%), 
-        url('bg.jpg');
-      background-size: cover;
-      background-position: center top;
-      background-repeat: no-repeat;
-      background-color: #050505; 
-      font-family: 'Segoe UI', 'Cairo', sans-serif;
-      display: flex;
-      align-items: center; 
-      justify-content: space-between;
-      overflow-x: hidden;
-      color: #fff;
+        linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), 
+        url('bg.jpg'); /* تأكد إن الصورة موجودة بنفس المسار */
+      background-size: cover; background-position: center; background-color: var(--bg-dark);
+      font-family: 'Inter', sans-serif;
+      display: flex; align-items: center; justify-content: space-between;
+      color: var(--text-main); overflow-x: hidden;
     }
 
     /* ========================================= */
-    /* القائمة الجانبية */
+    /* القائمة الجانبية (Sidebar) */
     /* ========================================= */
-    .menu-container {
-      margin-left: 8%; 
-      display: flex;
-      flex-direction: column;
-      gap: 20px; 
-      z-index: 10;
+    .sidebar {
+      width: 300px; margin-left: 5%; display: flex; flex-direction: column; z-index: 10;
     }
 
+    .logo-container { margin-bottom: 50px; }
+    .logo-container i { font-size: 30px; color: #4ade80; } /* شعار مؤقت لين تحط صورة السيفين والنخلة */
+
+    .welcome-text { margin-bottom: 40px; }
+    .welcome-text p { color: #4ade80; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .welcome-text h1 { font-size: 32px; font-weight: 600; line-height: 1.2; }
+
+    .menu-items { display: flex; flex-direction: column; gap: 15px; }
+    
     .menu-item {
-      font-size: 35px;
-      font-weight: 700;
-      color: #666;
-      cursor: pointer;
-      position: relative;
-      display: inline-block;
-      width: fit-content;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px 0; color: var(--text-muted); cursor: pointer;
+      font-size: 16px; font-weight: 500; border-bottom: 1px solid transparent;
       transition: all 0.3s ease;
-      letter-spacing: 1px;
     }
 
-    .menu-item::after {
-      content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px;
-      background: linear-gradient(90deg, rgba(144, 238, 144, 0.2) 0%, rgba(144, 238, 144, 1) 50%, rgba(144, 238, 144, 0.2) 100%);
-      box-shadow: 0 0 12px 2px rgba(144, 238, 144, 0.6); border-radius: 50%;
-      opacity: 0; transform: scaleX(0.3); transition: opacity 0.4s ease, transform 0.4s ease;
+    .menu-item:hover, .menu-item.active { color: var(--text-main); }
+    .menu-item.active { 
+      border-bottom: 1px solid #4ade80; 
+      box-shadow: 0 4px 10px -4px var(--glow-green);
     }
 
-    .menu-item:hover, .menu-item.active { color: #ffffff; transform: translateX(10px); }
-    .menu-item:hover::after, .menu-item.active::after { opacity: 1; transform: scaleX(1); }
-
-    .logout-item:hover, .logout-item.active { color: #ff4d6d; }
-    .logout-item::after { background: linear-gradient(90deg, rgba(255, 77, 109, 0.2) 0%, rgba(255, 77, 109, 1) 50%, rgba(255, 77, 109, 0.2) 100%); box-shadow: 0 0 12px 2px rgba(255, 77, 109, 0.6); }
+    .dashboard-menu { display: none; margin-top: 20px; }
+    .dash-item {
+      display: flex; align-items: center; gap: 15px; padding: 12px 20px;
+      margin-bottom: 10px; border-radius: 10px; color: var(--text-muted);
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .dash-item:hover { background: var(--input-bg); color: var(--text-main); }
+    .dash-item.active { background: var(--primary-green); color: var(--text-main); }
 
     /* ========================================= */
-    /* حاوية النماذج */
+    /* النوافذ الزجاجية (Glass Panels) */
     /* ========================================= */
-    .forms-wrapper {
-      margin-right: 10%;
-      position: relative;
-      width: 400px;
-      height: 450px; 
-      z-index: 10;
-    }
+    .forms-wrapper { margin-right: 8%; position: relative; width: 420px; min-height: 550px; z-index: 10; }
 
     .glass-panel {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(10, 10, 15, 0.5);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(144, 238, 144, 0.05);
-      
-      opacity: 0; visibility: hidden;
-      transform: translateX(50px);
-      transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-      direction: rtl; text-align: right;
+      position: absolute; top: 0; right: 0; width: 100%;
+      background: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color); border-radius: 24px; padding: 40px;
+      opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.4s ease;
     }
 
-    .glass-panel.show { opacity: 1; visibility: visible; transform: translateX(0); }
+    .glass-panel.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
-    .glass-panel h2 { font-family: 'Cairo', sans-serif; font-size: 28px; margin-bottom: 25px; color: #fff; font-weight: 900; }
-    .glass-panel h2 span { color: #90ee90; text-shadow: 0 0 15px rgba(144, 238, 144, 0.5); }
-    .glass-panel p { font-family: 'Cairo', sans-serif; font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.6; }
+    .panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+    .panel-header h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+    .panel-header p { color: var(--text-muted); font-size: 14px; }
+    .close-btn { color: var(--text-muted); cursor: pointer; font-size: 18px; }
+    .close-btn:hover { color: #fff; }
 
-    input {
-      width: 100%; padding: 15px 20px; margin-bottom: 15px; border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(0, 0, 0, 0.5);
-      color: #fff; font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 700; transition: all 0.3s ease;
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .input-field {
+      position: relative; display: flex; align-items: center;
+      background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 0 15px; transition: all 0.3s ease;
     }
-    input:focus { outline: none; border-color: #90ee90; box-shadow: 0 0 15px rgba(144, 238, 144, 0.3); background: rgba(0, 0, 0, 0.7); }
-
-    .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
-
-    button {
-      width: 100%; padding: 15px; border: none; border-radius: 12px;
-      font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 900;
-      cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
-    }
+    .input-field:focus-within { border-color: #4ade80; background: rgba(255,255,255,0.05); }
     
-    .btn-primary { background: linear-gradient(135deg, rgba(144, 238, 144, 0.2), rgba(34, 139, 34, 0.5)); color: #fff; border: 1px solid rgba(144, 238, 144, 0.5); }
-    .btn-primary:hover { background: linear-gradient(135deg, rgba(144, 238, 144, 0.4), rgba(34, 139, 34, 0.7)); box-shadow: 0 5px 20px rgba(144, 238, 144, 0.4); transform: translateY(-2px); }
+    .input-field i { color: var(--text-muted); font-size: 14px; }
+    .input-field input {
+      width: 100%; padding: 15px 10px; background: transparent; border: none;
+      color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+    }
+    .eye-icon { cursor: pointer; }
 
-    .btn-secondary { background: rgba(255, 255, 255, 0.05); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.2); }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: #fff; transform: translateY(-2px); }
+    .forgot-pass { display: block; text-align: right; color: #4ade80; font-size: 12px; text-decoration: none; margin-top: -10px; margin-bottom: 25px; }
+
+    .btn-main {
+      width: 100%; padding: 15px; background: linear-gradient(180deg, #3a7551 0%, #1f3b29 100%);
+      border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 12px;
+      color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+    }
+    .btn-main:hover { filter: brightness(1.1); box-shadow: 0 5px 15px rgba(45, 90, 63, 0.4); }
+
+    .btn-outline {
+      width: 100%; padding: 15px; background: transparent;
+      border: 1px solid var(--border-color); border-radius: 12px;
+      color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+
+    .divider { display: flex; align-items: center; text-align: center; margin: 25px 0; color: var(--text-muted); font-size: 12px; }
+    .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+    .divider::before { margin-right: .25em; } .divider::after { margin-left: .25em; }
+
+    /* شبكة أرقام التيشيرت (للتسجيل) */
+    .jersey-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+    .jersey-grid > div { flex: 1; }
+    .number-selector { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 15px; }
+    .number-selector i { cursor: pointer; color: var(--text-muted); }
+    .number-selector input { width: 40px; text-align: center; background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; outline: none; }
 
     /* ========================================= */
-    /* التوافق مع شاشات الجوال والأجهزة الذكية */
+    /* الجوال */
     /* ========================================= */
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-        justify-content: flex-start;
-        padding-top: 40px;
-        background-image: 
-          linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.9) 100%), 
-          url('bg.jpg');
-      }
-
-      .menu-container {
-        margin: 0 auto 30px auto;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        width: 90%;
-      }
-
-      .menu-item {
-        font-size: 22px;
-      }
-      
-      .menu-item:hover, .menu-item.active { 
-        transform: translateY(-5px); /* تغيير الحركة للأعلى بدل اليمين في الجوال */
-      }
-
-      .forms-wrapper {
-        margin: 0 auto;
-        width: 90%;
-        max-width: 400px;
-      }
-
-      .glass-panel {
-        padding: 30px 20px;
-        transform: translateY(30px); /* تغيير اتجاه الحركة للظهور */
-      }
-      
-      .glass-panel.show { transform: translateY(0); }
+    @media (max-width: 900px) {
+      body { flex-direction: column; justify-content: center; padding: 20px; }
+      .sidebar { display: none; /* إخفاء القائمة الجانبية في الجوال للتركيز على المربع */ }
+      .forms-wrapper { margin: 0; width: 100%; max-width: 400px; }
+      .glass-panel { position: relative; padding: 30px 20px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- القائمة الجانبية -->
-  <div class="menu-container">
-    <div class="menu-item logged-out-menu" onclick="switchTab('loginPanel', this)">Login</div>
-    <div class="menu-item logged-out-menu" onclick="switchTab('signupPanel', this)">Sign up</div>
+  <div class="sidebar">
+    <div class="logo-container">
+      <i class="fa-solid fa-tree"></i> </div>
 
-    <div class="menu-item logged-in-menu" style="display: none;" onclick="switchTab('createGamePanel', this)">إنشاء لعبة</div>
-    <div class="menu-item logged-in-menu" style="display: none;" onclick="switchTab('joinGamePanel', this)">انضمام إلى لعبة</div>
-    <div class="menu-item logged-in-menu" style="display: none;" onclick="switchTab('rulesPanel', this)">شرح اللعبة</div>
-    <div class="menu-item logged-in-menu logout-item" style="display: none;" onclick="handleLogout()">تسجيل خروج</div>
+    <div class="welcome-text" id="visitorWelcome">
+      <p>Welcome</p>
+      <h1>Enter the<br>locker room</h1>
+    </div>
+
+    <div class="welcome-text" id="playerWelcome" style="display: none;">
+      <p>Dashboard</p>
+      <h1 id="playerNameDisplay">Player Name</h1>
+    </div>
+
+    <div class="menu-items" id="visitorMenu">
+      <div class="menu-item active" onclick="openPanel('loginPanel', this)">
+        <span>Login</span> <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i>
+      </div>
+      <div class="menu-item" onclick="openPanel('signupPanel', this)">
+        <span>Sign up</span> <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i>
+      </div>
+    </div>
+
+    <div class="dashboard-menu" id="playerMenu">
+      <div class="dash-item active"><i class="fa-solid fa-house"></i> Home</div>
+      <div class="dash-item"><i class="fa-solid fa-user"></i> Profile</div>
+      <div class="dash-item"><i class="fa-solid fa-gear"></i> Settings</div>
+      <div class="dash-item" onclick="logoutUser()" style="margin-top: 30px;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
+    </div>
   </div>
 
-  <!-- حاوية النماذج -->
   <div class="forms-wrapper">
     
-    <div class="glass-panel" id="loginPanel">
-      <h2>تسجيل <span>الدخول</span></h2>
-      <input type="email" id="loginEmail" placeholder="البريد الإلكتروني..." autocomplete="off">
-      <input type="password" id="loginPass" placeholder="الرقم السري..." autocomplete="off">
-      <div class="btn-group">
-        <button class="btn-primary" onclick="handleLogin()">دخول سريع</button>
+    <div class="glass-panel show" id="loginPanel">
+      <div class="panel-header">
+        <div>
+          <h2>Login</h2>
+          <p>Welcome back, please login to your account.</p>
+        </div>
       </div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <div class="input-field">
+          <i class="fa-regular fa-envelope"></i>
+          <input type="email" id="loginEmail" placeholder="Enter your email">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <div class="input-field">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="loginPass" placeholder="Enter your password">
+          <i class="fa-regular fa-eye eye-icon" onclick="togglePass('loginPass')"></i>
+        </div>
+      </div>
+
+      <a href="#" class="forgot-pass">Forgot password?</a>
+
+      <button class="btn-main" id="loginBtn">Login</button>
+      
+      <div class="divider">or</div>
+      
+      <button class="btn-outline" onclick="openPanel('signupPanel', document.querySelectorAll('.menu-item')[1])">Sign up</button>
     </div>
 
     <div class="glass-panel" id="signupPanel">
-      <h2>حساب <span>جديد</span></h2>
-      <input type="text" id="regName" placeholder="اسم المستخدم..." autocomplete="off">
-      <input type="email" id="regEmail" placeholder="البريد الإلكتروني..." autocomplete="off">
-      <input type="password" id="regPass" placeholder="الرقم السري..." autocomplete="off">
-      <div class="btn-group">
-        <button class="btn-primary" onclick="handleSignup()">إنشاء الحساب</button>
+      <div class="panel-header">
+        <div>
+          <h2>Sign up</h2>
+          <p>Create your account to get started.</p>
+        </div>
+        <i class="fa-solid fa-xmark close-btn" onclick="openPanel('loginPanel', document.querySelectorAll('.menu-item')[0])"></i>
       </div>
-    </div>
 
-    <div class="glass-panel" id="createGamePanel">
-      <h2>إنشاء <span>لعبة جديدة</span></h2>
-      <p>قم بإنشاء غرفتك الخاصة وادعُ أصدقاءك للانضمام إليك والمنافسة.</p>
-      <input type="text" placeholder="اسم الغرفة (اختياري)..." autocomplete="off">
-      <div class="btn-group">
-        <button class="btn-primary">✨ ابدأ الغرفة</button>
+      <div class="input-group">
+        <label>Username</label>
+        <div class="input-field">
+          <i class="fa-regular fa-user"></i>
+          <input type="text" id="regName" placeholder="Enter your username">
+        </div>
       </div>
-    </div>
 
-    <div class="glass-panel" id="joinGamePanel">
-      <h2>انضمام <span>إلى لعبة</span></h2>
-      <p>أدخل كود الغرفة المكون من 4 حروف للانضمام إلى أصدقائك.</p>
-      <input type="text" placeholder="كود الغرفة..." style="text-transform: uppercase;" autocomplete="off">
-      <div class="btn-group">
-        <button class="btn-secondary">🔗 دخول الغرفة</button>
+      <div class="input-group">
+        <label>Email</label>
+        <div class="input-field">
+          <i class="fa-regular fa-envelope"></i>
+          <input type="email" id="regEmail" placeholder="Enter your email">
+        </div>
       </div>
-    </div>
 
-    <div class="glass-panel" id="rulesPanel">
-      <h2>شرح <span>اللعبة</span></h2>
-      <p>هنا سيتم وضع قوانين اللعبة الجديدة، كيف تلعب، كيف تفوز، وما هي الاستراتيجيات المتاحة.</p>
-      <p style="color:#90ee90; font-weight:bold;">(سيتم إضافة التفاصيل لاحقاً بناءً على فكرتك!)</p>
+      <div class="input-group">
+        <label>Password</label>
+        <div class="input-field">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="regPass" placeholder="Enter your password">
+        </div>
+      </div>
+
+      <div class="jersey-grid">
+        <div>
+          <label>Jersey Name</label>
+          <div class="input-field"><input type="text" id="regJerseyName" placeholder="Name on back" maxlength="15"></div>
+        </div>
+        <div>
+          <label>Number</label>
+          <div class="number-selector">
+            <i class="fa-solid fa-minus" onclick="changeNum(-1)"></i>
+            <input type="number" id="regJerseyNum" value="10" min="1" max="99" readonly>
+            <i class="fa-solid fa-plus" onclick="changeNum(1)"></i>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-main" id="signupBtn">Create Account</button>
     </div>
 
   </div>
 
   <script>
-    let usersDB = JSON.parse(localStorage.getItem('myGameUsers')) || [];
-
-    function switchTab(panelId, menuItemElement) {
-      document.querySelectorAll('.glass-panel').forEach(panel => panel.classList.remove('show'));
-      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-
+    // تغيير النوافذ
+    function openPanel(panelId, menuItem) {
+      document.querySelectorAll('.glass-panel').forEach(p => p.classList.remove('show'));
+      if(menuItem) {
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        menuItem.classList.add('active');
+      }
       document.getElementById(panelId).classList.add('show');
-      if(menuItemElement) menuItemElement.classList.add('active');
     }
 
-    function updateUIState() {
-      const currentUser = localStorage.getItem('currentUser');
-      const loggedOutMenus = document.querySelectorAll('.logged-out-menu');
-      const loggedInMenus = document.querySelectorAll('.logged-in-menu');
-
-      // تفريغ الشاشة من أي نافذة نشطة
-      document.querySelectorAll('.glass-panel').forEach(panel => panel.classList.remove('show'));
-      document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-
-      if (currentUser) {
-        loggedOutMenus.forEach(el => el.style.display = 'none');
-        loggedInMenus.forEach(el => el.style.display = 'block');
-        
-        // فتح نافذة إنشاء اللعبة تلقائياً إذا كان مسجل دخول
-        switchTab('createGamePanel', loggedInMenus[0]);
-        const userName = JSON.parse(currentUser).name;
-        document.querySelector('#createGamePanel h2').innerHTML = `أهلاً بك <span>${userName}</span>`;
-      } else {
-        loggedInMenus.forEach(el => el.style.display = 'none');
-        loggedOutMenus.forEach(el => el.style.display = 'block');
-        // تم إزالة الكود الذي كان يفتح نافذة تسجيل الدخول تلقائياً
-      }
+    // إظهار/إخفاء الباسورد
+    function togglePass(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    function handleSignup() {
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim();
-      const pass = document.getElementById('regPass').value.trim();
+    // تغيير رقم التيشيرت
+    function changeNum(step) {
+      const input = document.getElementById('regJerseyNum');
+      let val = parseInt(input.value) + step;
+      if(val >= 1 && val <= 99) input.value = val;
+    }
+  </script>
 
-      if (!name || !email || !pass) {
-        Swal.fire({ icon: 'error', title: 'خطأ', text: 'يرجى تعبئة جميع الحقول!', background: '#111', color: '#fff' });
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // 🔴🔴 استبدل هذا الكود بمعلومات مشروعك من Firebase 🔴🔴
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // تهيئة فايربيس
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ==========================================
+    // 1. إنشاء حساب جديد (مع حفظ بيانات اللاعب)
+    // ==========================================
+    document.getElementById('signupBtn').addEventListener('click', async () => {
+      const email = document.getElementById('regEmail').value;
+      const pass = document.getElementById('regPass').value;
+      const username = document.getElementById('regName').value;
+      const jerseyName = document.getElementById('regJerseyName').value;
+      const jerseyNum = document.getElementById('regJerseyNum').value;
+
+      if(!email || !pass || !username) {
+        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Error', text: 'Please fill all required fields.' });
         return;
       }
 
-      const exists = usersDB.find(u => u.email === email);
-      if (exists) {
-        Swal.fire({ icon: 'warning', title: 'عفواً', text: 'هذا الإيميل مسجل مسبقاً!', background: '#111', color: '#fff' });
-        return;
+      try {
+        // إنشاء الحساب في Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+        const user = userCredential.user;
+
+        // إنشاء ملف اللاعب في Firestore وحفظ البيانات للأبد
+        // لاحظ إضافة مصفوفة answeredQuestions عشان اللعبة تتذكر وش لعب
+        await setDoc(doc(db, "users", user.uid), {
+          username: username,
+          email: email,
+          jerseyName: jerseyName || username,
+          jerseyNumber: jerseyNum,
+          createdAt: new Date(),
+          answeredQuestions: [] // <--- السر هنا لعدم تكرار الأسئلة مستقبلاً
+        });
+
+        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Success', text: 'Account created successfully!' });
+      } catch (error) {
+        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Oops...', text: error.message });
       }
+    });
 
-      const newUser = { name, email, pass };
-      usersDB.push(newUser);
-      localStorage.setItem('myGameUsers', JSON.stringify(usersDB));
-      localStorage.setItem('currentUser', JSON.stringify(newUser));
-      
-      Swal.fire({ icon: 'success', title: 'تم!', text: 'تم إنشاء الحساب بنجاح.', background: '#111', color: '#fff', timer: 1500, showConfirmButton: false })
-      .then(() => updateUIState());
-    }
+    // ==========================================
+    // 2. تسجيل الدخول السريع
+    // ==========================================
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPass').value;
 
-    function handleLogin() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value.trim();
-
-      if (!email || !pass) {
-        Swal.fire({ icon: 'error', title: 'خطأ', text: 'يرجى إدخال الإيميل والرقم السري!', background: '#111', color: '#fff' });
-        return;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        // التوجيه أو الترحيب بيتم تلقائياً عبر onAuthStateChanged تحت
+      } catch (error) {
+        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Login Failed', text: 'Invalid email or password.' });
       }
+    });
 
-      const user = usersDB.find(u => u.email === email && u.pass === pass);
+    // ==========================================
+    // 3. تسجيل الخروج
+    // ==========================================
+    window.logoutUser = async () => {
+      await signOut(auth);
+      window.location.reload(); // إعادة تحميل الصفحة للرجوع كزائر
+    };
 
+    // ==========================================
+    // 4. مراقب الجلسة (يحفظ الدخول حتى لو قفل الصفحة)
+    // ==========================================
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        updateUIState();
-      } else {
-        Swal.fire({ icon: 'error', title: 'بيانات خاطئة', text: 'الإيميل أو الرقم السري غير صحيح.', background: '#111', color: '#fff' });
+        // اللاعب مسجل دخول -> جيب بياناته من Firestore
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          
+          // تحديث الواجهة (إخفاء قوائم الزوار وإظهار قوائم اللاعب)
+          document.getElementById('visitorWelcome').style.display = 'none';
+          document.getElementById('visitorMenu').style.display = 'none';
+          document.getElementById('loginPanel').classList.remove('show');
+          document.getElementById('signupPanel').classList.remove('show');
+          
+          document.getElementById('playerWelcome').style.display = 'block';
+          document.getElementById('playerMenu').style.display = 'block';
+          document.getElementById('playerNameDisplay').innerText = userData.username;
+          
+          // هنا مستقبلاً نقدر نفتح نافذة "Dashboard" أو "اختر غرفة"
+        }
       }
-    }
+    });
 
-    function handleLogout() {
-      localStorage.removeItem('currentUser');
-      updateUIState();
+    /*
+    مثال مستقبلي لكيفية جلب سؤال غير مكرر:
+    async function getNewQuestion(userUid) {
+       1. نجلب مصفوفة answeredQuestions من بيانات اللاعب
+       2. نبحث في الأسئلة عن سؤال الـ ID حقه مو موجود في هذي المصفوفة
+       3. إذا جاوب اللاعب، نسوي Update للمصفوفة ونضيف الـ ID الجديد فيها
     }
-
-    window.onload = updateUIState;
+    */
   </script>
 
 </body>
