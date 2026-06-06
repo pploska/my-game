@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Locker Room - Saudi Team</title>
   
+  <!-- خطوط وأيقونات ومكتبة التنبيهات -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +30,6 @@
     body {
       width: 100vw; 
       min-height: 100vh;
-      /* الخلفية الافتراضية مع تأثيرات الظلام */
       background-image: 
         linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), 
         url('bg.jpg');
@@ -46,9 +46,6 @@
       transition: background-image 0.5s ease-in-out;
     }
 
-    /* ========================================= */
-    /* القائمة الجانبية (Sidebar) */
-    /* ========================================= */
     .sidebar {
       width: 300px; margin-left: 5%; display: flex; flex-direction: column; z-index: 10;
     }
@@ -84,9 +81,6 @@
     .dash-item:hover { background: var(--input-bg); color: var(--text-main); }
     .dash-item.active { background: var(--primary-green); color: var(--text-main); }
 
-    /* ========================================= */
-    /* النوافذ الزجاجية (Glass Panels) */
-    /* ========================================= */
     .forms-wrapper { margin-right: 8%; position: relative; width: 420px; min-height: 550px; z-index: 10; }
 
     .glass-panel {
@@ -146,7 +140,6 @@
     .number-selector i { cursor: pointer; color: var(--text-muted); }
     .number-selector input { width: 40px; text-align: center; background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; outline: none; }
 
-    /* التوافق مع الجوال */
     @media (max-width: 900px) {
       body { flex-direction: column; justify-content: center; padding: 20px; }
       .sidebar { display: none; }
@@ -157,40 +150,47 @@
 </head>
 <body>
 
+  <!-- القائمة الجانبية -->
   <div class="sidebar">
     <div class="logo-container">
       <i class="fa-solid fa-tree"></i>
     </div>
 
+    <!-- ترحيب الزوار -->
     <div class="welcome-text" id="visitorWelcome">
       <p>Welcome</p>
       <h1>Enter the<br>locker room</h1>
     </div>
 
+    <!-- ترحيب اللاعبين -->
     <div class="welcome-text" id="playerWelcome" style="display: none;">
       <p>Dashboard</p>
-      <h1 id="playerNameDisplay">Player Name</h1>
+      <h1 id="playerNameDisplay">Player</h1>
     </div>
 
+    <!-- قوائم الزوار -->
     <div class="menu-items" id="visitorMenu">
-      <div class="menu-item active" onclick="openPanel('loginPanel', this)">
+      <div class="menu-item active" onclick="openPanel('loginPanel', 'visitor', this)">
         <span>Login</span> <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i>
       </div>
-      <div class="menu-item" onclick="openPanel('signupPanel', this)">
+      <div class="menu-item" onclick="openPanel('signupPanel', 'visitor', this)">
         <span>Sign up</span> <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i>
       </div>
     </div>
 
+    <!-- قوائم اللاعب -->
     <div class="dashboard-menu" id="playerMenu">
-      <div class="dash-item active"><i class="fa-solid fa-house"></i> Home</div>
-      <div class="dash-item"><i class="fa-solid fa-user"></i> Profile</div>
-      <div class="dash-item"><i class="fa-solid fa-gear"></i> Settings</div>
+      <div class="dash-item active" onclick="openPanel('homePanel', 'player', this)"><i class="fa-solid fa-house"></i> Home</div>
+      <div class="dash-item" onclick="openPanel('profilePanel', 'player', this)"><i class="fa-solid fa-user"></i> Profile</div>
+      <div class="dash-item" onclick="openPanel('settingsPanel', 'player', this)"><i class="fa-solid fa-gear"></i> Settings</div>
       <div class="dash-item" onclick="logoutUser()" style="margin-top: 30px; color: #ff4d6d;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
     </div>
   </div>
 
+  <!-- النوافذ -->
   <div class="forms-wrapper">
     
+    <!-- واجهة الدخول -->
     <div class="glass-panel show" id="loginPanel">
       <div class="panel-header">
         <div>
@@ -213,19 +213,18 @@
           <i class="fa-regular fa-eye eye-icon" onclick="togglePass('loginPass')"></i>
         </div>
       </div>
-      <a href="#" class="forgot-pass">Forgot password?</a>
       <button class="btn-main" id="loginBtn">Login</button>
       <div class="divider">or</div>
-      <button class="btn-outline" onclick="openPanel('signupPanel', document.querySelectorAll('.menu-item')[1])">Sign up</button>
+      <button class="btn-outline" onclick="openPanel('signupPanel', 'visitor', document.querySelectorAll('.menu-item')[1])">Sign up</button>
     </div>
 
+    <!-- واجهة التسجيل -->
     <div class="glass-panel" id="signupPanel">
       <div class="panel-header">
         <div>
           <h2>Sign up</h2>
           <p>Create your account to get started.</p>
         </div>
-        <i class="fa-solid fa-xmark close-btn" onclick="openPanel('loginPanel', document.querySelectorAll('.menu-item')[0])"></i>
       </div>
       <div class="input-group">
         <label>Username</label>
@@ -265,27 +264,72 @@
       <button class="btn-main" id="signupBtn">Create Account</button>
     </div>
 
+    <!-- واجهة الرئيسية للاعب -->
+    <div class="glass-panel" id="homePanel">
+      <div class="panel-header">
+        <div>
+          <h2>Dashboard</h2>
+          <p>Welcome to the Locker Room. Choose your next move.</p>
+        </div>
+      </div>
+      <button class="btn-main" style="margin-bottom: 15px;">Create Game</button>
+      <button class="btn-outline">Join Game</button>
+    </div>
+
+    <!-- واجهة البروفايل -->
+    <div class="glass-panel" id="profilePanel">
+      <div class="panel-header">
+        <div>
+          <h2>Player Profile</h2>
+          <p>View and edit your stats.</p>
+        </div>
+      </div>
+      <div style="text-align: center; color: var(--text-muted); margin-top: 50px;">
+        <i class="fa-solid fa-user-astronaut" style="font-size: 50px; margin-bottom: 20px; color: #4ade80;"></i>
+        <p>Your profile data will appear here soon.</p>
+      </div>
+    </div>
+
+    <!-- واجهة الإعدادات -->
+    <div class="glass-panel" id="settingsPanel">
+      <div class="panel-header">
+        <div>
+          <h2>Settings</h2>
+          <p>Customize your experience.</p>
+        </div>
+      </div>
+      <div style="text-align: center; color: var(--text-muted); margin-top: 50px;">
+        <i class="fa-solid fa-sliders" style="font-size: 50px; margin-bottom: 20px; color: #4ade80;"></i>
+        <p>Game settings are currently under construction.</p>
+      </div>
+    </div>
+
   </div>
 
   <script>
-    // ربط كل واجهة بالصورة الخاصة فيها
+    // تم توحيد الخلفيات مؤقتاً لتجنب الشاشة السوداء
     const bgImages = {
-      'loginPanel': 'login.jpg',   // تأكد إنك رافع صورة بهذا الاسم في قيت هب
-      'signupPanel': 'signup.jpg'  // تأكد إنك رافع صورة بهذا الاسم في قيت هب
+      'loginPanel': 'bg.jpg',   
+      'signupPanel': 'bg.jpg',
+      'homePanel': 'bg.jpg',
+      'profilePanel': 'bg.jpg',
+      'settingsPanel': 'bg.jpg'
     };
 
-    function openPanel(panelId, menuItem) {
-      // إخفاء النوافذ وإلغاء تفعيل القوائم
+    function openPanel(panelId, menuType, menuItem) {
       document.querySelectorAll('.glass-panel').forEach(p => p.classList.remove('show'));
+      
       if(menuItem) {
-        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        if(menuType === 'visitor') {
+          document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        } else {
+          document.querySelectorAll('.dash-item').forEach(m => m.classList.remove('active'));
+        }
         menuItem.classList.add('active');
       }
       
-      // إظهار النافذة المطلوبة
       document.getElementById(panelId).classList.add('show');
 
-      // تغيير الخلفية حسب النافذة المفتوحة
       const newBg = bgImages[panelId] || 'bg.jpg';
       document.body.style.backgroundImage = `
         linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), 
@@ -305,12 +349,12 @@
     }
   </script>
 
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // مفاتيح مشروعك اللي أرسلتها
     const firebaseConfig = {
       apiKey: "AIzaSyCuSHbu2RqMl7-4DICZf8XyM9B4hzbpdOQ",
       authDomain: "ploska-ae755.firebaseapp.com",
@@ -335,27 +379,31 @@
       const jerseyNum = document.getElementById('regJerseyNum').value;
 
       if(!email || !pass || !username) {
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Error', text: 'Please fill all required fields.' });
+        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Error', text: 'Please fill all fields.' });
         return;
       }
 
       try {
+        Swal.fire({ title: 'Creating Account...', background: '#111', color: '#fff', didOpen: () => { Swal.showLoading() }});
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
 
-        // حفظ بيانات اللعب عشان ما تتكرر الأسئلة
-        await setDoc(doc(db, "users", user.uid), {
-          username: username,
-          email: email,
-          jerseyName: jerseyName || username,
-          jerseyNumber: jerseyNum,
-          createdAt: new Date(),
-          answeredQuestions: [] // المصفوفة اللي بتحفظ الأسئلة المجابة
-        });
+        try {
+          await setDoc(doc(db, "users", user.uid), {
+            username: username,
+            email: email,
+            jerseyName: jerseyName || username,
+            jerseyNumber: jerseyNum,
+            createdAt: new Date(),
+            answeredQuestions: [] 
+          });
+        } catch(dbError) {
+          console.warn("Firestore not configured yet:", dbError);
+        }
 
-        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Success', text: 'Account created successfully!' });
+        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Success!', text: 'Logged in automatically.' });
       } catch (error) {
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Oops...', text: error.message });
+        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Error', text: error.message });
       }
     });
 
@@ -364,8 +412,12 @@
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPass').value;
 
+      if(!email || !pass) return;
+
       try {
+        Swal.fire({ title: 'Logging in...', background: '#111', color: '#fff', didOpen: () => { Swal.showLoading() }});
         await signInWithEmailAndPassword(auth, email, pass);
+        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Welcome Back!', timer: 1500, showConfirmButton: false });
       } catch (error) {
         Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Login Failed', text: 'Invalid email or password.' });
       }
@@ -377,30 +429,29 @@
       window.location.reload(); 
     };
 
-    // حفظ الجلسة وتحديث الواجهة تلقائياً
+    // متابعة حالة الجلسة وتحديث الواجهة
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const userData = docSnap.data();
-          
-          document.getElementById('visitorWelcome').style.display = 'none';
-          document.getElementById('visitorMenu').style.display = 'none';
-          document.getElementById('loginPanel').classList.remove('show');
-          document.getElementById('signupPanel').classList.remove('show');
-          
-          document.getElementById('playerWelcome').style.display = 'block';
-          document.getElementById('playerMenu').style.display = 'block';
-          document.getElementById('playerNameDisplay').innerText = userData.username;
-          
-          // إرجاع الخلفية الافتراضية بمجرد تسجيل الدخول
-          document.body.style.backgroundImage = `
-            linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), 
-            url('bg.jpg')
-          `;
+        let username = "Player";
+        
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            username = docSnap.data().username;
+          }
+        } catch(e) {
+          console.warn("Cannot read from Firestore. Is it enabled?", e);
         }
+        
+        document.getElementById('visitorWelcome').style.display = 'none';
+        document.getElementById('visitorMenu').style.display = 'none';
+        
+        document.getElementById('playerWelcome').style.display = 'block';
+        document.getElementById('playerMenu').style.display = 'block';
+        document.getElementById('playerNameDisplay').innerText = username;
+        
+        openPanel('homePanel', 'player', document.querySelector('.dash-item.active'));
       }
     });
   </script>
