@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Locker Room - Saudi Team</title>
   
-  <!-- خطوط وأيقونات ومكتبة التنبيهات -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -46,9 +45,27 @@
       transition: background-image 0.5s ease-in-out;
     }
 
-    .sidebar {
-      width: 300px; margin-left: 5%; display: flex; flex-direction: column; z-index: 10;
+    /* ========================================= */
+    /* الأيقونات العائمة فوق يسار */
+    /* ========================================= */
+    .top-left-actions {
+      position: fixed; top: 30px; left: 30px;
+      display: none; /* تظهر فقط بعد تسجيل الدخول */
+      flex-direction: column; gap: 15px; z-index: 50;
     }
+    .icon-btn {
+      background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color); width: 50px; height: 50px;
+      border-radius: 14px; color: var(--text-muted); cursor: pointer;
+      font-size: 20px; transition: all 0.3s ease;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .icon-btn:hover { color: #4ade80; border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
+
+    /* ========================================= */
+    /* القائمة الجانبية (Sidebar) */
+    /* ========================================= */
+    .sidebar { width: 300px; margin-left: 120px; display: flex; flex-direction: column; z-index: 10; }
 
     .logo-container { margin-bottom: 50px; }
     .logo-container i { font-size: 30px; color: #4ade80; }
@@ -62,15 +79,10 @@
     .menu-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 0; color: var(--text-muted); cursor: pointer;
-      font-size: 16px; font-weight: 500; border-bottom: 1px solid transparent;
-      transition: all 0.3s ease;
+      font-size: 16px; font-weight: 500; border-bottom: 1px solid transparent; transition: all 0.3s ease;
     }
-
     .menu-item:hover, .menu-item.active { color: var(--text-main); }
-    .menu-item.active { 
-      border-bottom: 1px solid #4ade80; 
-      box-shadow: 0 4px 10px -4px var(--glow-green);
-    }
+    .menu-item.active { border-bottom: 1px solid #4ade80; box-shadow: 0 4px 10px -4px var(--glow-green); }
 
     .dashboard-menu { display: none; margin-top: 20px; }
     .dash-item {
@@ -81,6 +93,9 @@
     .dash-item:hover { background: var(--input-bg); color: var(--text-main); }
     .dash-item.active { background: var(--primary-green); color: var(--text-main); }
 
+    /* ========================================= */
+    /* النوافذ الزجاجية */
+    /* ========================================= */
     .forms-wrapper { margin-right: 8%; position: relative; width: 420px; min-height: 550px; z-index: 10; }
 
     .glass-panel {
@@ -89,15 +104,12 @@
       border: 1px solid var(--border-color); border-radius: 24px; padding: 40px;
       opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.4s ease;
     }
-
     .glass-panel.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
     .panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
     .panel-header h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
     .panel-header p { color: var(--text-muted); font-size: 14px; }
-    .close-btn { color: var(--text-muted); cursor: pointer; font-size: 18px; }
-    .close-btn:hover { color: #fff; }
-
+    
     .input-group { margin-bottom: 20px; }
     .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
     .input-field {
@@ -106,7 +118,6 @@
       padding: 0 15px; transition: all 0.3s ease;
     }
     .input-field:focus-within { border-color: #4ade80; background: rgba(255,255,255,0.05); }
-    
     .input-field i { color: var(--text-muted); font-size: 14px; }
     .input-field input {
       width: 100%; padding: 15px 10px; background: transparent; border: none;
@@ -140,35 +151,71 @@
     .number-selector i { cursor: pointer; color: var(--text-muted); }
     .number-selector input { width: 40px; text-align: center; background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; outline: none; }
 
+    /* ========================================= */
+    /* نظام الشرح التعليمي (Tutorial Overlay) */
+    /* ========================================= */
+    .tutorial-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85); z-index: 999;
+      display: none; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .tutorial-box {
+      background: var(--panel-bg); backdrop-filter: blur(20px);
+      border: 1px solid #4ade80; padding: 30px; border-radius: 20px;
+      text-align: center; max-width: 400px; box-shadow: 0 0 30px rgba(74, 222, 128, 0.2);
+    }
+    .tutorial-box p { font-size: 16px; margin-bottom: 25px; line-height: 1.6; color: #fff; }
+    
+    .highlight-element {
+      position: relative !important; z-index: 1001 !important;
+      box-shadow: 0 0 0 4px #4ade80, 0 0 40px rgba(74, 222, 128, 0.4) !important;
+      border-radius: 20px !important; pointer-events: none !important;
+      background: var(--panel-bg); /* حماية من الشفافية الكاملة */
+      transition: all 0.3s ease;
+    }
+
     @media (max-width: 900px) {
       body { flex-direction: column; justify-content: center; padding: 20px; }
       .sidebar { display: none; }
       .forms-wrapper { margin: 0; width: 100%; max-width: 400px; }
-      .glass-panel { position: relative; padding: 30px 20px; }
+      .top-left-actions { top: 15px; left: 15px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- القائمة الجانبية -->
+  <div class="top-left-actions" id="topLeftActions">
+    <button class="icon-btn" onclick="openPanel('settingsPanel', 'player', null)" title="Settings">
+      <i class="fa-solid fa-gear"></i>
+    </button>
+    <button class="icon-btn" onclick="openPanel('rulesPanel', 'player', null)" title="Rules & Info">
+      <i class="fa-solid fa-exclamation"></i>
+    </button>
+  </div>
+
+  <div class="tutorial-overlay" id="tutorialOverlay">
+    <div class="tutorial-box">
+      <h3 style="color: #4ade80; margin-bottom: 15px;"><i class="fa-solid fa-graduation-cap"></i> دليل اللاعب </h3>
+      <p id="tutorialText">مرحباً بك!</p>
+      <button class="btn-main" onclick="nextTutorial()">فهمت</button>
+    </div>
+  </div>
+
   <div class="sidebar">
     <div class="logo-container">
       <i class="fa-solid fa-tree"></i>
     </div>
 
-    <!-- ترحيب الزوار -->
     <div class="welcome-text" id="visitorWelcome">
       <p>Welcome</p>
       <h1>Enter the<br>locker room</h1>
     </div>
 
-    <!-- ترحيب اللاعبين -->
     <div class="welcome-text" id="playerWelcome" style="display: none;">
       <p>Dashboard</p>
       <h1 id="playerNameDisplay">Player</h1>
     </div>
 
-    <!-- قوائم الزوار -->
     <div class="menu-items" id="visitorMenu">
       <div class="menu-item active" onclick="openPanel('loginPanel', 'visitor', this)">
         <span>Login</span> <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i>
@@ -178,19 +225,15 @@
       </div>
     </div>
 
-    <!-- قوائم اللاعب -->
     <div class="dashboard-menu" id="playerMenu">
       <div class="dash-item active" onclick="openPanel('homePanel', 'player', this)"><i class="fa-solid fa-house"></i> Home</div>
       <div class="dash-item" onclick="openPanel('profilePanel', 'player', this)"><i class="fa-solid fa-user"></i> Profile</div>
-      <div class="dash-item" onclick="openPanel('settingsPanel', 'player', this)"><i class="fa-solid fa-gear"></i> Settings</div>
       <div class="dash-item" onclick="logoutUser()" style="margin-top: 30px; color: #ff4d6d;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
     </div>
   </div>
 
-  <!-- النوافذ -->
   <div class="forms-wrapper">
     
-    <!-- واجهة الدخول -->
     <div class="glass-panel show" id="loginPanel">
       <div class="panel-header">
         <div>
@@ -218,7 +261,6 @@
       <button class="btn-outline" onclick="openPanel('signupPanel', 'visitor', document.querySelectorAll('.menu-item')[1])">Sign up</button>
     </div>
 
-    <!-- واجهة التسجيل -->
     <div class="glass-panel" id="signupPanel">
       <div class="panel-header">
         <div>
@@ -264,7 +306,6 @@
       <button class="btn-main" id="signupBtn">Create Account</button>
     </div>
 
-    <!-- واجهة الرئيسية للاعب -->
     <div class="glass-panel" id="homePanel">
       <div class="panel-header">
         <div>
@@ -276,44 +317,69 @@
       <button class="btn-outline">Join Game</button>
     </div>
 
-    <!-- واجهة البروفايل -->
     <div class="glass-panel" id="profilePanel">
       <div class="panel-header">
         <div>
           <h2>Player Profile</h2>
-          <p>View and edit your stats.</p>
+          <p>View your stats and history.</p>
         </div>
       </div>
       <div style="text-align: center; color: var(--text-muted); margin-top: 50px;">
         <i class="fa-solid fa-user-astronaut" style="font-size: 50px; margin-bottom: 20px; color: #4ade80;"></i>
-        <p>Your profile data will appear here soon.</p>
+        <p>Profile data will appear here.</p>
       </div>
     </div>
 
-    <!-- واجهة الإعدادات -->
     <div class="glass-panel" id="settingsPanel">
       <div class="panel-header">
         <div>
           <h2>Settings</h2>
-          <p>Customize your experience.</p>
+          <p>Manage your account and game preferences.</p>
         </div>
       </div>
-      <div style="text-align: center; color: var(--text-muted); margin-top: 50px;">
-        <i class="fa-solid fa-sliders" style="font-size: 50px; margin-bottom: 20px; color: #4ade80;"></i>
-        <p>Game settings are currently under construction.</p>
+      <div class="input-group">
+        <label>Game Difficulty</label>
+        <div class="input-field" style="padding: 15px; color: #fff;">
+          <input type="radio" name="diff" checked> Normal &nbsp;&nbsp;&nbsp;
+          <input type="radio" name="diff"> Hard
+        </div>
       </div>
+      <div class="input-group">
+        <label>Sound Effects</label>
+        <div class="input-field" style="padding: 15px; color: #fff;">
+          <input type="checkbox" checked> Enable Sounds
+        </div>
+      </div>
+      <button class="btn-main" style="margin-top: 20px;">Save Settings</button>
+    </div>
+
+    <div class="glass-panel" id="rulesPanel">
+      <div class="panel-header">
+        <div>
+          <h2>Game Rules <i class="fa-solid fa-exclamation" style="color: #4ade80;"></i></h2>
+          <p>Read carefully before playing.</p>
+        </div>
+      </div>
+      <ul style="color: #fff; line-height: 2.2; margin-left: 20px; font-size: 14px;">
+        <li>لا تشارك أجوبتك مع لاعبين آخرين.</li>
+        <li>لديك وقت محدد للإجابة على كل سؤال.</li>
+        <li>السرعة في الإجابة تمنحك نقاطاً أعلى.</li>
+        <li>يُمنع استخدام أي برامج خارجية للغش.</li>
+      </ul>
+      <button class="btn-outline" style="margin-top: 30px;" onclick="openPanel('homePanel', 'player', document.querySelector('.dash-item.active'))">فهمت وموافق</button>
     </div>
 
   </div>
 
   <script>
-    // تم توحيد الخلفيات مؤقتاً لتجنب الشاشة السوداء
+    // التحكم بالخلفيات
     const bgImages = {
       'loginPanel': 'bg.jpg',   
       'signupPanel': 'bg.jpg',
       'homePanel': 'bg.jpg',
       'profilePanel': 'bg.jpg',
-      'settingsPanel': 'bg.jpg'
+      'settingsPanel': 'bg.jpg',
+      'rulesPanel': 'bg.jpg'
     };
 
     function openPanel(panelId, menuType, menuItem) {
@@ -347,9 +413,51 @@
       let val = parseInt(input.value) + step;
       if(val >= 1 && val <= 99) input.value = val;
     }
+
+    // ==========================================
+    // منطق نظام الشرح (Tutorial)
+    // ==========================================
+    const tutorialSteps = [
+      { target: 'homePanel', text: 'هذه واجهة التحكم الرئيسية، من هنا تقدر تنشئ غرفة جديدة أو تنضم للعبة موجودة.' },
+      { target: 'topLeftActions', text: 'الزر الأول لإعدادات حسابك واللعبة، والزر الثاني (علامة التعجب) فيه قوانين اللعبة والشرح.' },
+      { target: 'playerMenu', text: 'من هذه القائمة الجانبية تقدر توصل لملفك الشخصي بسرعة، أو تسجل خروج.' }
+    ];
+    let currentStep = 0;
+    let currentUserUid = null;
+
+    window.startTutorial = function(uid) {
+      currentUserUid = uid;
+      currentStep = 0;
+      document.getElementById('tutorialOverlay').style.display = 'flex';
+      showTutorialStep();
+    }
+
+    function showTutorialStep() {
+      // إزالة التظليل عن العنصر السابق
+      document.querySelectorAll('.highlight-element').forEach(el => el.classList.remove('highlight-element'));
+      
+      if(currentStep >= tutorialSteps.length) {
+        // انتهى الشرح
+        document.getElementById('tutorialOverlay').style.display = 'none';
+        localStorage.setItem('tutorialDone_' + currentUserUid, 'true'); // حفظ عشان ما يتكرر
+        return;
+      }
+
+      // تظليل العنصر الحالي
+      const step = tutorialSteps[currentStep];
+      const targetEl = document.getElementById(step.target);
+      if(targetEl) targetEl.classList.add('highlight-element');
+      
+      // تغيير النص
+      document.getElementById('tutorialText').innerText = step.text;
+    }
+
+    window.nextTutorial = function() {
+      currentStep++;
+      showTutorialStep();
+    }
   </script>
 
-  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -370,7 +478,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // تسجيل حساب جديد
     document.getElementById('signupBtn').addEventListener('click', async () => {
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPass').value;
@@ -398,52 +505,45 @@
             answeredQuestions: [] 
           });
         } catch(dbError) {
-          console.warn("Firestore not configured yet:", dbError);
+          console.warn("Firestore error:", dbError);
         }
 
-        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Success!', text: 'Logged in automatically.' });
+        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Success!', text: 'Account Created.' });
       } catch (error) {
         Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Error', text: error.message });
       }
     });
 
-    // تسجيل الدخول
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPass').value;
-
       if(!email || !pass) return;
 
       try {
         Swal.fire({ title: 'Logging in...', background: '#111', color: '#fff', didOpen: () => { Swal.showLoading() }});
         await signInWithEmailAndPassword(auth, email, pass);
-        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Welcome Back!', timer: 1500, showConfirmButton: false });
+        Swal.close();
       } catch (error) {
         Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Login Failed', text: 'Invalid email or password.' });
       }
     });
 
-    // تسجيل الخروج
     window.logoutUser = async () => {
       await signOut(auth);
       window.location.reload(); 
     };
 
-    // متابعة حالة الجلسة وتحديث الواجهة
+    // متابعة تسجيل الدخول وتشغيل نظام الشرح
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         let username = "Player";
-        
         try {
           const docRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            username = docSnap.data().username;
-          }
-        } catch(e) {
-          console.warn("Cannot read from Firestore. Is it enabled?", e);
-        }
+          if (docSnap.exists()) username = docSnap.data().username;
+        } catch(e) {}
         
+        // إخفاء نوافذ الزوار وإظهار نوافذ اللاعب
         document.getElementById('visitorWelcome').style.display = 'none';
         document.getElementById('visitorMenu').style.display = 'none';
         
@@ -451,7 +551,20 @@
         document.getElementById('playerMenu').style.display = 'block';
         document.getElementById('playerNameDisplay').innerText = username;
         
+        // إظهار الأيقونات العائمة
+        document.getElementById('topLeftActions').style.display = 'flex';
+        
         openPanel('homePanel', 'player', document.querySelector('.dash-item.active'));
+
+        // فحص وتشغيل الشرح للمستخدم الجديد
+        const hasSeenTutorial = localStorage.getItem('tutorialDone_' + user.uid);
+        if(!hasSeenTutorial) {
+          setTimeout(() => { window.startTutorial(user.uid); }, 600); // تأخير بسيط عشان تكتمل الواجهة
+        }
+
+      } else {
+        const topActions = document.getElementById('topLeftActions');
+        if(topActions) topActions.style.display = 'none';
       }
     });
   </script>
