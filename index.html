@@ -45,12 +45,10 @@
       transition: background-image 0.5s ease-in-out;
     }
 
-    /* ========================================= */
-    /* الأيقونات العائمة فوق يسار */
-    /* ========================================= */
+    /* الأيقونات العائمة */
     .top-left-actions {
       position: fixed; top: 30px; left: 30px;
-      display: none; /* تظهر فقط بعد تسجيل الدخول */
+      display: none; 
       flex-direction: column; gap: 15px; z-index: 50;
     }
     .icon-btn {
@@ -62,9 +60,7 @@
     }
     .icon-btn:hover { color: #4ade80; border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
 
-    /* ========================================= */
     /* القائمة الجانبية (Sidebar) */
-    /* ========================================= */
     .sidebar { width: 300px; margin-left: 120px; display: flex; flex-direction: column; z-index: 10; }
 
     .logo-container { margin-bottom: 50px; }
@@ -93,9 +89,7 @@
     .dash-item:hover { background: var(--input-bg); color: var(--text-main); }
     .dash-item.active { background: var(--primary-green); color: var(--text-main); }
 
-    /* ========================================= */
     /* النوافذ الزجاجية */
-    /* ========================================= */
     .forms-wrapper { margin-right: 8%; position: relative; width: 420px; min-height: 550px; z-index: 10; }
 
     .glass-panel {
@@ -125,8 +119,6 @@
     }
     .eye-icon { cursor: pointer; }
 
-    .forgot-pass { display: block; text-align: right; color: #4ade80; font-size: 12px; text-decoration: none; margin-top: -10px; margin-bottom: 25px; }
-
     .btn-main {
       width: 100%; padding: 15px; background: linear-gradient(180deg, #3a7551 0%, #1f3b29 100%);
       border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 12px;
@@ -152,33 +144,72 @@
     .number-selector input { width: 40px; text-align: center; background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; outline: none; }
 
     /* ========================================= */
-    /* نظام الشرح التعليمي (Tutorial Overlay) */
+    /* ملف تعريفي - أفاتار ونظام التعديل */
     /* ========================================= */
-    .tutorial-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85); z-index: 999;
-      display: none; flex-direction: column; align-items: center; justify-content: center;
+    .profile-avatar-section {
+      text-align: center; margin-bottom: 30px; position: relative;
     }
-    .tutorial-box {
-      background: var(--panel-bg); backdrop-filter: blur(20px);
-      border: 1px solid #4ade80; padding: 30px; border-radius: 20px;
-      text-align: center; max-width: 400px; box-shadow: 0 0 30px rgba(74, 222, 128, 0.2);
+    .profile-avatar-container {
+      position: relative; display: inline-block;
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 2px solid #4ade80; padding: 5px; cursor: pointer;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.3); transition: all 0.3s ease;
     }
-    .tutorial-box p { font-size: 16px; margin-bottom: 25px; line-height: 1.6; color: #fff; }
-    
-    .highlight-element {
-      position: relative !important; z-index: 1001 !important;
-      box-shadow: 0 0 0 4px #4ade80, 0 0 40px rgba(74, 222, 128, 0.4) !important;
-      border-radius: 20px !important; pointer-events: none !important;
-      background: var(--panel-bg); /* حماية من الشفافية الكاملة */
-      transition: all 0.3s ease;
+    .profile-avatar-container:hover { box-shadow: 0 0 30px rgba(74, 222, 128, 0.5); transform: scale(1.05); }
+    .profile-avatar-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .edit-avatar-overlay {
+      position: absolute; bottom: 0; right: 0;
+      width: 35px; height: 35px; background: #4ade80;
+      border-radius: 50%; display: flex; justify-content: center; align-items: center;
+      color: #000; font-size: 14px; border: 3px solid var(--panel-bg);
     }
 
+    /* نافذة اختيار الأفاتار (Avatar Selector) */
+    .avatar-selector-popup {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000;
+      display: none; justify-content: center; align-items: center;
+    }
+    .avatar-selector-popup.show { display: flex; }
+    .avatar-selector-box {
+      background: var(--panel-bg); border: 1px solid var(--border-color);
+      border-radius: 24px; padding: 30px; max-width: 500px; width: 90%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .avatar-selector-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px;
+    }
+    .avatar-option {
+      width: 100%; padding-top: 100%; position: relative;
+      border-radius: 50%; border: 2px solid transparent; cursor: pointer;
+      overflow: hidden; transition: all 0.3s ease;
+    }
+    .avatar-option:hover { border-color: rgba(74, 222, 128, 0.5); }
+    .avatar-option.selected { border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
+    .avatar-option img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+
     @media (max-width: 900px) {
-      body { flex-direction: column; justify-content: center; padding: 20px; }
-      .sidebar { display: none; }
+      body { flex-direction: column; justify-content: center; padding: 20px; padding-top: 100px; }
+      .sidebar { 
+        width: 100%; margin-left: 0; margin-bottom: 30px;
+        align-items: center; text-align: center;
+      }
+      .sidebar.logged-in-mobile { position: fixed; top: 0; left: 0; width: 100vw; height: auto; background: var(--panel-bg); backdrop-filter: blur(20px); padding: 15px; margin: 0; border-bottom: 1px solid var(--border-color); flex-direction: row; justify-content: space-between; }
+      .sidebar.logged-in-mobile .logo-container { margin: 0; }
+      .sidebar.logged-in-mobile .welcome-text { margin: 0; display: flex; align-items: center; gap: 10px; text-align: left; }
+      .sidebar.logged-in-mobile .welcome-text h1 { font-size: 18px; }
+      .sidebar.logged-in-mobile .welcome-text p { display: none; }
+      .sidebar.logged-in-mobile .dashboard-menu { display: flex; margin: 0; flex-direction: row; gap: 5px; }
+      .sidebar.logged-in-mobile .dash-item { padding: 8px 12px; margin: 0; font-size: 13px; }
+      .sidebar.logged-in-mobile .dash-item i { font-size: 15px; margin: 0; }
+      .sidebar.logged-in-mobile .dash-item span { display: none; }
+      
       .forms-wrapper { margin: 0; width: 100%; max-width: 400px; }
       .top-left-actions { top: 15px; left: 15px; }
+      
+      .glass-panel { padding: 25px; }
+      .glass-panel.show { position: relative; }
+      .glass-panel:not(.show) { display: none; }
     }
   </style>
 </head>
@@ -193,15 +224,22 @@
     </button>
   </div>
 
-  <div class="tutorial-overlay" id="tutorialOverlay">
-    <div class="tutorial-box">
-      <h3 style="color: #4ade80; margin-bottom: 15px;"><i class="fa-solid fa-graduation-cap"></i> دليل اللاعب </h3>
-      <p id="tutorialText">مرحباً بك!</p>
-      <button class="btn-main" onclick="nextTutorial()">فهمت</button>
+  <div class="avatar-selector-popup" id="avatarSelector">
+    <div class="avatar-selector-box">
+      <div class="panel-header">
+        <div>
+          <h2>اختر شخصيتك</h2>
+          <p>اختر أفاتار يعبر عنك من أساطيرنا.</p>
+        </div>
+        <i class="fa-solid fa-times" style="cursor:pointer; color:var(--text-muted);" onclick="closeAvatarSelector()"></i>
+      </div>
+      <div class="avatar-selector-grid" id="avatarGrid">
+        </div>
+      <button class="btn-main" style="margin-top: 25px;" onclick="saveSelectedAvatar()">تاكيد الاختيار</button>
     </div>
   </div>
 
-  <div class="sidebar">
+  <div class="sidebar" id="mainSidebar">
     <div class="logo-container">
       <i class="fa-solid fa-tree"></i>
     </div>
@@ -213,7 +251,10 @@
 
     <div class="welcome-text" id="playerWelcome" style="display: none;">
       <p>Dashboard</p>
-      <h1 id="playerNameDisplay">Player</h1>
+      <div style="display:flex; align-items:center; gap: 10px;">
+        <img id="sidebarAvatarDisplay" src="" style="width: 30px; height: 30px; border-radius: 50%; display:none; border: 1px solid #4ade80;">
+        <h1 id="playerNameDisplay">Player</h1>
+      </div>
     </div>
 
     <div class="menu-items" id="visitorMenu">
@@ -226,9 +267,9 @@
     </div>
 
     <div class="dashboard-menu" id="playerMenu">
-      <div class="dash-item active" onclick="openPanel('homePanel', 'player', this)"><i class="fa-solid fa-house"></i> Home</div>
-      <div class="dash-item" onclick="openPanel('profilePanel', 'player', this)"><i class="fa-solid fa-user"></i> Profile</div>
-      <div class="dash-item" onclick="logoutUser()" style="margin-top: 30px; color: #ff4d6d;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</div>
+      <div class="dash-item active" onclick="openPanel('homePanel', 'player', this)"><i class="fa-solid fa-house"></i> <span>Home</span></div>
+      <div class="dash-item" onclick="openPanel('profilePanel', 'player', this)"><i class="fa-solid fa-user"></i> <span>Profile</span></div>
+      <div class="dash-item" onclick="logoutUser()" style="margin-top: 30px; color: #ff4d6d;"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Log out</span></div>
     </div>
   </div>
 
@@ -238,7 +279,7 @@
       <div class="panel-header">
         <div>
           <h2>Login</h2>
-          <p>Welcome back, please login to your account.</p>
+          <p>Welcome back, please login.</p>
         </div>
       </div>
       <div class="input-group">
@@ -265,7 +306,7 @@
       <div class="panel-header">
         <div>
           <h2>Sign up</h2>
-          <p>Create your account to get started.</p>
+          <p>Create your account.</p>
         </div>
       </div>
       <div class="input-group">
@@ -310,7 +351,7 @@
       <div class="panel-header">
         <div>
           <h2>Dashboard</h2>
-          <p>Welcome to the Locker Room. Choose your next move.</p>
+          <p>Welcome, choose your next move.</p>
         </div>
       </div>
       <button class="btn-main" style="margin-bottom: 15px;">Create Game</button>
@@ -321,33 +362,48 @@
       <div class="panel-header">
         <div>
           <h2>Player Profile</h2>
-          <p>View your stats and history.</p>
+          <p>عرض وتعديل بياناتك وشخصيتك.</p>
         </div>
       </div>
-      <div style="text-align: center; color: var(--text-muted); margin-top: 50px;">
-        <i class="fa-solid fa-user-astronaut" style="font-size: 50px; margin-bottom: 20px; color: #4ade80;"></i>
-        <p>Profile data will appear here.</p>
+      
+      <div class="profile-avatar-section">
+        <div class="profile-avatar-container" onclick="openAvatarSelector()">
+          <img id="profileAvatarDisplay" src="" alt="Player Avatar">
+          <div class="edit-avatar-overlay">
+            <i class="fa-solid fa-pencil"></i>
+          </div>
+        </div>
       </div>
+
+      <div class="input-group">
+        <label>اسم المستخدم (يظهر للجميع)</label>
+        <div class="input-field">
+          <i class="fa-regular fa-user"></i>
+          <input type="text" id="profileUsername" placeholder="Enter new username">
+        </div>
+      </div>
+
+      <div class="jersey-grid" style="margin-top: 10px; margin-bottom: 30px;">
+        <div>
+          <label>اسم القميص</label>
+          <div class="input-field"><input type="text" id="profileJerseyName" readonly style="color:var(--text-muted);"></div>
+        </div>
+        <div>
+          <label>الرقم</label>
+          <div class="number-selector" style="border-color:transparent; background:transparent; padding:0 10px;">
+            <input type="number" id="profileJerseyNum" readonly style="font-size:24px; color:#4ade80;">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-main" id="saveProfileBtn">حفظ التعديلات</button>
     </div>
 
     <div class="glass-panel" id="settingsPanel">
       <div class="panel-header">
         <div>
           <h2>Settings</h2>
-          <p>Manage your account and game preferences.</p>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>Game Difficulty</label>
-        <div class="input-field" style="padding: 15px; color: #fff;">
-          <input type="radio" name="diff" checked> Normal &nbsp;&nbsp;&nbsp;
-          <input type="radio" name="diff"> Hard
-        </div>
-      </div>
-      <div class="input-group">
-        <label>Sound Effects</label>
-        <div class="input-field" style="padding: 15px; color: #fff;">
-          <input type="checkbox" checked> Enable Sounds
+          <p>Manage your account.</p>
         </div>
       </div>
       <button class="btn-main" style="margin-top: 20px;">Save Settings</button>
@@ -356,128 +412,101 @@
     <div class="glass-panel" id="rulesPanel">
       <div class="panel-header">
         <div>
-          <h2>Game Rules <i class="fa-solid fa-exclamation" style="color: #4ade80;"></i></h2>
-          <p>Read carefully before playing.</p>
+          <h2>Game Rules</h2>
         </div>
       </div>
       <ul style="color: #fff; line-height: 2.2; margin-left: 20px; font-size: 14px;">
         <li>لا تشارك أجوبتك مع لاعبين آخرين.</li>
         <li>لديك وقت محدد للإجابة على كل سؤال.</li>
-        <li>السرعة في الإجابة تمنحك نقاطاً أعلى.</li>
-        <li>يُمنع استخدام أي برامج خارجية للغش.</li>
       </ul>
-      <button class="btn-outline" style="margin-top: 30px;" onclick="openPanel('homePanel', 'player', document.querySelector('.dash-item.active'))">فهمت وموافق</button>
+      <button class="btn-outline" style="margin-top: 30px;" onclick="openPanel('homePanel', 'player', document.querySelector('.dash-item.active'))">فهمت</button>
     </div>
 
   </div>
 
   <script>
     // التحكم بالخلفيات
-    const bgImages = {
-      'loginPanel': 'bg.jpg',   
-      'signupPanel': 'bg.jpg',
-      'homePanel': 'bg.jpg',
-      'profilePanel': 'bg.jpg',
-      'settingsPanel': 'bg.jpg',
-      'rulesPanel': 'bg.jpg'
-    };
+    const bgImages = { 'loginPanel': 'bg.jpg', 'signupPanel': 'bg.jpg', 'homePanel': 'bg.jpg', 'profilePanel': 'bg.jpg', 'settingsPanel': 'bg.jpg', 'rulesPanel': 'bg.jpg' };
 
     function openPanel(panelId, menuType, menuItem) {
       document.querySelectorAll('.glass-panel').forEach(p => p.classList.remove('show'));
       
       if(menuItem) {
-        if(menuType === 'visitor') {
-          document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        } else {
-          document.querySelectorAll('.dash-item').forEach(m => m.classList.remove('active'));
-        }
+        if(menuType === 'visitor') { document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active')); }
+        else { document.querySelectorAll('.dash-item').forEach(m => m.classList.remove('active')); }
         menuItem.classList.add('active');
       }
       
       document.getElementById(panelId).classList.add('show');
-
       const newBg = bgImages[panelId] || 'bg.jpg';
-      document.body.style.backgroundImage = `
-        linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), 
-        url('${newBg}')
-      `;
+      document.body.style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), url('${newBg}')`;
     }
 
-    function togglePass(id) {
-      const input = document.getElementById(id);
-      input.type = input.type === 'password' ? 'text' : 'password';
-    }
-
+    function togglePass(id) { const input = document.getElementById(id); input.type = input.type === 'password' ? 'text' : 'password'; }
     function changeNum(step) {
       const input = document.getElementById('regJerseyNum');
       let val = parseInt(input.value) + step;
       if(val >= 1 && val <= 99) input.value = val;
-    }
-
-    // ==========================================
-    // منطق نظام الشرح (Tutorial)
-    // ==========================================
-    const tutorialSteps = [
-      { target: 'homePanel', text: 'هذه واجهة التحكم الرئيسية، من هنا تقدر تنشئ غرفة جديدة أو تنضم للعبة موجودة.' },
-      { target: 'topLeftActions', text: 'الزر الأول لإعدادات حسابك واللعبة، والزر الثاني (علامة التعجب) فيه قوانين اللعبة والشرح.' },
-      { target: 'playerMenu', text: 'من هذه القائمة الجانبية تقدر توصل لملفك الشخصي بسرعة، أو تسجل خروج.' }
-    ];
-    let currentStep = 0;
-    let currentUserUid = null;
-
-    window.startTutorial = function(uid) {
-      currentUserUid = uid;
-      currentStep = 0;
-      document.getElementById('tutorialOverlay').style.display = 'flex';
-      showTutorialStep();
-    }
-
-    function showTutorialStep() {
-      // إزالة التظليل عن العنصر السابق
-      document.querySelectorAll('.highlight-element').forEach(el => el.classList.remove('highlight-element'));
-      
-      if(currentStep >= tutorialSteps.length) {
-        // انتهى الشرح
-        document.getElementById('tutorialOverlay').style.display = 'none';
-        localStorage.setItem('tutorialDone_' + currentUserUid, 'true'); // حفظ عشان ما يتكرر
-        return;
-      }
-
-      // تظليل العنصر الحالي
-      const step = tutorialSteps[currentStep];
-      const targetEl = document.getElementById(step.target);
-      if(targetEl) targetEl.classList.add('highlight-element');
-      
-      // تغيير النص
-      document.getElementById('tutorialText').innerText = step.text;
-    }
-
-    window.nextTutorial = function() {
-      currentStep++;
-      showTutorialStep();
     }
   </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCuSHbu2RqMl7-4DICZf8XyM9B4hzbpdOQ",
-      authDomain: "ploska-ae755.firebaseapp.com",
-      databaseURL: "https://ploska-ae755-default-rtdb.firebaseio.com",
-      projectId: "ploska-ae755",
-      storageBucket: "ploska-ae755.firebasestorage.app",
-      messagingSenderId: "115680839911",
-      appId: "1:115680839911:web:1220fea64c03c3a9137a42",
-      measurementId: "G-H2ESYN5ZTE"
-    };
-
+    // تكوين Firebase
+    const firebaseConfig = { apiKey: "AIzaSyCuSHbu2RqMl7-4DICZf8XyM9B4hzbpdOQ", authDomain: "ploska-ae755.firebaseapp.com", projectId: "ploska-ae755", storageBucket: "ploska-ae755.firebasestorage.app", messagingSenderId: "115680839911", appId: "1:115680839911:web:1220fea64c03c3a9137a42" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // ==========================================
+    // مصادر الأفاتارات (الصور الرمزية الراقية)
+    // ==========================================
+    const avatarList = [
+      { id: 'av_majir', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_majir.webp' },
+      { id: 'av_yousuf', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_yousuf.webp' },
+      { id: 'av_sami', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_sami.webp' },
+      { id: 'av_nawaf', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_nawaf.webp' },
+      { id: 'av_saeed', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_saeed.webp' },
+      { id: 'av_mohammed', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_mohammed.webp' },
+      { id: 'av_fahad', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_fahad.webp' },
+      { id: 'av_abdullah', url: 'https://cdn.jsdelivr.net/gh/YazeedAlKhalaf/SaudiFootballIcons/av_abdullah.webp' }
+    ];
+    const defaultAvatar = avatarList[0].url;
+    let tempSelectedAvatarUrl = null;
+
+    // تهيئة شبكة الأفاتارات في النافذة المنبثقة
+    const avatarGrid = document.getElementById('avatarGrid');
+    avatarList.forEach(av => {
+      const option = document.createElement('div');
+      option.className = 'avatar-option';
+      option.onclick = () => selectAvatarOption(av.url, option);
+      option.innerHTML = `<img src="${av.url}" alt="Saudi Icon ${av.id}">`;
+      avatarGrid.appendChild(option);
+    });
+
+    window.openAvatarSelector = () => { document.getElementById('avatarSelector').classList.add('show'); };
+    window.closeAvatarSelector = () => { document.getElementById('avatarSelector').classList.remove('show'); };
+
+    function selectAvatarOption(url, element) {
+      document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+      tempSelectedAvatarUrl = url;
+    }
+
+    // حفظ الأفاتار المختار (في واجهة البروفايل مؤقتاً)
+    window.saveSelectedAvatar = () => {
+      if(tempSelectedAvatarUrl) {
+        document.getElementById('profileAvatarDisplay').src = tempSelectedAvatarUrl;
+        closeAvatarSelector();
+      } else {
+        Swal.fire({ background: '#111', color: '#fff', icon: 'info', text: 'الرجاء اختيار أفاتار أولاً.' });
+      }
+    };
+
+    // --- إنشاء الحساب ---
     document.getElementById('signupBtn').addEventListener('click', async () => {
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPass').value;
@@ -485,86 +514,110 @@
       const jerseyName = document.getElementById('regJerseyName').value;
       const jerseyNum = document.getElementById('regJerseyNum').value;
 
-      if(!email || !pass || !username) {
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Error', text: 'Please fill all fields.' });
-        return;
-      }
+      if(!email || !pass || !username) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'الرجاء تعبئة حقول الاسم والايميل والباسورد.' }); return; }
 
       try {
         Swal.fire({ title: 'Creating Account...', background: '#111', color: '#fff', didOpen: () => { Swal.showLoading() }});
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
-
-        try {
-          await setDoc(doc(db, "users", user.uid), {
-            username: username,
-            email: email,
-            jerseyName: jerseyName || username,
-            jerseyNumber: jerseyNum,
-            createdAt: new Date(),
-            answeredQuestions: [] 
-          });
-        } catch(dbError) {
-          console.warn("Firestore error:", dbError);
-        }
-
-        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'Success!', text: 'Account Created.' });
-      } catch (error) {
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Error', text: error.message });
-      }
+        await setDoc(doc(db, "users", user.uid), { username: username, email: email, avatarUrl: defaultAvatar, jerseyName: jerseyName || username, jerseyNumber: jerseyNum, createdAt: new Date(), answeredQuestions: [] });
+        Swal.fire({ background: '#111', color: '#fff', icon: 'success', title: 'تهانينا!', text: 'تم إنشاء الحساب، يمكنك تعديل أفاتارك من الملف الشخصي.' });
+      } catch (error) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'خطأ', text: error.message }); }
     });
 
+    // --- تسجيل الدخول ---
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPass').value;
       if(!email || !pass) return;
-
-      try {
-        Swal.fire({ title: 'Logging in...', background: '#111', color: '#fff', didOpen: () => { Swal.showLoading() }});
-        await signInWithEmailAndPassword(auth, email, pass);
-        Swal.close();
-      } catch (error) {
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', title: 'Login Failed', text: 'Invalid email or password.' });
-      }
+      try { await signInWithEmailAndPassword(auth, email, pass); }
+      catch (error) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'الايميل أو الباسورد خطأ.' }); }
     });
 
-    window.logoutUser = async () => {
-      await signOut(auth);
-      window.location.reload(); 
-    };
+    window.logoutUser = async () => { await signOut(auth); window.location.reload(); };
 
-    // متابعة تسجيل الدخول وتشغيل نظام الشرح
+    // --- حفظ تعديلات البروفايل (الاسم والأفاتار) ---
+    document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if(!user) return;
+      const newUsername = document.getElementById('profileUsername').value;
+      const newAvatarUrl = document.getElementById('profileAvatarDisplay').src;
+      if(!newUsername) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'لا يمكن ترك حقل الاسم فارغاً.' }); return; }
+      try {
+        Swal.fire({ title: 'جاري الحفظ...', background: '#111', color: '#fff', didOpen: () => { Swal.showLoading() }});
+        await updateDoc(doc(db, "users", user.uid), { username: newUsername, avatarUrl: newAvatarUrl });
+        
+        // تحديث الاسم والشخصية في الواجهة الجانبية (Sidebar)
+        document.getElementById('playerNameDisplay').innerText = newUsername;
+        document.getElementById('sidebarAvatarDisplay').src = newAvatarUrl;
+
+        Swal.fire({ background: '#111', color: '#fff', icon: 'success', text: 'تم تحديث ملفك الشخصي بنجاح.' });
+      } catch(e) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'حدث خطأ أثناء الحفظ.' }); }
+    });
+
+    // --- متابعة حالة تسجيل الدخول وتعبئة البيانات ---
     onAuthStateChanged(auth, async (user) => {
+      const sidebar = document.getElementById('mainSidebar');
+      const topActions = document.getElementById('topLeftActions');
+
       if (user) {
+        // تعبئة البيانات الافتراضية
         let username = "Player";
+        let avatarUrl = defaultAvatar;
+        let jName = "Player";
+        let jNum = "10";
+
         try {
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) username = docSnap.data().username;
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            username = data.username || username;
+            avatarUrl = data.avatarUrl || avatarUrl;
+            jName = data.jerseyName || username;
+            jNum = data.jerseyNumber || jNum;
+          }
         } catch(e) {}
         
-        // إخفاء نوافذ الزوار وإظهار نوافذ اللاعب
+        // تحديث واجهة الزوار -> واجهة اللاعب
         document.getElementById('visitorWelcome').style.display = 'none';
         document.getElementById('visitorMenu').style.display = 'none';
-        
         document.getElementById('playerWelcome').style.display = 'block';
         document.getElementById('playerMenu').style.display = 'block';
         document.getElementById('playerNameDisplay').innerText = username;
         
+        // تعبئة وتفعيل الأفاتار في القائمة الجانبية
+        const sideAvatar = document.getElementById('sidebarAvatarDisplay');
+        sideAvatar.src = avatarUrl;
+        sideAvatar.style.display = 'block';
+
+        // تعبئة بيانات البروفايل (في اللوحة الزجاجية)
+        document.getElementById('profileUsername').value = username;
+        document.getElementById('profileAvatarDisplay').src = avatarUrl;
+        document.getElementById('profileJerseyName').value = jName;
+        document.getElementById('profileJerseyNum').value = jNum;
+
+        // تحديد الأفاتار الحالي في نافذة الاختيار
+        document.querySelectorAll('.avatar-option').forEach(el => {
+          if(el.querySelector('img').src === avatarUrl) el.classList.add('selected');
+          else el.classList.remove('selected');
+        });
+        tempSelectedAvatarUrl = avatarUrl; // تعيين الأفاتار الحالي كاختيار أولي
+
         // إظهار الأيقونات العائمة
-        document.getElementById('topLeftActions').style.display = 'flex';
+        if(topActions) topActions.style.display = 'flex';
+        
+        // تعديل القائمة للجوال (نسخة تسجيل الدخول)
+        sidebar.classList.add('logged-in-mobile');
         
         openPanel('homePanel', 'player', document.querySelector('.dash-item.active'));
-
-        // فحص وتشغيل الشرح للمستخدم الجديد
-        const hasSeenTutorial = localStorage.getItem('tutorialDone_' + user.uid);
-        if(!hasSeenTutorial) {
-          setTimeout(() => { window.startTutorial(user.uid); }, 600); // تأخير بسيط عشان تكتمل الواجهة
-        }
-
       } else {
-        const topActions = document.getElementById('topLeftActions');
+        // وضع الزائر (تسجيل الخروج)
         if(topActions) topActions.style.display = 'none';
+        sidebar.classList.remove('logged-in-mobile');
+        document.getElementById('visitorWelcome').style.display = 'block';
+        document.getElementById('visitorMenu').style.display = 'flex';
+        document.getElementById('playerWelcome').style.display = 'none';
+        document.getElementById('playerMenu').style.display = 'none';
       }
     });
   </script>
