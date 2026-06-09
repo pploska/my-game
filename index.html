@@ -1,9 +1,353 @@
-<script type="module">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Locker Room - Saudi Team</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #050505;
+      --panel-bg: rgba(15, 15, 15, 0.7);
+      --input-bg: rgba(255, 255, 255, 0.03);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary-green: #2d5a3f;
+      --primary-green-hover: #3a7551;
+      --text-main: #ffffff;
+      --text-muted: #8b8b8b;
+      --glow-green: rgba(74, 222, 128, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 100vw; 
+      min-height: 100vh;
+      background-image: 
+        linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), 
+        url('bg.jpg');
+      background-size: cover; 
+      background-position: center; 
+      background-color: var(--bg-dark);
+      background-attachment: fixed;
+      font-family: 'Inter', sans-serif;
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      color: var(--text-main); 
+      overflow-x: hidden;
+      transition: background-image 0.5s ease-in-out;
+    }
+
+    /* الأيقونات العائمة */
+    .top-left-actions {
+      position: fixed; top: 30px; left: 30px;
+      display: none;
+      flex-direction: column; gap: 15px; z-index: 50;
+    }
+    .icon-btn {
+      background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color); width: 50px; height: 50px;
+      border-radius: 14px; color: var(--text-muted); cursor: pointer;
+      font-size: 20px; transition: all 0.3s ease;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .icon-btn:hover { color: #4ade80; border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
+
+    /* القائمة الجانبية */
+    .sidebar { width: 300px; margin-left: 120px; display: flex; flex-direction: column; z-index: 10; }
+
+    .logo-container { margin-bottom: 50px; }
+    .logo-container i { font-size: 30px; color: #4ade80; }
+
+    .welcome-text { margin-bottom: 40px; }
+    .welcome-text p { color: #4ade80; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .welcome-text h1 { font-size: 32px; font-weight: 600; line-height: 1.2; }
+
+    .menu-items { display: flex; flex-direction: column; gap: 15px; }
+    
+    .menu-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px 0; color: var(--text-muted); cursor: pointer;
+      font-size: 16px; font-weight: 500; border-bottom: 1px solid transparent; transition: all 0.3s ease;
+    }
+    .menu-item:hover, .menu-item.active { color: var(--text-main); }
+    .menu-item.active { border-bottom: 1px solid #4ade80; box-shadow: 0 4px 10px -4px var(--glow-green); }
+
+    .dashboard-menu { display: none; margin-top: 20px; }
+    .dash-item {
+      display: flex; align-items: center; gap: 15px; padding: 12px 20px;
+      margin-bottom: 10px; border-radius: 10px; color: var(--text-muted);
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .dash-item:hover { background: var(--input-bg); color: var(--text-main); }
+    .dash-item.active { background: var(--primary-green); color: var(--text-main); }
+
+    /* النوافذ الزجاجية */
+    .forms-wrapper { margin-right: 8%; position: relative; width: 420px; min-height: 550px; z-index: 10; }
+
+    .glass-panel {
+      position: absolute; top: 0; right: 0; width: 100%;
+      background: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color); border-radius: 24px; padding: 40px;
+      opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.4s ease;
+    }
+    .glass-panel.show { opacity: 1; visibility: visible; transform: translateY(0); }
+
+    .panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+    .panel-header h2 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+    .panel-header p { color: var(--text-muted); font-size: 14px; }
+    
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .input-field {
+      position: relative; display: flex; align-items: center;
+      background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 0 15px; transition: all 0.3s ease;
+    }
+    .input-field:focus-within { border-color: #4ade80; background: rgba(255,255,255,0.05); }
+    .input-field i { color: var(--text-muted); font-size: 14px; }
+    .input-field input {
+      width: 100%; padding: 15px 10px; background: transparent; border: none;
+      color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+    }
+    .eye-icon { cursor: pointer; }
+
+    .btn-main {
+      width: 100%; padding: 15px; background: linear-gradient(180deg, #3a7551 0%, #1f3b29 100%);
+      border: 1px solid rgba(74, 222, 128, 0.2); border-radius: 12px;
+      color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+    }
+    .btn-main:hover { filter: brightness(1.1); box-shadow: 0 5px 15px rgba(45, 90, 63, 0.4); }
+
+    .btn-outline {
+      width: 100%; padding: 15px; background: transparent;
+      border: 1px solid var(--border-color); border-radius: 12px;
+      color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
+
+    .divider { display: flex; align-items: center; text-align: center; margin: 25px 0; color: var(--text-muted); font-size: 12px; }
+    .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+    .divider::before { margin-right: .25em; } .divider::after { margin-left: .25em; }
+
+    .jersey-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+    .jersey-grid > div { flex: 1; }
+    .number-selector { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 15px; }
+    .number-selector i { cursor: pointer; color: var(--text-muted); }
+    .number-selector input { width: 40px; text-align: center; background: transparent; border: none; color: #fff; font-size: 16px; font-weight: bold; outline: none; }
+
+    /* الأفاتار */
+    .profile-avatar-section { text-align: center; margin-bottom: 30px; position: relative; }
+    .profile-avatar-container {
+      position: relative; display: inline-block; width: 120px; height: 120px; border-radius: 50%;
+      border: 2px solid #4ade80; padding: 5px; cursor: pointer;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.3); transition: all 0.3s ease;
+    }
+    .profile-avatar-container:hover { box-shadow: 0 0 30px rgba(74, 222, 128, 0.5); transform: scale(1.05); }
+    .profile-avatar-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .edit-avatar-overlay {
+      position: absolute; bottom: 0; right: 0; width: 35px; height: 35px; background: #4ade80;
+      border-radius: 50%; display: flex; justify-content: center; align-items: center;
+      color: #000; font-size: 14px; border: 3px solid var(--panel-bg);
+    }
+    .avatar-selector-popup {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 1000;
+      display: none; justify-content: center; align-items: center;
+    }
+    .avatar-selector-popup.show { display: flex; }
+    .avatar-selector-box {
+      background: var(--panel-bg); border: 1px solid var(--border-color);
+      border-radius: 24px; padding: 30px; max-width: 500px; width: 90%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .avatar-selector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+    .avatar-option {
+      width: 100%; padding-top: 100%; position: relative;
+      border-radius: 50%; border: 2px solid transparent; cursor: pointer;
+      overflow: hidden; transition: all 0.3s ease;
+    }
+    .avatar-option:hover { border-color: rgba(74, 222, 128, 0.5); }
+    .avatar-option.selected { border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
+    .avatar-option img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    /* الجوال */
+    @media (max-width: 900px) {
+      body { flex-direction: column; justify-content: center; padding: 20px; padding-top: 100px; }
+      .sidebar { width: 100%; margin-left: 0; margin-bottom: 30px; align-items: center; text-align: center; }
+      .sidebar.logged-in-mobile { 
+        position: fixed; top: 0; left: 0; width: 100vw; height: auto; 
+        background: var(--panel-bg); backdrop-filter: blur(20px); padding: 15px; 
+        margin: 0; border-bottom: 1px solid var(--border-color); 
+        flex-direction: row; justify-content: space-between; z-index: 100;
+      }
+      .sidebar.logged-in-mobile .logo-container { margin: 0; }
+      .sidebar.logged-in-mobile .welcome-text { margin: 0; display: flex; align-items: center; gap: 10px; text-align: left; }
+      .sidebar.logged-in-mobile .welcome-text h1 { font-size: 18px; }
+      .sidebar.logged-in-mobile .welcome-text p { display: none; }
+      .sidebar.logged-in-mobile .dashboard-menu { display: flex; margin: 0; flex-direction: row; gap: 5px; }
+      .sidebar.logged-in-mobile .dash-item { padding: 8px 12px; margin: 0; font-size: 13px; }
+      .sidebar.logged-in-mobile .dash-item i { font-size: 15px; margin: 0; }
+      .sidebar.logged-in-mobile .dash-item span { display: none; }
+      .forms-wrapper { margin: 0; width: 100%; max-width: 400px; }
+      .top-left-actions { top: 15px; left: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-left-actions" id="topLeftActions">
+    <button class="icon-btn" onclick="openPanel('settingsPanel', 'player', null)" title="Settings"><i class="fa-solid fa-gear"></i></button>
+    <button class="icon-btn" onclick="openPanel('rulesPanel', 'player', null)" title="Rules & Info"><i class="fa-solid fa-exclamation"></i></button>
+  </div>
+
+  <div class="avatar-selector-popup" id="avatarSelector">
+    <div class="avatar-selector-box">
+      <div class="panel-header">
+        <div><h2>اختر شخصيتك</h2><p>اختر الأفاتار الذي يعبر عنك.</p></div>
+        <i class="fa-solid fa-times" style="cursor:pointer; color:var(--text-muted);" onclick="closeAvatarSelector()"></i>
+      </div>
+      <div class="avatar-selector-grid" id="avatarGrid"></div>
+      <button class="btn-main" style="margin-top: 25px;" onclick="saveSelectedAvatar()">تأكيد الاختيار</button>
+    </div>
+  </div>
+
+  <div class="sidebar" id="mainSidebar">
+    <div class="logo-container"><i class="fa-solid fa-tree"></i></div>
+    <div class="welcome-text" id="visitorWelcome">
+      <p>Welcome</p><h1>Enter the<br>locker room</h1>
+    </div>
+    <div class="welcome-text" id="playerWelcome" style="display: none;">
+      <p>Dashboard</p>
+      <div style="display:flex; align-items:center; gap: 10px;">
+        <img id="sidebarAvatarDisplay" src="" style="width: 30px; height: 30px; border-radius: 50%; display:none; border: 1px solid #4ade80;">
+        <h1 id="playerNameDisplay">Player</h1>
+      </div>
+    </div>
+    <div class="menu-items" id="visitorMenu">
+      <div class="menu-item active" onclick="openPanel('loginPanel', 'visitor', this)">
+        <span>Login</span> <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i>
+      </div>
+      <div class="menu-item" onclick="openPanel('signupPanel', 'visitor', this)">
+        <span>Sign up</span> <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i>
+      </div>
+    </div>
+    <div class="dashboard-menu" id="playerMenu">
+      <div class="dash-item active" onclick="openPanel('homePanel', 'player', this)"><i class="fa-solid fa-house"></i> <span>Home</span></div>
+      <div class="dash-item" onclick="openPanel('profilePanel', 'player', this)"><i class="fa-solid fa-user"></i> <span>Profile</span></div>
+      <div class="dash-item" onclick="logoutUser()" style="margin-top: 30px; color: #ff4d6d;"><i class="fa-solid fa-arrow-right-from-bracket"></i> <span>Log out</span></div>
+    </div>
+  </div>
+
+  <div class="forms-wrapper">
+    <div class="glass-panel show" id="loginPanel">
+      <div class="panel-header"><div><h2>Login</h2><p>Welcome back, please login to your account.</p></div></div>
+      <div class="input-group">
+        <label>Email</label>
+        <div class="input-field"><i class="fa-regular fa-envelope"></i><input type="email" id="loginEmail" placeholder="Enter your email"></div>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <div class="input-field"><i class="fa-solid fa-lock"></i><input type="password" id="loginPass" placeholder="Enter your password"><i class="fa-regular fa-eye eye-icon" onclick="togglePass('loginPass')"></i></div>
+      </div>
+      <button class="btn-main" id="loginBtn">Login</button>
+      <div class="divider">or</div>
+      <button class="btn-outline" onclick="openPanel('signupPanel', 'visitor', document.querySelectorAll('.menu-item')[1])">Sign up</button>
+    </div>
+
+    <div class="glass-panel" id="signupPanel">
+      <div class="panel-header"><div><h2>Sign up</h2><p>Create your account to get started.</p></div></div>
+      <div class="input-group"><label>Username</label><div class="input-field"><i class="fa-regular fa-user"></i><input type="text" id="regName" placeholder="Enter your username"></div></div>
+      <div class="input-group"><label>Email</label><div class="input-field"><i class="fa-regular fa-envelope"></i><input type="email" id="regEmail" placeholder="Enter your email"></div></div>
+      <div class="input-group"><label>Password</label><div class="input-field"><i class="fa-solid fa-lock"></i><input type="password" id="regPass" placeholder="Enter your password"></div></div>
+      <div class="jersey-grid">
+        <div><label>Jersey Name</label><div class="input-field"><input type="text" id="regJerseyName" placeholder="Name on back" maxlength="15"></div></div>
+        <div>
+          <label>Number</label>
+          <div class="number-selector">
+            <i class="fa-solid fa-minus" onclick="changeNum(-1)"></i><input type="number" id="regJerseyNum" value="10" min="1" max="99" readonly><i class="fa-solid fa-plus" onclick="changeNum(1)"></i>
+          </div>
+        </div>
+      </div>
+      <button class="btn-main" id="signupBtn">Create Account</button>
+    </div>
+
+    <div class="glass-panel" id="homePanel">
+      <div class="panel-header"><div><h2>Dashboard</h2><p>Welcome to the Locker Room. Choose your next move.</p></div></div>
+      <button class="btn-main" style="margin-bottom: 15px;">Create Game</button><button class="btn-outline">Join Game</button>
+    </div>
+
+    <div class="glass-panel" id="profilePanel">
+      <div class="panel-header"><div><h2>Player Profile</h2><p>عرض وتعديل بياناتك وشخصيتك.</p></div></div>
+      <div class="profile-avatar-section">
+        <div class="profile-avatar-container" onclick="openAvatarSelector()">
+          <img id="profileAvatarDisplay" src="" alt="Player Avatar">
+          <div class="edit-avatar-overlay"><i class="fa-solid fa-pencil"></i></div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>اسم المستخدم (يظهر للجميع)</label>
+        <div class="input-field"><i class="fa-regular fa-user"></i><input type="text" id="profileUsername" placeholder="Enter new username"></div>
+      </div>
+      <div class="jersey-grid" style="margin-top: 10px; margin-bottom: 30px;">
+        <div><label>اسم القميص</label><div class="input-field"><input type="text" id="profileJerseyName" readonly style="color:var(--text-muted);"></div></div>
+        <div><label>الرقم</label><div class="number-selector" style="border-color:transparent; background:transparent; padding:0 10px;"><input type="number" id="profileJerseyNum" readonly style="font-size:24px; color:#4ade80;"></div></div>
+      </div>
+      <button class="btn-main" id="saveProfileBtn">حفظ التعديلات</button>
+    </div>
+
+    <div class="glass-panel" id="settingsPanel">
+      <div class="panel-header"><div><h2>Settings</h2><p>Manage your account and game preferences.</p></div></div>
+      <div class="input-group"><label>Game Difficulty</label><div class="input-field" style="padding: 15px; color: #fff;"><input type="radio" name="diff" checked> Normal &nbsp;&nbsp;&nbsp; <input type="radio" name="diff"> Hard</div></div>
+      <div class="input-group"><label>Sound Effects</label><div class="input-field" style="padding: 15px; color: #fff;"><input type="checkbox" checked> Enable Sounds</div></div>
+      <button class="btn-main" style="margin-top: 20px;">Save Settings</button>
+    </div>
+
+    <div class="glass-panel" id="rulesPanel">
+      <div class="panel-header"><div><h2>Game Rules <i class="fa-solid fa-exclamation" style="color: #4ade80;"></i></h2><p>Read carefully before playing.</p></div></div>
+      <ul style="color: #fff; line-height: 2.2; margin-left: 20px; font-size: 14px;">
+        <li>لا تشارك أجوبتك مع لاعبين آخرين.</li><li>لديك وقت محدد للإجابة على كل سؤال.</li>
+        <li>السرعة في الإجابة تمنحك نقاطاً أعلى.</li><li>يُمنع استخدام أي برامج خارجية للغش.</li>
+      </ul>
+      <button class="btn-outline" style="margin-top: 30px;" onclick="openPanel('homePanel', 'player', document.querySelector('.dash-item.active'))">فهمت وموافق</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <script>
+    const bgImages = { 'loginPanel':'bg.jpg', 'signupPanel':'bg.jpg', 'homePanel':'bg.jpg', 'profilePanel':'bg.jpg', 'settingsPanel':'bg.jpg', 'rulesPanel':'bg.jpg' };
+    function openPanel(panelId, menuType, menuItem) {
+      document.querySelectorAll('.glass-panel').forEach(p => p.classList.remove('show'));
+      if(menuItem) {
+        if(menuType === 'visitor') { document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active')); }
+        else { document.querySelectorAll('.dash-item').forEach(m => m.classList.remove('active')); }
+        menuItem.classList.add('active');
+      }
+      document.getElementById(panelId).classList.add('show');
+      const newBg = bgImages[panelId] || 'bg.jpg';
+      document.body.style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%), url('${newBg}')`;
+    }
+    function togglePass(id) { const input = document.getElementById(id); input.type = input.type === 'password' ? 'text' : 'password'; }
+    function changeNum(step) {
+      const input = document.getElementById('regJerseyNum');
+      let val = parseInt(input.value) + step;
+      if(val >= 1 && val <= 99) input.value = val;
+    }
+  </script>
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyCuSHbu2RqMl7-4DICZf8XyM9B4hzbpdOQ", authDomain: "ploska-ae755.firebaseapp.com", projectId: "ploska-ae755", storageBucket: "ploska-ae755.firebasestorage.app", messagingSenderId: "115680839911", appId: "1:115680839911:web:1220fea64c03c3a9137a42" };
+    const firebaseConfig = { apiKey: "AIzaSyCuSHbu2RqMl7-4DICZf8XyM9B4hzbpdOQ", authDomain: "ploska-ae755.firebaseapp.com", databaseURL: "https://ploska-ae755-default-rtdb.firebaseio.com", projectId: "ploska-ae755", storageBucket: "ploska-ae755.firebasestorage.app", messagingSenderId: "115680839911", appId: "1:115680839911:web:1220fea64c03c3a9137a42", measurementId: "G-H2ESYN5ZTE" };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -14,9 +358,9 @@
       { id: 'av_3', url: 'https://i.pinimg.com/736x/b8/6d/61/b86d610fbc909254943f3a262dd400b9.jpg' },
       { id: 'av_4', url: 'https://i.pinimg.com/736x/f7/4d/9c/f74d9c7191428e3a01f8a63739862c44.jpg' },
       { id: 'av_5', url: 'https://i.pinimg.com/736x/22/09/7a/22097abef6a3ebdae64e4811e931fece.jpg' },
-      { id: 'av_6', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=6&backgroundColor=4ade80' },
-      { id: 'av_7', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=7&backgroundColor=4ade80' },
-      { id: 'av_8', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=8&backgroundColor=4ade80' }
+      { id: 'av_6', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Saudi1&backgroundColor=4ade80' },
+      { id: 'av_7', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Saudi2&backgroundColor=4ade80' },
+      { id: 'av_8', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=Saudi3&backgroundColor=4ade80' }
     ];
     const defaultAvatar = avatarList[0].url;
     let tempSelectedAvatarUrl = null;
@@ -38,127 +382,81 @@
     }
 
     window.saveSelectedAvatar = () => {
-      if(tempSelectedAvatarUrl) {
-        document.getElementById('profileAvatarDisplay').src = tempSelectedAvatarUrl; closeAvatarSelector();
-      }
+      if(tempSelectedAvatarUrl) { document.getElementById('profileAvatarDisplay').src = tempSelectedAvatarUrl; closeAvatarSelector(); }
     };
 
-    // --- دالة مساعدة لقطع التحميل إذا طال عن 8 ثوانٍ ---
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error("انتهى وقت الاتصال! يرجى التأكد من تفعيل قاعدة بيانات Firestore في لوحة تحكم Firebase.")), 8000)
-    );
+    // دالة لحماية النظام من التعليق المالانهايي (Timeout)
+    const withTimeout = (promise, ms = 10000) => {
+      return Promise.race([ promise, new Promise((_, reject) => setTimeout(() => reject(new Error("طال وقت الاتصال. يبدو أن هناك مشكلة في اتصالك أو في إعدادات الفايربيس.")), ms)) ]);
+    };
 
-    // تسجيل حساب جديد
     document.getElementById('signupBtn').addEventListener('click', async () => {
-      const email = document.getElementById('regEmail').value;
-      const pass = document.getElementById('regPass').value;
-      const username = document.getElementById('regName').value;
-      const jerseyName = document.getElementById('regJerseyName').value;
+      const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value;
+      const username = document.getElementById('regName').value; const jerseyName = document.getElementById('regJerseyName').value;
       const jerseyNum = document.getElementById('regJerseyNum').value;
 
-      if(!email || !pass || !username) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'الرجاء تعبئة الحقول.' }); return; }
+      if(!email || !pass || !username) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'الرجاء تعبئة كل الحقول.' }); return; }
 
       Swal.fire({ title: 'جاري الإنشاء...', background: '#111', color: '#fff', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
       
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+        const userCredential = await withTimeout(createUserWithEmailAndPassword(auth, email, pass));
         const user = userCredential.user;
-        
-        // استخدام Promise.race لمنع التعليق
-        await Promise.race([
-          setDoc(doc(db, "users", user.uid), { username: username, email: email, avatarUrl: defaultAvatar, jerseyName: jerseyName || username, jerseyNumber: jerseyNum, createdAt: new Date(), answeredQuestions: [] }),
-          timeoutPromise
-        ]);
-        
-        Swal.close(); 
+        await withTimeout(setDoc(doc(db, "users", user.uid), { username: username, email: email, avatarUrl: defaultAvatar, jerseyName: jerseyName || username, jerseyNumber: jerseyNum, createdAt: new Date(), answeredQuestions: [] }, { merge: true }));
         Swal.fire({ background: '#111', color: '#fff', icon: 'success', text: 'تم إنشاء الحساب بنجاح.' });
-      } catch (error) { 
-        Swal.close(); 
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: error.message }); 
-      }
+      } catch (error) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: error.message }); }
     });
 
-    // تسجيل الدخول
     document.getElementById('loginBtn').addEventListener('click', async () => {
-      const email = document.getElementById('loginEmail').value;
-      const pass = document.getElementById('loginPass').value;
+      const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPass').value;
       if(!email || !pass) return;
 
       Swal.fire({ title: 'جاري الدخول...', background: '#111', color: '#fff', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
       
       try { 
-        await Promise.race([
-          signInWithEmailAndPassword(auth, email, pass),
-          timeoutPromise
-        ]); 
-        Swal.close();
-      } catch (error) { 
-        Swal.close();
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: error.message }); 
-      }
+        await withTimeout(signInWithEmailAndPassword(auth, email, pass)); 
+        Swal.close(); 
+      } catch (error) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'الايميل أو كلمة المرور غير صحيحة.' }); }
     });
 
     window.logoutUser = async () => { await signOut(auth); window.location.reload(); };
 
-    // تعديل البروفايل
     document.getElementById('saveProfileBtn').addEventListener('click', async () => {
       const user = auth.currentUser; if(!user) return;
-      const newUsername = document.getElementById('profileUsername').value;
-      const newAvatarUrl = document.getElementById('profileAvatarDisplay').src;
-      if(!newUsername) return;
+      const newUsername = document.getElementById('profileUsername').value; const newAvatarUrl = document.getElementById('profileAvatarDisplay').src;
+      if(!newUsername) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: 'الاسم مطلوب.' }); return; }
 
       Swal.fire({ title: 'جاري الحفظ...', background: '#111', color: '#fff', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
       
       try {
-        // استخدام Promise.race لمنع التعليق
-        await Promise.race([
-          setDoc(doc(db, "users", user.uid), { username: newUsername, avatarUrl: newAvatarUrl }, { merge: true }),
-          timeoutPromise
-        ]);
-        
-        document.getElementById('playerNameDisplay').innerText = newUsername;
-        document.getElementById('sidebarAvatarDisplay').src = newAvatarUrl;
-        
-        Swal.close(); 
+        await withTimeout(setDoc(doc(db, "users", user.uid), { username: newUsername, avatarUrl: newAvatarUrl }, { merge: true }));
+        document.getElementById('playerNameDisplay').innerText = newUsername; document.getElementById('sidebarAvatarDisplay').src = newAvatarUrl;
         Swal.fire({ background: '#111', color: '#fff', icon: 'success', text: 'تم التحديث بنجاح.' });
-      } catch(e) { 
-        Swal.close(); 
-        Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: e.message }); 
-      }
+      } catch(e) { Swal.fire({ background: '#111', color: '#fff', icon: 'error', text: e.message }); }
     });
 
     onAuthStateChanged(auth, async (user) => {
-      const sidebar = document.getElementById('mainSidebar');
-      const topActions = document.getElementById('topLeftActions');
-
+      const sidebar = document.getElementById('mainSidebar'); const topActions = document.getElementById('topLeftActions');
       if (user) {
         let username = "Player", avatarUrl = defaultAvatar, jName = "Player", jNum = "10";
         try {
-          const docSnap = await Promise.race([ getDoc(doc(db, "users", user.uid)), timeoutPromise ]);
+          const docSnap = await withTimeout(getDoc(doc(db, "users", user.uid)));
           if (docSnap && docSnap.exists()) {
             const data = docSnap.data();
-            username = data.username || username; avatarUrl = data.avatarUrl || avatarUrl;
-            jName = data.jerseyName || username; jNum = data.jerseyNumber || jNum;
+            username = data.username || username; avatarUrl = data.avatarUrl || avatarUrl; jName = data.jerseyName || username; jNum = data.jerseyNumber || jNum;
           }
-        } catch(e) { console.log("Firestore error:", e); }
+        } catch(e) { console.warn("Firestore Error:", e); }
         
-        document.getElementById('visitorWelcome').style.display = 'none';
-        document.getElementById('visitorMenu').style.display = 'none';
-        document.getElementById('playerWelcome').style.display = 'block';
-        document.getElementById('playerMenu').style.display = 'block';
+        document.getElementById('visitorWelcome').style.display = 'none'; document.getElementById('visitorMenu').style.display = 'none';
+        document.getElementById('playerWelcome').style.display = 'block'; document.getElementById('playerMenu').style.display = 'block';
         document.getElementById('playerNameDisplay').innerText = username;
         
-        const sideAvatar = document.getElementById('sidebarAvatarDisplay');
-        sideAvatar.src = avatarUrl; sideAvatar.style.display = 'block';
-
-        document.getElementById('profileUsername').value = username;
-        document.getElementById('profileAvatarDisplay').src = avatarUrl;
-        document.getElementById('profileJerseyName').value = jName;
-        document.getElementById('profileJerseyNum').value = jNum;
+        const sideAvatar = document.getElementById('sidebarAvatarDisplay'); sideAvatar.src = avatarUrl; sideAvatar.style.display = 'block';
+        document.getElementById('profileUsername').value = username; document.getElementById('profileAvatarDisplay').src = avatarUrl;
+        document.getElementById('profileJerseyName').value = jName; document.getElementById('profileJerseyNum').value = jNum;
 
         document.querySelectorAll('.avatar-option').forEach(el => {
-          if(el.querySelector('img').src === avatarUrl) el.classList.add('selected');
-          else el.classList.remove('selected');
+          if(el.querySelector('img').src === avatarUrl) el.classList.add('selected'); else el.classList.remove('selected');
         });
         tempSelectedAvatarUrl = avatarUrl;
 
@@ -168,10 +466,10 @@
       } else {
         if(topActions) topActions.style.display = 'none';
         sidebar.classList.remove('logged-in-mobile');
-        document.getElementById('visitorWelcome').style.display = 'block';
-        document.getElementById('visitorMenu').style.display = 'flex';
-        document.getElementById('playerWelcome').style.display = 'none';
-        document.getElementById('playerMenu').style.display = 'none';
+        document.getElementById('visitorWelcome').style.display = 'block'; document.getElementById('visitorMenu').style.display = 'flex';
+        document.getElementById('playerWelcome').style.display = 'none'; document.getElementById('playerMenu').style.display = 'none';
       }
     });
   </script>
+</body>
+</html>
