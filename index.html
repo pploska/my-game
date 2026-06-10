@@ -373,8 +373,8 @@
       { id: 'av_8', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=G3&backgroundColor=0a0a0a' }
     ];
     
-    let signupSelectedAvatar = avatarList[0].url; // الافتراضي للتسجيل
-    let profileTempAvatar = null; // المؤقت للبروفايل
+    let signupSelectedAvatar = avatarList[0].url; 
+    let profileTempAvatar = null; 
 
     // تعبئة الأفاتار في صفحة التسجيل
     const signupAvatarGrid = document.getElementById('signupAvatarGrid');
@@ -392,7 +392,7 @@
     // تعبئة الأفاتار في نافذة البروفايل
     const popupAvatarGrid = document.getElementById('popupAvatarGrid');
     avatarList.forEach(av => {
-      const opt = document.createElement('div'); opt.className = 'avatar-circle-option'; style="width:100%; height:auto; padding-top:100%; border-radius:50%;"
+      const opt = document.createElement('div'); opt.className = 'avatar-circle-option'; 
       opt.style.width = '100%'; opt.style.paddingTop = '100%';
       opt.onclick = () => {
         document.querySelectorAll('#popupAvatarGrid .avatar-circle-option').forEach(el => el.classList.remove('selected'));
