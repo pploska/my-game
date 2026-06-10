@@ -7,7 +7,7 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
@@ -20,6 +20,7 @@
       --text-muted: #888888;
       --border-color: #222222;
       --input-bg: #0d0d0d;
+      --glow-gold: rgba(197, 160, 89, 0.2);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,8 +29,8 @@
       width: 100vw; 
       min-height: 100vh;
       background-image: 
-        linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%), 
-        url('bg.jpg'); /* ضع خلفيتك هنا */
+        linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.95) 100%), 
+        url('bg.jpg'); /* ضع رابط خلفيتك هنا */
       background-size: cover; 
       background-position: center; 
       background-color: var(--bg-color);
@@ -37,271 +38,274 @@
       font-family: 'Inter', sans-serif;
       display: flex; 
       align-items: center; 
-      justify-content: center;
+      justify-content: center; /* في المنتصف للزوار */
       color: var(--text-main); 
+      overflow-x: hidden;
+      transition: all 0.5s ease;
+    }
+
+    /* حالة تسجيل الدخول (يتغير التخطيط ليظهر الشريط الجانبي) */
+    body.is-player {
+      justify-content: space-between;
     }
 
     /* ========================================= */
-    /* الحاوية الرئيسية والتصميم الذهبي */
+    /* الأيقونات العائمة (فوق يسار) - تظهر بعد الدخول */
     /* ========================================= */
-    .forms-wrapper {
-      width: 100%;
-      max-width: 420px;
-      padding: 20px;
-      position: relative;
+    .top-left-actions {
+      position: fixed; top: 30px; left: 30px;
+      display: none; flex-direction: column; gap: 15px; z-index: 50;
     }
+    .icon-btn {
+      background: var(--panel-bg); backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color); width: 50px; height: 50px;
+      border-radius: 14px; color: var(--text-muted); cursor: pointer;
+      font-size: 20px; transition: all 0.3s ease;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .icon-btn:hover { color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px var(--glow-gold); }
+
+    /* ========================================= */
+    /* القائمة الجانبية (Sidebar) - تظهر بعد الدخول */
+    /* ========================================= */
+    .sidebar { 
+      width: 300px; margin-left: 120px; 
+      display: none; flex-direction: column; z-index: 10; 
+    }
+    .logo-container { margin-bottom: 50px; }
+    .logo-container i { font-size: 35px; color: var(--gold); }
+
+    .welcome-text { margin-bottom: 40px; }
+    .welcome-text p { color: var(--gold); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
+    .welcome-text h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; line-height: 1.2; text-transform: uppercase; color: var(--gold); }
+
+    .dashboard-menu { display: flex; flex-direction: column; gap: 15px; }
+    .dash-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px 20px; color: var(--text-muted); cursor: pointer;
+      font-size: 15px; border-radius: 12px; transition: all 0.3s ease;
+      border: 1px solid transparent; background: transparent;
+    }
+    .dash-item:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
+    .dash-item.active { border: 1px solid var(--border-color); background: rgba(197, 160, 89, 0.05); color: var(--gold); }
+
+    /* ========================================= */
+    /* النوافذ الزجاجية والتصميم الذهبي */
+    /* ========================================= */
+    .forms-wrapper { width: 100%; max-width: 440px; position: relative; z-index: 10; transition: all 0.5s ease; }
+    
+    body.is-player .forms-wrapper { margin-right: 10%; margin-left: auto; }
 
     .glass-panel {
-      background: var(--panel-bg);
-      border: 1px solid var(--gold-muted);
-      border-radius: 20px;
-      padding: 40px 25px;
-      display: none;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      position: relative;
+      position: absolute; top: 0; right: 0; width: 100%;
+      background: var(--panel-bg); border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 40px 30px;
+      opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.4s ease;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
     }
-    
-    /* إضافة لمسة الزوايا العلوية */
     .glass-panel::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 50%; transform: translateX(-50%);
-      width: 60%; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
     }
+    .glass-panel.show { opacity: 1; visibility: visible; transform: translateY(0); position: relative; }
 
-    .glass-panel.show { display: block; animation: fadeIn 0.4s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* ========================================= */
-    /* النصوص العلوية */
-    /* ========================================= */
     .panel-header { text-align: center; margin-bottom: 30px; }
-    .panel-header h2 { 
-      font-family: 'Playfair Display', serif; 
-      font-size: 32px; 
-      color: var(--gold); 
-      font-weight: 500; 
-      margin-bottom: 8px; 
-      letter-spacing: 0.5px;
-    }
+    .panel-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--gold); font-weight: 500; margin-bottom: 8px; letter-spacing: 0.5px; }
     .panel-header p { color: var(--text-muted); font-size: 14px; }
 
-    /* ========================================= */
-    /* شريط الخطوات (Steps) */
-    /* ========================================= */
+    /* شريط الخطوات (للتسجيل) */
     .stepper { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 35px; }
     .step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
     .step.active { color: var(--gold); }
-    
-    .step-circle { 
-      width: 22px; height: 22px; 
-      border-radius: 50%; 
-      border: 1px solid var(--text-muted); 
-      display: flex; align-items: center; justify-content: center; 
-      font-size: 11px; transition: all 0.3s;
-    }
+    .step-circle { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.3s; }
     .step.active .step-circle { border-color: var(--gold); background: rgba(197, 160, 89, 0.1); color: var(--gold); }
-    
     .step-line { height: 1px; width: 30px; background: var(--border-color); }
 
-    /* ========================================= */
-    /* الأفاتارات (Avatars) */
-    /* ========================================= */
-    .avatars-section { margin-bottom: 30px; }
-    .avatars-section h3 { font-size: 14px; color: #ccc; margin-bottom: 15px; font-weight: 400; }
-    
-    .avatars-row { display: flex; justify-content: space-between; gap: 10px; }
-    .avatar-box { 
-      position: relative; width: 55px; height: 55px; 
-      border-radius: 50%; border: 1px solid var(--border-color); 
-      cursor: pointer; transition: all 0.3s;
-    }
-    .avatar-box img { 
-      width: 100%; height: 100%; border-radius: 50%; 
-      object-fit: cover; filter: brightness(0.4) grayscale(100%); transition: all 0.3s;
-    }
-    
-    .avatar-box.selected { border-color: var(--gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.15); }
-    .avatar-box.selected img { filter: brightness(1) grayscale(0%); }
-    
-    .avatar-check { 
-      position: absolute; bottom: -2px; right: -2px; 
-      background: var(--gold); color: #000; 
-      width: 18px; height: 18px; border-radius: 50%; 
-      display: none; align-items: center; justify-content: center; 
-      font-size: 10px; border: 2px solid var(--panel-bg);
-    }
-    .avatar-box.selected .avatar-check { display: flex; }
-
-    /* ========================================= */
-    /* حقول الإدخال (Inputs) */
-    /* ========================================= */
-    .input-group { margin-bottom: 20px; }
+    /* حقول الإدخال */
+    .input-group { margin-bottom: 20px; text-align: left; }
     .input-group label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; font-weight: 400; }
-    
-    .input-box { 
-      display: flex; align-items: center; 
-      background: var(--input-bg); 
-      border: 1px solid var(--border-color); 
-      border-radius: 12px; padding: 0 15px; 
-      height: 52px; transition: all 0.3s;
-    }
+    .input-box { display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 0 15px; height: 52px; transition: all 0.3s; }
     .input-box:focus-within { border-color: var(--gold-muted); box-shadow: 0 0 10px rgba(197, 160, 89, 0.05); }
-    
     .input-box i { color: var(--text-muted); font-size: 16px; margin-right: 12px; width: 20px; text-align: center; }
-    
-    .input-box input { 
-      flex: 1; background: transparent; border: none; 
-      color: var(--text-main); font-family: 'Inter', sans-serif; 
-      font-size: 14px; outline: none; width: 100%;
-    }
+    .input-box input { flex: 1; background: transparent; border: none; color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 14px; outline: none; width: 100%; }
     .input-box input::placeholder { color: #555; }
-    
     .eye-icon { cursor: pointer; color: var(--gold) !important; opacity: 0.7; }
     .eye-icon:hover { opacity: 1; }
-
-    /* الحقول المزدوجة (للقميص) */
     .split-row { display: flex; gap: 15px; }
     .split-row .input-group { flex: 1; }
 
-    /* ========================================= */
-    /* الأزرار والنصوص السفلية */
-    /* ========================================= */
-    .submit-btn { 
-      width: 100%; height: 52px; 
-      background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); 
-      border: 1px solid var(--gold-muted); border-radius: 12px; 
-      color: var(--gold); font-size: 18px; 
-      font-family: 'Playfair Display', serif; font-weight: 500;
-      cursor: pointer; margin-top: 10px; transition: all 0.3s;
-    }
-    .submit-btn:hover { background: rgba(197, 160, 89, 0.1); border-color: var(--gold); }
+    /* الأفاتارات (التسجيل) */
+    .avatars-section { margin-bottom: 30px; text-align: left; }
+    .avatars-section h3 { font-size: 14px; color: #ccc; margin-bottom: 15px; font-weight: 400; }
+    .avatars-row { display: flex; justify-content: space-between; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+    .avatar-box { position: relative; width: 55px; height: 55px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
+    .avatar-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; filter: brightness(0.4) grayscale(100%); transition: all 0.3s; }
+    .avatar-box.selected { border-color: var(--gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.15); }
+    .avatar-box.selected img { filter: brightness(1) grayscale(0%); }
+    .avatar-check { position: absolute; bottom: -2px; right: -2px; background: var(--gold); color: #000; width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 10px; border: 2px solid var(--panel-bg); }
+    .avatar-box.selected .avatar-check { display: flex; }
 
+    /* الأزرار */
+    .submit-btn { width: 100%; height: 52px; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); border: 1px solid var(--gold-muted); border-radius: 12px; color: var(--gold); font-size: 18px; font-family: 'Playfair Display', serif; font-weight: 500; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
+    .submit-btn:hover { background: rgba(197, 160, 89, 0.1); border-color: var(--gold); }
+    .btn-outline { width: 100%; height: 52px; background: transparent; border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); font-size: 16px; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
     .bottom-text { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); }
     .bottom-text span { color: var(--gold); cursor: pointer; font-weight: 500; transition: 0.3s; }
-    .bottom-text span:hover { text-shadow: 0 0 8px rgba(197, 160, 89, 0.5); }
 
-    /* واجهة البروفايل والرئيسية للتحكم */
-    .logout-btn { position: absolute; top: 20px; right: 20px; color: #ff4d6d; background: transparent; border: none; font-size: 18px; cursor: pointer; }
-    
-    @media (max-width: 400px) {
-      .avatars-row { overflow-x: auto; padding-bottom: 5px; }
-      .avatar-box { flex-shrink: 0; }
+    /* خيارات الإعدادات والقوانين */
+    .radio-group { display: flex; gap: 15px; color: #fff; font-size: 14px; margin-top: 10px; }
+    .rules-list { color: #ccc; font-size: 14px; line-height: 2; margin-left: 20px; text-align: left; }
+
+    /* ========================================= */
+    /* الجوال */
+    /* ========================================= */
+    @media (max-width: 900px) {
+      body.is-player { flex-direction: column; justify-content: flex-start; padding: 20px; }
+      .top-left-actions { top: 15px; left: 15px; flex-direction: row; }
+      .sidebar { display: none !important; } /* إخفاء الشريط الجانبي في الجوال لتوفير المساحة */
+      .forms-wrapper, body.is-player .forms-wrapper { margin: 0; width: 100%; max-width: 400px; margin-top: 70px; }
+      .split-row { flex-direction: column; gap: 0; }
     }
   </style>
 </head>
 <body>
 
+  <div class="top-left-actions" id="topLeftActions">
+    <button class="icon-btn" onclick="openPanel('settingsPanel', this)" title="Settings"><i class="fa-solid fa-gear"></i></button>
+    <button class="icon-btn" onclick="openPanel('rulesPanel', this)" title="Rules"><i class="fa-solid fa-exclamation"></i></button>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="logo-container">
+      <i class="fa-solid fa-crown"></i>
+    </div>
+    <div class="welcome-text">
+      <p>Dashboard</p>
+      <h1 id="sidebarPlayerName">Player</h1>
+    </div>
+    <div class="dashboard-menu">
+      <div class="dash-item active" onclick="openPanel('homePanel', this)">Dashboard <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i></div>
+      <div class="dash-item" onclick="openPanel('profilePanel', this)">Profile <i class="fa-solid fa-chevron-right" style="font-size:12px;"></i></div>
+      <div class="dash-item" onclick="logoutUser()" style="margin-top: 30px; color: #ff4d6d; border-color: rgba(255, 77, 109, 0.2);">Logout <i class="fa-solid fa-arrow-right-from-bracket" style="font-size:12px;"></i></div>
+    </div>
+  </div>
+
   <div class="forms-wrapper">
     
-    <div class="glass-panel show" id="signupPanel">
+    <div class="glass-panel show" id="loginPanel">
+      <div class="panel-header">
+        <h2>Login</h2>
+        <p>Access your locker</p>
+      </div>
+      <div class="input-group" style="margin-top: 40px;">
+        <label>Email</label>
+        <div class="input-box"><i class="fa-regular fa-envelope"></i><input type="email" id="loginEmail" placeholder="Enter your email"></div>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <div class="input-box"><i class="fa-solid fa-lock"></i><input type="password" id="loginPass" placeholder="Enter your password"><i class="fa-regular fa-eye eye-icon" onclick="togglePass('loginPass')"></i></div>
+      </div>
+      <button class="submit-btn" id="loginBtn" style="margin-top: 30px;">Login</button>
+      <div class="bottom-text">Don't have an account? <span onclick="openPanel('signupPanel')">Sign up</span></div>
+    </div>
+
+    <div class="glass-panel" id="signupPanel">
       <div class="panel-header">
         <h2>Sign up</h2>
         <p>Create your account</p>
       </div>
-
       <div class="stepper">
         <div class="step active"><div class="step-circle">1</div> Avatar</div>
         <div class="step-line"></div>
-        <div class="step"><div class="step-circle">2</div> Information</div>
+        <div class="step"><div class="step-circle">2</div> Info</div>
         <div class="step-line"></div>
         <div class="step"><div class="step-circle">3</div> Confirm</div>
       </div>
-
       <div class="avatars-section">
         <h3>Choose your avatar</h3>
-        <div class="avatars-row" id="signupAvatars">
-          </div>
+        <div class="avatars-row" id="signupAvatars"></div>
       </div>
-
       <div class="input-group">
         <label>Username</label>
-        <div class="input-box">
-          <i class="fa-regular fa-user"></i>
-          <input type="text" id="regName" placeholder="Enter your username">
-        </div>
+        <div class="input-box"><i class="fa-regular fa-user"></i><input type="text" id="regName" placeholder="Enter your username"></div>
       </div>
-      
       <div class="input-group">
         <label>Email</label>
-        <div class="input-box">
-          <i class="fa-regular fa-envelope"></i>
-          <input type="email" id="regEmail" placeholder="Enter your email">
-        </div>
+        <div class="input-box"><i class="fa-regular fa-envelope"></i><input type="email" id="regEmail" placeholder="Enter your email"></div>
       </div>
-      
       <div class="input-group">
         <label>Password</label>
-        <div class="input-box">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" id="regPass" placeholder="Enter your password">
-          <i class="fa-regular fa-eye eye-icon" onclick="togglePass('regPass')"></i>
-        </div>
+        <div class="input-box"><i class="fa-solid fa-lock"></i><input type="password" id="regPass" placeholder="Enter your password"><i class="fa-regular fa-eye eye-icon" onclick="togglePass('regPass')"></i></div>
       </div>
-
       <div class="split-row">
         <div class="input-group">
           <label>Jersey Name</label>
-          <div class="input-box">
-            <i class="fa-solid fa-shirt"></i>
-            <input type="text" id="regJerseyName" placeholder="Name" maxlength="12">
-          </div>
+          <div class="input-box"><i class="fa-solid fa-shirt"></i><input type="text" id="regJerseyName" placeholder="Name" maxlength="12"></div>
         </div>
         <div class="input-group">
           <label>Number</label>
-          <div class="input-box">
-            <i class="fa-solid fa-hashtag"></i>
-            <input type="number" id="regJerseyNum" placeholder="10" min="1" max="99">
-          </div>
+          <div class="input-box"><i class="fa-solid fa-hashtag"></i><input type="number" id="regJerseyNum" placeholder="10" min="1" max="99"></div>
         </div>
       </div>
-
       <button class="submit-btn" id="signupBtn">Next</button>
-
-      <div class="bottom-text">
-        Already have an account? <span onclick="switchPanel('loginPanel')">Login</span>
-      </div>
-    </div>
-
-    <div class="glass-panel" id="loginPanel">
-      <div class="panel-header">
-        <h2>Login</h2>
-        <p>Access your account</p>
-      </div>
-
-      <div class="input-group" style="margin-top: 40px;">
-        <label>Email</label>
-        <div class="input-box">
-          <i class="fa-regular fa-envelope"></i>
-          <input type="email" id="loginEmail" placeholder="Enter your email">
-        </div>
-      </div>
-      
-      <div class="input-group">
-        <label>Password</label>
-        <div class="input-box">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" id="loginPass" placeholder="Enter your password">
-          <i class="fa-regular fa-eye eye-icon" onclick="togglePass('loginPass')"></i>
-        </div>
-      </div>
-
-      <button class="submit-btn" id="loginBtn" style="margin-top: 30px;">Login</button>
-
-      <div class="bottom-text">
-        Don't have an account? <span onclick="switchPanel('signupPanel')">Sign up</span>
-      </div>
+      <div class="bottom-text">Already have an account? <span onclick="openPanel('loginPanel')">Login</span></div>
     </div>
 
     <div class="glass-panel" id="homePanel">
-      <button class="logout-btn" onclick="logoutUser()" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
-      <div class="panel-header" style="margin-top: 20px;">
-        <h2 id="playerNameDisplay">Player</h2>
-        <p id="playerJerseyDisplay" style="margin-bottom: 20px;">#10</p>
-        <img id="playerAvatarDisplay" src="" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; margin-bottom: 20px;">
+      <div class="panel-header">
+        <h2>Locker Room</h2>
+        <p>Ready for the match.</p>
       </div>
-      <button class="submit-btn">Start Game</button>
+      <button class="submit-btn" style="margin-bottom: 10px;">Create Game</button>
+      <button class="btn-outline">Join Game</button>
+    </div>
+
+    <div class="glass-panel" id="profilePanel">
+      <div class="panel-header">
+        <h2>Profile</h2>
+        <p>Your legacy</p>
+      </div>
+      <div style="text-align: center; margin-top: 20px;">
+        <img id="profileAvatarDisplay" src="" style="width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; margin-bottom: 20px; box-shadow: 0 0 20px var(--glow-gold);">
+        <h3 id="profileNameDisplay" style="color: var(--text-main); margin-bottom: 5px; font-size: 22px;">Player</h3>
+        <p id="profileJerseyDisplay" style="color: var(--gold); font-size: 16px; font-weight: 600;">#10</p>
+      </div>
+    </div>
+
+    <div class="glass-panel" id="settingsPanel">
+      <div class="panel-header">
+        <h2>Settings</h2>
+        <p>Manage your preferences</p>
+      </div>
+      <div class="input-group">
+        <label>Game Difficulty</label>
+        <div class="input-box" style="height: auto; padding: 15px;">
+          <input type="radio" name="diff" checked> &nbsp;Normal &nbsp;&nbsp;&nbsp;
+          <input type="radio" name="diff"> &nbsp;Hard
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Sound Effects</label>
+        <div class="input-box" style="height: auto; padding: 15px;">
+          <input type="checkbox" checked> &nbsp;Enable Sounds
+        </div>
+      </div>
+      <button class="submit-btn" style="margin-top: 20px;">Save Settings</button>
+    </div>
+
+    <div class="glass-panel" id="rulesPanel">
+      <div class="panel-header">
+        <h2>Rules</h2>
+        <p>Read before playing</p>
+      </div>
+      <ul class="rules-list">
+        <li>لا تشارك أجوبتك مع لاعبين آخرين.</li>
+        <li>لديك وقت محدد للإجابة على كل سؤال.</li>
+        <li>السرعة في الإجابة تمنحك نقاطاً أعلى.</li>
+        <li>يُمنع استخدام أي برامج خارجية للغش.</li>
+      </ul>
+      <button class="btn-outline" style="margin-top: 30px;" onclick="openPanel('homePanel', document.querySelector('.dash-item'))">فهمت وموافق</button>
     </div>
 
   </div>
@@ -309,7 +313,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    // روابط الأفاتارات الخاصة بك
+    // إعداد الأفاتارات
     const avatars = [
       "https://cdn.pfps.gg/pfps/5024-dark-aesthetic-anime-profile-avatar.png",
       "https://i.pinimg.com/736x/35/cd/4d/35cd4dd145c0aaa1027b37d3c910ace3.jpg",
@@ -318,19 +322,13 @@
       "https://i.pinimg.com/736x/22/09/7a/22097abef6a3ebdae64e4811e931fece.jpg"
     ];
 
-    let selectedAvatarUrl = avatars[0];
+    let selectedAvatarUrl = avatars[2];
 
-    // عرض الأفاتارات بنفس شكل الصورة
     const avatarContainer = document.getElementById('signupAvatars');
     avatars.forEach((url, index) => {
       const div = document.createElement('div');
-      div.className = `avatar-box ${index === 2 ? 'selected' : ''}`; // الخيار الثالث مفعل افتراضياً كالصورة
-      if(index === 2) selectedAvatarUrl = url;
-      
-      div.innerHTML = `
-        <img src="${url}" alt="Avatar">
-        <div class="avatar-check"><i class="fa-solid fa-check"></i></div>
-      `;
+      div.className = `avatar-box ${index === 2 ? 'selected' : ''}`;
+      div.innerHTML = `<img src="${url}" alt="Avatar"><div class="avatar-check"><i class="fa-solid fa-check"></i></div>`;
       div.onclick = () => {
         document.querySelectorAll('.avatar-box').forEach(el => el.classList.remove('selected'));
         div.classList.add('selected');
@@ -340,12 +338,16 @@
     });
 
     // التنقل بين النوافذ
-    function switchPanel(panelId) {
+    function openPanel(panelId, menuItem = null) {
       document.querySelectorAll('.glass-panel').forEach(p => p.classList.remove('show'));
       document.getElementById(panelId).classList.add('show');
+
+      if(menuItem && menuItem.classList.contains('dash-item')) {
+        document.querySelectorAll('.dash-item').forEach(m => m.classList.remove('active'));
+        menuItem.classList.add('active');
+      }
     }
 
-    // إظهار/إخفاء الرقم السري
     function togglePass(id) {
       const input = document.getElementById(id);
       input.type = input.type === 'password' ? 'text' : 'password';
@@ -371,7 +373,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // إنشاء الحساب
     document.getElementById('signupBtn').addEventListener('click', async () => {
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPass').value;
@@ -386,11 +387,10 @@
 
       try {
         Swal.fire({ background: '#0a0a0a', color: '#c5a059', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
-        
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
 
-        const dbPromise = setDoc(doc(db, "users", user.uid), {
+        await setDoc(doc(db, "users", user.uid), {
           username: username,
           email: email,
           jerseyName: jerseyName || username,
@@ -399,16 +399,12 @@
           createdAt: new Date()
         }, { merge: true });
 
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
-        await Promise.race([dbPromise, timeoutPromise]);
-
-        Swal.fire({ background: '#0a0a0a', color: '#c5a059', icon: 'success', text: 'Account created successfully.' });
+        Swal.fire({ background: '#0a0a0a', color: '#c5a059', icon: 'success', text: 'Draft successful.' });
       } catch (error) {
         Swal.fire({ background: '#0a0a0a', color: '#ff4d6d', icon: 'error', text: error.message });
       }
     });
 
-    // تسجيل الدخول
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPass').value;
@@ -419,7 +415,7 @@
         await signInWithEmailAndPassword(auth, email, pass);
         Swal.close();
       } catch (error) {
-        Swal.fire({ background: '#0a0a0a', color: '#ff4d6d', icon: 'error', text: 'Invalid email or password.' });
+        Swal.fire({ background: '#0a0a0a', color: '#ff4d6d', icon: 'error', text: 'Invalid credentials.' });
       }
     });
 
@@ -428,10 +424,14 @@
       window.location.reload(); 
     };
 
-    // متابعة حالة الدخول
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        let username = "Player", jerseyName = "Player", jerseyNum = "10", avatar = avatars[0];
+        // تفعيل حالة اللاعب وتغيير تخطيط الصفحة
+        document.body.classList.add('is-player');
+        document.getElementById('sidebar').style.display = 'flex';
+        document.getElementById('topLeftActions').style.display = 'flex';
+        
+        let username = "Player", jerseyName = "Player", jerseyNum = "10", avatar = avatars[2];
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           if (docSnap.exists()) {
@@ -443,11 +443,20 @@
           }
         } catch(e) {}
         
-        switchPanel('homePanel');
+        // فتح الرئيسية
+        openPanel('homePanel', document.querySelector('.dash-item.active'));
         
-        document.getElementById('playerNameDisplay').innerText = username;
-        document.getElementById('playerJerseyDisplay').innerText = `${jerseyName} #${jerseyNum}`;
-        document.getElementById('playerAvatarDisplay').src = avatar;
+        // تعبئة البيانات
+        document.getElementById('sidebarPlayerName').innerText = username;
+        document.getElementById('profileNameDisplay').innerText = username;
+        document.getElementById('profileJerseyDisplay').innerText = `${jerseyName} #${jerseyNum}`;
+        document.getElementById('profileAvatarDisplay').src = avatar;
+      } else {
+        // حالة الزائر
+        document.body.classList.remove('is-player');
+        document.getElementById('sidebar').style.display = 'none';
+        document.getElementById('topLeftActions').style.display = 'none';
+        openPanel('loginPanel');
       }
     });
   </script>
