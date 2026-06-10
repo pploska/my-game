@@ -20,7 +20,7 @@
       --text-muted: #888888;
       --border-color: #222222;
       --input-bg: #0d0d0d;
-      --glow-gold: rgba(197, 160, 89, 0.2);
+      --glow-gold: rgba(197, 160, 89, 0.4);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +28,6 @@
     body {
       width: 100vw; 
       min-height: 100vh;
-      /* تم تفتيح درجة الشفافية هنا لتظهر تفاصيل الصورة الخلفية بوضوح */
       background-image: 
         linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%), 
         url('bg.jpg'); 
@@ -77,16 +76,17 @@
     .welcome-text { margin-bottom: 40px; }
     .welcome-text p { color: var(--gold); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
     
-    /* تم إلغاء تحويل الاسم لكابتل ليظهر حسب إدخال المستخدم */
-    .welcome-text h1 { 
-      font-family: 'Playfair Display', serif; 
-      font-size: 32px; 
-      font-weight: 700; 
-      line-height: 1.2; 
-      color: var(--gold); 
+    .player-header-desktop {
+      display: flex; align-items: center; gap: 15px; margin-top: 10px;
+    }
+    .player-header-desktop img {
+      width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: 0 0 10px var(--glow-gold);
+    }
+    .player-header-desktop h1 { 
+      font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; line-height: 1.2; color: var(--gold); 
     }
 
-    .dashboard-menu { display: flex; flex-direction: column; gap: 15px; }
+    .dashboard-menu { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
     .dash-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 20px; color: var(--text-muted); cursor: pointer;
@@ -95,6 +95,20 @@
     }
     .dash-item:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
     .dash-item.active { border: 1px solid var(--border-color); background: rgba(197, 160, 89, 0.05); color: var(--gold); }
+
+    /* ========================================= */
+    /* الشريط العلوي للجوال (يظهر الأفاتار والاسم) */
+    /* ========================================= */
+    .mobile-top-bar {
+      display: none; align-items: center; justify-content: center; gap: 12px; 
+      margin-bottom: 25px; width: 100%; text-align: center;
+    }
+    .mobile-top-bar img {
+      width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: 0 0 10px var(--glow-gold);
+    }
+    .mobile-top-bar h1 {
+      font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--gold); margin: 0;
+    }
 
     /* ========================================= */
     /* النوافذ والتصميم */
@@ -132,20 +146,44 @@
     .input-box:focus-within { border-color: var(--gold-muted); box-shadow: 0 0 10px rgba(197, 160, 89, 0.05); }
     .input-box i { color: var(--text-muted); font-size: 16px; margin-right: 12px; width: 20px; text-align: center; }
     .input-box input { flex: 1; background: transparent; border: none; color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 14px; outline: none; width: 100%; }
-    
     .eye-icon { cursor: pointer; color: var(--gold) !important; opacity: 0.7; }
     .split-row { display: flex; gap: 15px; }
     .split-row .input-group { flex: 1; }
 
-    /* الأفاتارات */
+    /* ========================================= */
+    /* الأفاتارات (التسجيل والتعديل) */
+    /* ========================================= */
     .avatars-section { margin-bottom: 25px; text-align: left; }
     .avatars-section h3 { font-size: 14px; color: #ccc; margin-bottom: 15px; font-weight: 400; }
-    .avatars-row { display: flex; justify-content: space-between; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
-    .avatar-box { position: relative; width: 55px; height: 55px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.3s; flex-shrink: 0; }
-    .avatar-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; filter: brightness(0.4) grayscale(100%); transition: all 0.3s; }
-    .avatar-box.selected { border-color: var(--gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.15); }
-    .avatar-box.selected img { filter: brightness(1) grayscale(0%); }
-    .avatar-check { position: absolute; bottom: -2px; right: -2px; background: var(--gold); color: #000; width: 18px; height: 18px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 10px; border: 2px solid var(--panel-bg); }
+    .avatars-row { display: flex; justify-content: space-between; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; }
+    
+    .avatar-box { 
+      position: relative; width: 55px; height: 55px; border-radius: 50%; 
+      border: 1px solid var(--border-color); cursor: pointer; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; 
+    }
+    .avatar-box img { 
+      width: 100%; height: 100%; border-radius: 50%; object-fit: cover; 
+      filter: brightness(0.3) grayscale(100%); transition: all 0.3s; 
+    }
+    
+    /* التأثير البصري القوي عند اختيار الأفاتار */
+    .avatar-box.selected { 
+      border: 3px solid var(--gold); 
+      box-shadow: 0 0 20px var(--glow-gold); 
+      transform: scale(1.2); 
+      z-index: 5;
+    }
+    .avatar-box.selected img { filter: brightness(1.1) grayscale(0%); }
+    
+    .avatar-check { 
+      position: absolute; bottom: -5px; right: -5px; 
+      background: var(--gold); color: #000; 
+      width: 22px; height: 22px; border-radius: 50%; 
+      display: none; align-items: center; justify-content: center; 
+      font-size: 12px; border: 2px solid var(--panel-bg); 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
     .avatar-box.selected .avatar-check { display: flex; }
 
     .submit-btn { width: 100%; height: 52px; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); border: 1px solid var(--gold-muted); border-radius: 12px; color: var(--gold); font-size: 18px; font-family: 'Playfair Display', serif; font-weight: 500; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
@@ -176,12 +214,15 @@
       .sidebar { display: none !important; } 
       
       body.is-player .mobile-nav { display: flex; }
+      body.is-player .mobile-top-bar { display: flex; }
 
       .forms-wrapper, body.is-player .forms-wrapper { 
-        margin: 0 auto; width: 100%; max-width: 100%; margin-top: 50px; 
+        margin: 0 auto; width: 100%; max-width: 100%; margin-top: 10px; 
       }
       .split-row { flex-direction: column; gap: 0; }
       .glass-panel { padding: 30px 20px; }
+      
+      .avatars-row { justify-content: flex-start; gap: 15px; } /* لترتيب الأفاتارات أفضل في الجوال */
     }
   </style>
 </head>
@@ -198,8 +239,8 @@
     </div>
     <div class="welcome-text">
       <p>Dashboard</p>
-      <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
-        <img id="sidebarAvatar" src="" style="width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--gold); object-fit: cover; display: none;">
+      <div class="player-header-desktop">
+        <img id="sidebarAvatar" src="">
         <h1 id="sidebarPlayerName">Player</h1>
       </div>
     </div>
@@ -211,6 +252,11 @@
   </div>
 
   <div class="forms-wrapper">
+
+    <div class="mobile-top-bar" id="mobileTopBar">
+      <img id="mobileAvatar" src="">
+      <h1 id="mobilePlayerName">Player</h1>
+    </div>
     
     <div class="glass-panel show" id="loginPanel">
       <div class="panel-header">
@@ -289,8 +335,8 @@
         <img id="profileAvatarDisplay" src="" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 20px var(--glow-gold);">
         
         <div class="avatars-section">
-          <h3 style="text-align: center; font-size: 12px; margin-bottom: 8px; color: var(--gold);">Change Avatar</h3>
-          <div class="avatars-row" id="profileAvatars" style="justify-content: center; gap: 8px;"></div>
+          <h3 style="text-align: center; font-size: 12px; margin-bottom: 12px; color: var(--gold);">Change Avatar</h3>
+          <div class="avatars-row" id="profileAvatars" style="justify-content: center; padding-bottom: 15px;"></div>
         </div>
 
         <div class="input-group" style="margin-top: 15px;">
@@ -361,7 +407,7 @@
     let selectedAvatarUrl = avatars[2];
     let profileSelectedAvatarUrl = avatars[2];
 
-    // بناء الأفاتارات في شاشة التسجيل
+    // بناء الأفاتارات للتسجيل
     const avatarContainer = document.getElementById('signupAvatars');
     avatars.forEach((url, index) => {
       const div = document.createElement('div');
@@ -375,7 +421,7 @@
       avatarContainer.appendChild(div);
     });
 
-    // بناء الأفاتارات في شاشة البروفايل للتعديل
+    // بناء الأفاتارات للتعديل في البروفايل
     const profileAvatarContainer = document.getElementById('profileAvatars');
     avatars.forEach((url, index) => {
       const div = document.createElement('div');
@@ -390,7 +436,6 @@
       profileAvatarContainer.appendChild(div);
     });
 
-    // التنقل بين النوافذ ومزامنة الجوال
     function openPanel(panelId, menuItem = null) {
       document.querySelectorAll('.glass-panel').forEach(p => p.classList.remove('show'));
       document.getElementById(panelId).classList.add('show');
@@ -400,7 +445,6 @@
         menuItem.classList.add('active');
       }
 
-      // مزامنة أزرار شريط الجوال السفلي
       if (panelId === 'homePanel') {
         document.querySelectorAll('.mobile-nav-item').forEach((item, idx) => { if(idx === 0) item.classList.add('active'); else item.classList.remove('active'); });
       } else if (panelId === 'profilePanel') {
@@ -433,7 +477,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // إنشاء الحساب
     document.getElementById('signupBtn').addEventListener('click', async () => {
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPass').value;
@@ -466,7 +509,6 @@
       }
     });
 
-    // تسجيل الدخول
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPass').value;
@@ -481,7 +523,6 @@
       }
     });
 
-    // حفظ تعديلات الاسم والأفاتار من البروفايل
     document.getElementById('saveProfileBtn').addEventListener('click', async () => {
       const user = auth.currentUser;
       if (!user) return;
@@ -500,10 +541,11 @@
           avatarUrl: profileSelectedAvatarUrl
         }, { merge: true });
 
-        // تحديث الواجهات فوراً بالبيانات المدخلة بدقة
+        // التحديث الفوري للواجهات
         document.getElementById('sidebarPlayerName').innerText = newUsername;
-        document.getElementById('profileNameDisplay').innerText = newUsername;
+        document.getElementById('mobilePlayerName').innerText = newUsername;
         document.getElementById('sidebarAvatar').src = profileSelectedAvatarUrl;
+        document.getElementById('mobileAvatar').src = profileSelectedAvatarUrl;
         document.getElementById('profileAvatarDisplay').src = profileSelectedAvatarUrl;
 
         Swal.fire({ background: '#0a0a0a', color: '#c5a059', icon: 'success', text: 'Changes saved successfully!' });
@@ -517,7 +559,6 @@
       window.location.reload(); 
     };
 
-    // مراقبة حالة الدخول والمزامنة الحية
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         document.body.classList.add('is-player');
@@ -538,19 +579,16 @@
         
         openPanel('homePanel', document.querySelector('.dash-item.active'));
         
-        // تعبئة حقول العرض بالبيانات الأصلية
+        // تعبئة البيانات في الواجهات (الجوال والكمبيوتر)
         document.getElementById('sidebarPlayerName').innerText = username;
-        document.getElementById('profileNameDisplay').innerText = username;
+        document.getElementById('mobilePlayerName').innerText = username;
         document.getElementById('profileNameInput').value = username;
         document.getElementById('profileJerseyDisplay').innerText = `${jerseyName} #${jerseyNum}`;
         document.getElementById('profileAvatarDisplay').src = avatar;
         
-        // تفعيل الأفاتار بجانب الاسم في السايدبار
-        const sAvatar = document.getElementById('sidebarAvatar');
-        sAvatar.src = avatar;
-        sAvatar.style.display = 'block';
+        document.getElementById('sidebarAvatar').src = avatar;
+        document.getElementById('mobileAvatar').src = avatar;
 
-        // تظليل الأفاتار المختار تلقائياً في نافذة تعديل البروفايل
         profileSelectedAvatarUrl = avatar;
         document.querySelectorAll('#profileAvatars .avatar-box').forEach(el => el.classList.remove('selected'));
         const activeIndex = avatars.indexOf(avatar);
