@@ -7,20 +7,19 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
     :root {
-      --bg-dark: #050505;
-      --panel-bg: rgba(15, 15, 15, 0.85);
-      --input-bg: rgba(255, 255, 255, 0.03);
-      --border-color: rgba(212, 175, 55, 0.2);
-      --primary-gold: #D4AF37;
-      --primary-gold-hover: #b5952f;
+      --bg-color: #050505;
+      --panel-bg: #0a0a0a;
+      --gold: #c5a059;
+      --gold-muted: rgba(197, 160, 89, 0.4);
       --text-main: #ffffff;
-      --text-muted: #8b8b8b;
-      --glow-gold: rgba(212, 175, 55, 0.3);
+      --text-muted: #888888;
+      --border-color: #222222;
+      --input-bg: #0d0d0d;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,313 +28,280 @@
       width: 100vw; 
       min-height: 100vh;
       background-image: 
-        linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.95) 100%), 
-        url('bg.jpg'); /* ضع رابط خلفيتك هنا */
+        linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%), 
+        url('bg.jpg'); /* ضع خلفيتك هنا */
       background-size: cover; 
       background-position: center; 
-      background-color: var(--bg-dark);
+      background-color: var(--bg-color);
       background-attachment: fixed;
       font-family: 'Inter', sans-serif;
       display: flex; 
       align-items: center; 
-      justify-content: space-between;
+      justify-content: center;
       color: var(--text-main); 
-      overflow-x: hidden;
     }
 
     /* ========================================= */
-    /* القائمة الجانبية والأيقونات */
+    /* الحاوية الرئيسية والتصميم الذهبي */
     /* ========================================= */
-    .top-left-actions {
-      position: fixed; top: 30px; left: 30px;
-      display: none; flex-direction: column; gap: 15px; z-index: 50;
+    .forms-wrapper {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      position: relative;
     }
-    .icon-btn {
-      background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color); width: 50px; height: 50px;
-      border-radius: 14px; color: var(--text-muted); cursor: pointer;
-      font-size: 20px; transition: all 0.3s ease;
-      display: flex; justify-content: center; align-items: center;
-    }
-    .icon-btn:hover { color: var(--primary-gold); border-color: var(--primary-gold); box-shadow: 0 0 15px var(--glow-gold); }
-
-    .sidebar { width: 300px; margin-left: 120px; display: flex; flex-direction: column; z-index: 10; }
-    .logo-container { margin-bottom: 50px; }
-    .logo-container i { font-size: 35px; color: var(--primary-gold); }
-
-    .welcome-text { margin-bottom: 40px; }
-    .welcome-text p { color: var(--primary-gold); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
-    .welcome-text h1 { font-size: 32px; font-weight: 700; line-height: 1.2; text-transform: uppercase; }
-
-    .menu-items, .dashboard-menu { display: flex; flex-direction: column; gap: 15px; }
-    .dashboard-menu { display: none; margin-top: 20px; }
-    
-    .menu-item, .dash-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 15px 20px; color: var(--text-muted); cursor: pointer;
-      font-size: 16px; font-weight: 500; border-radius: 12px; transition: all 0.3s ease;
-      border: 1px solid transparent;
-    }
-    .menu-item:hover, .dash-item:hover { color: var(--text-main); background: rgba(255,255,255,0.02); }
-    .menu-item.active, .dash-item.active { 
-      border: 1px solid var(--border-color); 
-      background: rgba(212, 175, 55, 0.05); 
-      color: var(--primary-gold); 
-    }
-
-    /* ========================================= */
-    /* تصميم النوافذ المحدث (أسود وذهبي) */
-    /* ========================================= */
-    .forms-wrapper { margin-right: 10%; position: relative; width: 480px; min-height: 600px; z-index: 10; }
 
     .glass-panel {
-      position: absolute; top: 0; right: 0; width: 100%;
-      background: var(--panel-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      border: 1px solid var(--border-color); border-radius: 24px; padding: 45px;
-      opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.4s ease;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      background: var(--panel-bg);
+      border: 1px solid var(--gold-muted);
+      border-radius: 20px;
+      padding: 40px 25px;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      position: relative;
     }
-    .glass-panel.show { opacity: 1; visibility: visible; transform: translateY(0); }
+    
+    /* إضافة لمسة الزوايا العلوية */
+    .glass-panel::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 60%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
 
-    .panel-header { margin-bottom: 30px; text-align: center; }
-    .panel-header h2 { font-size: 26px; font-weight: 700; margin-bottom: 8px; color: var(--primary-gold); text-transform: uppercase; letter-spacing: 1px; }
+    .glass-panel.show { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ========================================= */
+    /* النصوص العلوية */
+    /* ========================================= */
+    .panel-header { text-align: center; margin-bottom: 30px; }
+    .panel-header h2 { 
+      font-family: 'Playfair Display', serif; 
+      font-size: 32px; 
+      color: var(--gold); 
+      font-weight: 500; 
+      margin-bottom: 8px; 
+      letter-spacing: 0.5px;
+    }
     .panel-header p { color: var(--text-muted); font-size: 14px; }
-    
-    /* شريط الخطوات للتسجيل */
-    .steps-container { display: flex; justify-content: space-between; margin-bottom: 30px; position: relative; }
-    .steps-container::before {
-      content: ''; position: absolute; top: 15px; left: 0; width: 100%; height: 2px;
-      background: var(--border-color); z-index: 1;
-    }
-    .step { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .step-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-dark); border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-muted); transition: all 0.3s; }
-    .step.active .step-icon { border-color: var(--primary-gold); background: var(--primary-gold); color: #000; box-shadow: 0 0 10px var(--glow-gold); }
-    .step-text { font-size: 12px; color: var(--text-muted); font-weight: 600; }
-    .step.active .step-text { color: var(--primary-gold); }
-
-    /* الحقول */
-    .input-group { margin-bottom: 20px; text-align: left; }
-    .input-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .input-field {
-      position: relative; display: flex; align-items: center;
-      background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px;
-      padding: 0 15px; transition: all 0.3s ease;
-    }
-    .input-field:focus-within { border-color: var(--primary-gold); background: rgba(255,255,255,0.05); box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); }
-    .input-field i { color: var(--text-muted); font-size: 14px; }
-    .input-field input {
-      width: 100%; padding: 15px 10px; background: transparent; border: none;
-      color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 15px; outline: none;
-    }
-
-    .btn-main {
-      width: 100%; padding: 16px; background: linear-gradient(135deg, #D4AF37 0%, #AA8C2C 100%);
-      border: none; border-radius: 12px; color: #000; font-size: 16px; font-weight: 700; 
-      cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;
-    }
-    .btn-main:hover { filter: brightness(1.1); box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3); transform: translateY(-2px); }
-
-    .btn-outline {
-      width: 100%; padding: 16px; background: transparent;
-      border: 1px solid var(--primary-gold); border-radius: 12px;
-      color: var(--primary-gold); font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
-      text-transform: uppercase; letter-spacing: 1px;
-    }
-    .btn-outline:hover { background: rgba(212, 175, 55, 0.1); }
-
-    .divider { display: flex; align-items: center; text-align: center; margin: 25px 0; color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
-    .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
-    .divider::before { margin-right: .5em; } .divider::after { margin-left: .5em; }
-
-    /* تفاصيل القميص */
-    .jersey-grid { display: flex; gap: 15px; margin-bottom: 25px; }
-    .jersey-grid > div { flex: 1; }
-    .number-selector { display: flex; align-items: center; justify-content: space-between; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px 15px; }
-    .number-selector i { cursor: pointer; color: var(--primary-gold); padding: 5px; }
-    .number-selector input { width: 40px; text-align: center; background: transparent; border: none; color: var(--primary-gold); font-size: 18px; font-weight: bold; outline: none; }
-
-    /* الأفاتارات الأفقي */
-    .avatar-selection-wrapper { margin-bottom: 25px; text-align: left; }
-    .avatar-selection-wrapper label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; }
-    .avatar-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: var(--primary-gold) var(--bg-dark); }
-    .avatar-scroll::-webkit-scrollbar { height: 6px; }
-    .avatar-scroll::-webkit-scrollbar-track { background: var(--bg-dark); border-radius: 10px; }
-    .avatar-scroll::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 10px; }
-    
-    .avatar-option { flex-shrink: 0; cursor: pointer; border-radius: 12px; border: 2px solid transparent; transition: all 0.3s; position: relative; }
-    .avatar-option img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; filter: grayscale(50%); transition: all 0.3s; }
-    .avatar-option:hover img { filter: grayscale(0%); transform: scale(1.05); }
-    .avatar-option.selected { border-color: var(--primary-gold); box-shadow: 0 0 15px var(--glow-gold); }
-    .avatar-option.selected img { filter: grayscale(0%); }
-    .avatar-option.selected::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: -8px; right: -8px; background: var(--primary-gold); color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
 
     /* ========================================= */
-    /* تحسينات الجوال (السر هنا) */
+    /* شريط الخطوات (Steps) */
     /* ========================================= */
-    @media (max-width: 900px) {
-      body { flex-direction: column; justify-content: flex-start; padding: 20px; overflow-y: auto; }
-      
-      .top-left-actions { top: 15px; left: 15px; flex-direction: row; }
-      
-      .sidebar { width: 100%; margin-left: 0; margin-top: 60px; margin-bottom: 30px; text-align: center; }
-      .logo-container { margin-bottom: 20px; }
-      .welcome-text { margin-bottom: 20px; }
-      .menu-items, .dashboard-menu { flex-direction: row; justify-content: center; flex-wrap: wrap; gap: 10px; }
-      .menu-item, .dash-item { padding: 10px 15px; font-size: 14px; }
-      .dash-item i { display: none; } /* إخفاء الأيقونات في الجوال لتوفير المساحة */
-
-      .forms-wrapper { width: 100%; max-width: 100%; margin-right: 0; min-height: auto; margin-bottom: 50px; }
-      
-      .glass-panel { position: relative; padding: 30px 20px; }
-      
-      /* تحويل شبكة القميص في الجوال لتكون عمودية */
-      .jersey-grid { flex-direction: column; gap: 15px; }
-      
-      .step-text { font-size: 10px; }
-      .avatar-option img { width: 60px; height: 60px; }
+    .stepper { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 35px; }
+    .step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+    .step.active { color: var(--gold); }
+    
+    .step-circle { 
+      width: 22px; height: 22px; 
+      border-radius: 50%; 
+      border: 1px solid var(--text-muted); 
+      display: flex; align-items: center; justify-content: center; 
+      font-size: 11px; transition: all 0.3s;
     }
+    .step.active .step-circle { border-color: var(--gold); background: rgba(197, 160, 89, 0.1); color: var(--gold); }
+    
+    .step-line { height: 1px; width: 30px; background: var(--border-color); }
 
+    /* ========================================= */
+    /* الأفاتارات (Avatars) */
+    /* ========================================= */
+    .avatars-section { margin-bottom: 30px; }
+    .avatars-section h3 { font-size: 14px; color: #ccc; margin-bottom: 15px; font-weight: 400; }
+    
+    .avatars-row { display: flex; justify-content: space-between; gap: 10px; }
+    .avatar-box { 
+      position: relative; width: 55px; height: 55px; 
+      border-radius: 50%; border: 1px solid var(--border-color); 
+      cursor: pointer; transition: all 0.3s;
+    }
+    .avatar-box img { 
+      width: 100%; height: 100%; border-radius: 50%; 
+      object-fit: cover; filter: brightness(0.4) grayscale(100%); transition: all 0.3s;
+    }
+    
+    .avatar-box.selected { border-color: var(--gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.15); }
+    .avatar-box.selected img { filter: brightness(1) grayscale(0%); }
+    
+    .avatar-check { 
+      position: absolute; bottom: -2px; right: -2px; 
+      background: var(--gold); color: #000; 
+      width: 18px; height: 18px; border-radius: 50%; 
+      display: none; align-items: center; justify-content: center; 
+      font-size: 10px; border: 2px solid var(--panel-bg);
+    }
+    .avatar-box.selected .avatar-check { display: flex; }
+
+    /* ========================================= */
+    /* حقول الإدخال (Inputs) */
+    /* ========================================= */
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; font-weight: 400; }
+    
+    .input-box { 
+      display: flex; align-items: center; 
+      background: var(--input-bg); 
+      border: 1px solid var(--border-color); 
+      border-radius: 12px; padding: 0 15px; 
+      height: 52px; transition: all 0.3s;
+    }
+    .input-box:focus-within { border-color: var(--gold-muted); box-shadow: 0 0 10px rgba(197, 160, 89, 0.05); }
+    
+    .input-box i { color: var(--text-muted); font-size: 16px; margin-right: 12px; width: 20px; text-align: center; }
+    
+    .input-box input { 
+      flex: 1; background: transparent; border: none; 
+      color: var(--text-main); font-family: 'Inter', sans-serif; 
+      font-size: 14px; outline: none; width: 100%;
+    }
+    .input-box input::placeholder { color: #555; }
+    
+    .eye-icon { cursor: pointer; color: var(--gold) !important; opacity: 0.7; }
+    .eye-icon:hover { opacity: 1; }
+
+    /* الحقول المزدوجة (للقميص) */
+    .split-row { display: flex; gap: 15px; }
+    .split-row .input-group { flex: 1; }
+
+    /* ========================================= */
+    /* الأزرار والنصوص السفلية */
+    /* ========================================= */
+    .submit-btn { 
+      width: 100%; height: 52px; 
+      background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); 
+      border: 1px solid var(--gold-muted); border-radius: 12px; 
+      color: var(--gold); font-size: 18px; 
+      font-family: 'Playfair Display', serif; font-weight: 500;
+      cursor: pointer; margin-top: 10px; transition: all 0.3s;
+    }
+    .submit-btn:hover { background: rgba(197, 160, 89, 0.1); border-color: var(--gold); }
+
+    .bottom-text { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); }
+    .bottom-text span { color: var(--gold); cursor: pointer; font-weight: 500; transition: 0.3s; }
+    .bottom-text span:hover { text-shadow: 0 0 8px rgba(197, 160, 89, 0.5); }
+
+    /* واجهة البروفايل والرئيسية للتحكم */
+    .logout-btn { position: absolute; top: 20px; right: 20px; color: #ff4d6d; background: transparent; border: none; font-size: 18px; cursor: pointer; }
+    
+    @media (max-width: 400px) {
+      .avatars-row { overflow-x: auto; padding-bottom: 5px; }
+      .avatar-box { flex-shrink: 0; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="top-left-actions" id="topLeftActions">
-    <button class="icon-btn" onclick="openPanel('profilePanel', 'player', null)"><i class="fa-solid fa-user"></i></button>
-    <button class="icon-btn" onclick="logoutUser()" style="color: #ff4d6d;"><i class="fa-solid fa-right-from-bracket"></i></button>
-  </div>
-
-  <div class="sidebar">
-    <div class="logo-container">
-      <i class="fa-solid fa-crown"></i>
-    </div>
-
-    <div class="welcome-text" id="visitorWelcome">
-      <p>Saudi Legends</p>
-      <h1>Locker Room</h1>
-    </div>
-
-    <div class="welcome-text" id="playerWelcome" style="display: none;">
-      <p>Welcome Back</p>
-      <h1 id="playerNameDisplay" style="color: var(--primary-gold);">Player</h1>
-    </div>
-
-    <div class="menu-items" id="visitorMenu">
-      <div class="menu-item active" onclick="openPanel('loginPanel', 'visitor', this)">Login</div>
-      <div class="menu-item" onclick="openPanel('signupPanel', 'visitor', this)">Sign up</div>
-    </div>
-
-    <div class="dashboard-menu" id="playerMenu">
-      <div class="dash-item active" onclick="openPanel('homePanel', 'player', this)">Dashboard</div>
-      <div class="dash-item" onclick="openPanel('profilePanel', 'player', this)">Profile</div>
-    </div>
-  </div>
-
   <div class="forms-wrapper">
     
-    <div class="glass-panel show" id="loginPanel">
+    <div class="glass-panel show" id="signupPanel">
       <div class="panel-header">
-        <h2>Player Login</h2>
-        <p>Enter your credentials to access the locker room.</p>
+        <h2>Sign up</h2>
+        <p>Create your account</p>
+      </div>
+
+      <div class="stepper">
+        <div class="step active"><div class="step-circle">1</div> Avatar</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-circle">2</div> Information</div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-circle">3</div> Confirm</div>
+      </div>
+
+      <div class="avatars-section">
+        <h3>Choose your avatar</h3>
+        <div class="avatars-row" id="signupAvatars">
+          </div>
+      </div>
+
+      <div class="input-group">
+        <label>Username</label>
+        <div class="input-box">
+          <i class="fa-regular fa-user"></i>
+          <input type="text" id="regName" placeholder="Enter your username">
+        </div>
       </div>
       
       <div class="input-group">
-        <label>Email Address</label>
-        <div class="input-field">
+        <label>Email</label>
+        <div class="input-box">
           <i class="fa-regular fa-envelope"></i>
-          <input type="email" id="loginEmail" placeholder="player@team.sa">
+          <input type="email" id="regEmail" placeholder="Enter your email">
         </div>
       </div>
       
       <div class="input-group">
         <label>Password</label>
-        <div class="input-field">
+        <div class="input-box">
           <i class="fa-solid fa-lock"></i>
-          <input type="password" id="loginPass" placeholder="••••••••">
-          <i class="fa-regular fa-eye" style="cursor:pointer;" onclick="togglePass('loginPass')"></i>
+          <input type="password" id="regPass" placeholder="Enter your password">
+          <i class="fa-regular fa-eye eye-icon" onclick="togglePass('regPass')"></i>
         </div>
       </div>
-      
-      <button class="btn-main" id="loginBtn">Enter Locker Room</button>
-      <div class="divider">New Player?</div>
-      <button class="btn-outline" onclick="openPanel('signupPanel', 'visitor', document.querySelectorAll('.menu-item')[1])">Draft Registration</button>
+
+      <div class="split-row">
+        <div class="input-group">
+          <label>Jersey Name</label>
+          <div class="input-box">
+            <i class="fa-solid fa-shirt"></i>
+            <input type="text" id="regJerseyName" placeholder="Name" maxlength="12">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Number</label>
+          <div class="input-box">
+            <i class="fa-solid fa-hashtag"></i>
+            <input type="number" id="regJerseyNum" placeholder="10" min="1" max="99">
+          </div>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="signupBtn">Next</button>
+
+      <div class="bottom-text">
+        Already have an account? <span onclick="switchPanel('loginPanel')">Login</span>
+      </div>
     </div>
 
-    <div class="glass-panel" id="signupPanel">
+    <div class="glass-panel" id="loginPanel">
       <div class="panel-header">
-        <h2>Draft Registration</h2>
-        <p>Build your legend profile.</p>
+        <h2>Login</h2>
+        <p>Access your account</p>
       </div>
 
-      <div class="steps-container">
-        <div class="step active"><div class="step-icon"><i class="fa-solid fa-id-card"></i></div><span class="step-text">Identity</span></div>
-        <div class="step active"><div class="step-icon"><i class="fa-solid fa-shirt"></i></div><span class="step-text">Jersey</span></div>
-        <div class="step active"><div class="step-icon"><i class="fa-solid fa-image"></i></div><span class="step-text">Avatar</span></div>
-      </div>
-
-      <div class="input-group">
-        <div class="input-field">
-          <i class="fa-regular fa-user"></i>
-          <input type="text" id="regName" placeholder="Full Username">
-        </div>
-      </div>
-      
-      <div class="input-group">
-        <div class="input-field">
+      <div class="input-group" style="margin-top: 40px;">
+        <label>Email</label>
+        <div class="input-box">
           <i class="fa-regular fa-envelope"></i>
-          <input type="email" id="regEmail" placeholder="Email Address">
+          <input type="email" id="loginEmail" placeholder="Enter your email">
         </div>
       </div>
       
       <div class="input-group">
-        <div class="input-field">
+        <label>Password</label>
+        <div class="input-box">
           <i class="fa-solid fa-lock"></i>
-          <input type="password" id="regPass" placeholder="Secure Password">
+          <input type="password" id="loginPass" placeholder="Enter your password">
+          <i class="fa-regular fa-eye eye-icon" onclick="togglePass('loginPass')"></i>
         </div>
       </div>
 
-      <div class="jersey-grid">
-        <div>
-          <label>Jersey Name</label>
-          <div class="input-field"><input type="text" id="regJerseyName" placeholder="e.g. MAJED" maxlength="12" style="text-transform: uppercase;"></div>
-        </div>
-        <div>
-          <label>Number</label>
-          <div class="number-selector">
-            <i class="fa-solid fa-minus" onclick="changeNum(-1)"></i>
-            <input type="number" id="regJerseyNum" value="9" readonly>
-            <i class="fa-solid fa-plus" onclick="changeNum(1)"></i>
-          </div>
-        </div>
-      </div>
+      <button class="submit-btn" id="loginBtn" style="margin-top: 30px;">Login</button>
 
-      <div class="avatar-selection-wrapper">
-        <label>Select Legend Avatar</label>
-        <div class="avatar-scroll" id="signupAvatars">
-          </div>
+      <div class="bottom-text">
+        Don't have an account? <span onclick="switchPanel('signupPanel')">Sign up</span>
       </div>
-
-      <button class="btn-main" id="signupBtn">Complete Draft</button>
     </div>
 
     <div class="glass-panel" id="homePanel">
-      <div class="panel-header">
-        <h2>Locker Room</h2>
-        <p>Ready for the match.</p>
+      <button class="logout-btn" onclick="logoutUser()" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+      <div class="panel-header" style="margin-top: 20px;">
+        <h2 id="playerNameDisplay">Player</h2>
+        <p id="playerJerseyDisplay" style="margin-bottom: 20px;">#10</p>
+        <img id="playerAvatarDisplay" src="" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; margin-bottom: 20px;">
       </div>
-      <button class="btn-main" style="margin-bottom: 15px;">Start Match</button>
-      <button class="btn-outline">View Squad</button>
-    </div>
-
-    <div class="glass-panel" id="profilePanel">
-      <div class="panel-header">
-        <h2>Player Profile</h2>
-        <p>Your legacy starts here.</p>
-      </div>
-      <div style="text-align: center; margin-top: 20px;">
-        <img id="currentProfileAvatar" src="" style="width: 100px; height: 100px; border-radius: 15px; border: 2px solid var(--primary-gold); margin-bottom: 20px; object-fit: cover;">
-        <h3 id="profileNameDisplay" style="color: var(--primary-gold); margin-bottom: 5px;">Player</h3>
-        <p id="profileJerseyDisplay" style="color: var(--text-muted); font-size: 14px; margin-bottom: 30px;">#9</p>
-      </div>
+      <button class="submit-btn">Start Game</button>
     </div>
 
   </div>
@@ -343,7 +309,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    // روابط الأفاتارات التي أرسلتها
+    // روابط الأفاتارات الخاصة بك
     const avatars = [
       "https://cdn.pfps.gg/pfps/5024-dark-aesthetic-anime-profile-avatar.png",
       "https://i.pinimg.com/736x/35/cd/4d/35cd4dd145c0aaa1027b37d3c910ace3.jpg",
@@ -354,14 +320,19 @@
 
     let selectedAvatarUrl = avatars[0];
 
-    // عرض الأفاتارات في شاشة التسجيل
+    // عرض الأفاتارات بنفس شكل الصورة
     const avatarContainer = document.getElementById('signupAvatars');
     avatars.forEach((url, index) => {
       const div = document.createElement('div');
-      div.className = `avatar-option ${index === 0 ? 'selected' : ''}`;
-      div.innerHTML = `<img src="${url}" alt="Avatar ${index+1}">`;
+      div.className = `avatar-box ${index === 2 ? 'selected' : ''}`; // الخيار الثالث مفعل افتراضياً كالصورة
+      if(index === 2) selectedAvatarUrl = url;
+      
+      div.innerHTML = `
+        <img src="${url}" alt="Avatar">
+        <div class="avatar-check"><i class="fa-solid fa-check"></i></div>
+      `;
       div.onclick = () => {
-        document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+        document.querySelectorAll('.avatar-box').forEach(el => el.classList.remove('selected'));
         div.classList.add('selected');
         selectedAvatarUrl = url;
       };
@@ -369,18 +340,8 @@
     });
 
     // التنقل بين النوافذ
-    function openPanel(panelId, menuType, menuItem) {
+    function switchPanel(panelId) {
       document.querySelectorAll('.glass-panel').forEach(p => p.classList.remove('show'));
-      
-      if(menuItem) {
-        if(menuType === 'visitor') {
-          document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-        } else {
-          document.querySelectorAll('.dash-item').forEach(m => m.classList.remove('active'));
-        }
-        menuItem.classList.add('active');
-      }
-      
       document.getElementById(panelId).classList.add('show');
     }
 
@@ -388,13 +349,6 @@
     function togglePass(id) {
       const input = document.getElementById(id);
       input.type = input.type === 'password' ? 'text' : 'password';
-    }
-
-    // تغيير رقم القميص
-    function changeNum(step) {
-      const input = document.getElementById('regJerseyNum');
-      let val = parseInt(input.value) + step;
-      if(val >= 1 && val <= 99) input.value = val;
     }
   </script>
 
@@ -417,7 +371,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // دالة إنشاء الحساب
+    // إنشاء الحساب
     document.getElementById('signupBtn').addEventListener('click', async () => {
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPass').value;
@@ -426,12 +380,12 @@
       const jerseyNum = document.getElementById('regJerseyNum').value;
 
       if(!email || !pass || !username) {
-        Swal.fire({ background: '#141414', color: '#D4AF37', icon: 'warning', title: 'Missing Info', text: 'Please fill all required fields.' });
+        Swal.fire({ background: '#0a0a0a', color: '#c5a059', icon: 'warning', text: 'Please fill username, email, and password.' });
         return;
       }
 
       try {
-        Swal.fire({ title: 'Drafting Player...', background: '#141414', color: '#D4AF37', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
+        Swal.fire({ background: '#0a0a0a', color: '#c5a059', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
         
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
@@ -440,7 +394,7 @@
           username: username,
           email: email,
           jerseyName: jerseyName || username,
-          jerseyNumber: jerseyNum,
+          jerseyNumber: jerseyNum || "10",
           avatarUrl: selectedAvatarUrl,
           createdAt: new Date()
         }, { merge: true });
@@ -448,24 +402,24 @@
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
         await Promise.race([dbPromise, timeoutPromise]);
 
-        Swal.fire({ background: '#141414', color: '#D4AF37', icon: 'success', title: 'Welcome to the Squad', text: 'Draft successful.' });
+        Swal.fire({ background: '#0a0a0a', color: '#c5a059', icon: 'success', text: 'Account created successfully.' });
       } catch (error) {
-        Swal.fire({ background: '#141414', color: '#ff4d6d', icon: 'error', title: 'Draft Failed', text: error.message });
+        Swal.fire({ background: '#0a0a0a', color: '#ff4d6d', icon: 'error', text: error.message });
       }
     });
 
-    // دالة تسجيل الدخول
+    // تسجيل الدخول
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const email = document.getElementById('loginEmail').value;
       const pass = document.getElementById('loginPass').value;
       if(!email || !pass) return;
 
       try {
-        Swal.fire({ title: 'Entering...', background: '#141414', color: '#D4AF37', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
+        Swal.fire({ background: '#0a0a0a', color: '#c5a059', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }});
         await signInWithEmailAndPassword(auth, email, pass);
         Swal.close();
       } catch (error) {
-        Swal.fire({ background: '#141414', color: '#ff4d6d', icon: 'error', title: 'Access Denied', text: 'Invalid credentials.' });
+        Swal.fire({ background: '#0a0a0a', color: '#ff4d6d', icon: 'error', text: 'Invalid email or password.' });
       }
     });
 
@@ -474,38 +428,26 @@
       window.location.reload(); 
     };
 
-    // متابعة حالة المستخدم وتحديث البروفايل
+    // متابعة حالة الدخول
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        let username = "Player", jerseyName = "", jerseyNum = "", avatar = avatars[0];
+        let username = "Player", jerseyName = "Player", jerseyNum = "10", avatar = avatars[0];
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           if (docSnap.exists()) {
             const data = docSnap.data();
-            username = data.username;
-            jerseyName = data.jerseyName;
-            jerseyNum = data.jerseyNumber;
+            username = data.username || username;
+            jerseyName = data.jerseyName || jerseyName;
+            jerseyNum = data.jerseyNumber || jerseyNum;
             if(data.avatarUrl) avatar = data.avatarUrl;
           }
         } catch(e) {}
         
-        document.getElementById('visitorWelcome').style.display = 'none';
-        document.getElementById('visitorMenu').style.display = 'none';
+        switchPanel('homePanel');
         
-        document.getElementById('playerWelcome').style.display = 'block';
-        document.getElementById('playerMenu').style.display = 'flex';
         document.getElementById('playerNameDisplay').innerText = username;
-        document.getElementById('topLeftActions').style.display = 'flex';
-        
-        // تحديث واجهة البروفايل
-        document.getElementById('currentProfileAvatar').src = avatar;
-        document.getElementById('profileNameDisplay').innerText = username;
-        document.getElementById('profileJerseyDisplay').innerText = `${jerseyName} #${jerseyNum}`;
-
-        openPanel('homePanel', 'player', document.querySelector('.dash-item.active'));
-      } else {
-        const topActions = document.getElementById('topLeftActions');
-        if(topActions) topActions.style.display = 'none';
+        document.getElementById('playerJerseyDisplay').innerText = `${jerseyName} #${jerseyNum}`;
+        document.getElementById('playerAvatarDisplay').src = avatar;
       }
     });
   </script>
