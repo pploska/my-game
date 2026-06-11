@@ -188,30 +188,44 @@
     .mobile-top-bar, .mobile-nav { display: none; }
 
     /* ========================================= */
-    /* التصميم الجديد بالكامل لنسخة الجوال (App Style) */
+    /* التصميم الجديد بالكامل لنسخة الجوال */
     /* ========================================= */
     @media (max-width: 900px) {
-      body { flex-direction: column; padding: 0; justify-content: flex-start; }
-      body.is-player { padding-bottom: 100px; } 
+      /* إيقاف تقنية الفليكس في البدي لمنع قص الشاشة من الأعلى نهائياً */
+      body { 
+        display: block; 
+        padding: 0; 
+      }
+      
+      /* توسيط واجهة تسجيل الدخول عمودياً عندما لا يكون اللاعب مسجلاً */
+      body:not(.is-player) .forms-wrapper { 
+        margin-top: 15vh; 
+      }
+
+      body.is-player { 
+        padding-top: 30px; /* مسافة أمان من الأعلى (Notch Safe Area) */
+        padding-bottom: 120px; /* مسافة كافية للشريط السفلي العائم */
+      }
       
       .top-left-actions { top: 15px; left: 15px; flex-direction: row; }
       .sidebar { display: none !important; } 
       
-      /* التصميم الجديد للشريط العلوي (الاسم والصورة والتاج) */
+      /* التصميم الجديد والفخم للهيدر (الاسم والصورة والتاج) */
       body.is-player .mobile-top-bar { 
         display: flex; 
-        justify-content: center; /* توسيط في منتصف الشاشة */
+        justify-content: center; 
         align-items: center; 
-        gap: 18px; /* مسافة متناسقة بين الصورة والاسم */
+        gap: 20px; /* مسافة متناسقة ومريحة بين الصورة والاسم */
         width: 100%; 
-        padding: 50px 20px 20px; /* نزول العنصر لأسفل قليلاً */
-        background: transparent; /* إزالة الخلفية ليدمج مع الواجهة الرئيسية */
+        padding: 20px 20px 30px; /* هوامش متزنة */
+        background: transparent; 
         position: relative; 
         z-index: 100;
       }
+      
       body.is-player .mobile-top-bar img { 
-        width: 75px; /* تكبير الصورة بشكل ملحوظ */
-        height: 75px; 
+        width: 85px; /* تكبير صورة الأفاتار */
+        height: 85px; 
         border-radius: 50%; 
         border: 2px solid var(--gold); 
         object-fit: cover; 
@@ -222,22 +236,24 @@
         position: relative;
         display: inline-block;
       }
+      
       .mobile-name-wrapper h1 { 
         font-family: 'Playfair Display', serif; 
-        font-size: 32px; /* تكبير الاسم */
+        font-size: 36px; /* تكبير الاسم بشكل ملحوظ */
         font-weight: 700; 
-        color: var(--text-main); /* نفس لون الصورة المرسلة */
+        color: var(--text-main); 
         margin: 0; 
       }
-      /* التاج الذهبي المائل فوق الاسم */
+      
+      /* التاج الذهبي المائل فوق الاسم بتصميم احترافي */
       .tilted-crown {
         position: absolute;
-        top: -18px;
-        left: -16px;
+        top: -22px; /* الرفع للأعلى قليلاً لتناسب حجم الاسم */
+        left: -18px; 
         color: var(--gold);
-        font-size: 26px; /* حجم التاج متناسب مع الاسم الكبير */
-        transform: rotate(-25deg); /* جعله مائلاً */
-        filter: drop-shadow(0 0 8px rgba(197, 160, 89, 0.6)); /* توهج ذهبي */
+        font-size: 28px; /* تكبير التاج */
+        transform: rotate(-25deg); /* جعله مائلاً بشكل ديناميكي */
+        filter: drop-shadow(0 0 8px rgba(197, 160, 89, 0.6)); 
       }
 
       .forms-wrapper, body.is-player .forms-wrapper { 
@@ -246,7 +262,6 @@
         padding: 0 15px;
         margin: 0 auto; 
       }
-      body:not(.is-player) .forms-wrapper { margin-top: 50px; }
       
       .glass-panel { 
         width: 100%;
