@@ -23,12 +23,14 @@
       --glow-gold: rgba(197, 160, 89, 0.4);
     }
 
+    /* تطبيق صارم لمنع تجاوز العناصر للعرض */
     *, *::before, *::after { 
       margin: 0; 
       padding: 0; 
       box-sizing: border-box; 
     }
 
+    /* 1. منع القص والتمرير الأفقي نهائياً */
     html, body {
       width: 100%;
       max-width: 100%;
@@ -45,14 +47,16 @@
       background-color: var(--bg-color);
       background-attachment: fixed;
       font-family: 'Inter', sans-serif;
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
       color: var(--text-main); 
+      
+      /* استخدام Flex Column مع Margin Auto للحاوية يوفر توسيطاً آمناً لا يقص الأعلى */
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
     }
 
     /* ========================================= */
-    /* الأيقونات العائمة */
+    /* الأيقونات العائمة (الشاشات الكبيرة) */
     /* ========================================= */
     .top-left-actions {
       position: fixed; top: 30px; left: 30px;
@@ -71,7 +75,7 @@
     /* القائمة الجانبية (Sidebar) - الشاشات الكبيرة */
     /* ========================================= */
     .sidebar { 
-      width: 300px; margin-left: 100px; 
+      width: 300px; margin-left: 50px; 
       display: none; flex-direction: column; z-index: 10; 
     }
     .logo-container { margin-bottom: 50px; }
@@ -95,24 +99,28 @@
     .dash-item.active { border: 1px solid var(--border-color); background: rgba(197, 160, 89, 0.05); color: var(--gold); }
 
     /* ========================================= */
-    /* النوافذ (Forms Wrapper) */
+    /* الهيكل الأساسي للنوافذ (Forms Wrapper) */
     /* ========================================= */
+    /* 2. ضبط العرض والتوسيط الآمن */
     .forms-wrapper { 
       width: 100%; 
       max-width: 420px; 
-      margin: 0 auto; 
+      margin: auto; /* يضمن التوسيط العمودي والأفقي معاً بدون قص */
       position: relative; 
       z-index: 10; 
     }
 
+    /* تخطيط الشاشات الكبيرة */
     @media (min-width: 901px) {
-      body.is-player { justify-content: space-between; }
+      body { flex-direction: row; justify-content: center; }
+      body.is-player { justify-content: space-between; align-items: center; }
       body.is-player .forms-wrapper { margin-right: 10%; margin-left: auto; }
     }
 
     /* ========================================= */
     /* الألواح الزجاجية (.glass-panel) */
     /* ========================================= */
+    /* 3. جعل النوافذ نسبية لتجنب الخروج عن الشاشة */
     .glass-panel {
       display: none; 
       width: 100%; 
@@ -137,18 +145,18 @@
     }
 
     /* ========================================= */
-    /* محتويات النوافذ */
+    /* محتويات النوافذ الداخلية (محاذاة 100%) */
     /* ========================================= */
-    .panel-header { text-align: center; margin-bottom: 30px; }
+    .panel-header { text-align: center; margin-bottom: 30px; width: 100%; }
     .panel-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--gold); font-weight: 500; margin-bottom: 8px; letter-spacing: 0.5px; }
     .panel-header p { color: var(--text-muted); font-size: 14px; }
 
-    .stepper { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 35px; width: 100%; }
-    .step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .stepper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 35px; width: 100%; }
+    .step { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
     .step.active { color: var(--gold); }
     .step-circle { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.3s; flex-shrink: 0; }
     .step.active .step-circle { border-color: var(--gold); background: rgba(197, 160, 89, 0.1); color: var(--gold); }
-    .step-line { height: 1px; width: 25px; background: var(--border-color); flex-shrink: 0; }
+    .step-line { height: 1px; flex: 1; background: var(--border-color); margin: 0 8px; }
 
     .input-group { margin-bottom: 20px; text-align: left; width: 100%; }
     .input-group label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; font-weight: 400; }
@@ -163,84 +171,77 @@
     .split-row .input-group { flex: 1; margin-bottom: 0; }
 
     /* الأفاتارات */
-    .avatars-section { margin-bottom: 25px; text-align: left; width: 100%; overflow: hidden; }
+    .avatars-section { margin-bottom: 25px; text-align: left; width: 100%; }
     .avatars-section h3 { font-size: 14px; color: #ccc; margin-bottom: 15px; font-weight: 400; }
-    .avatars-row { display: flex; justify-content: flex-start; gap: 12px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; width: 100%; }
+    .avatars-row { display: flex; justify-content: space-between; gap: 10px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; width: 100%; }
     
-    .avatar-box { position: relative; width: 55px; height: 55px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; }
+    .avatar-box { position: relative; width: 55px; height: 55px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.3s ease; flex-shrink: 0; }
     .avatar-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; filter: brightness(0.3) grayscale(100%); transition: all 0.3s; }
     
-    .avatar-box.selected { border: 3px solid var(--gold); box-shadow: 0 0 20px var(--glow-gold); transform: scale(1.15); z-index: 5; }
+    .avatar-box.selected { border: 2px solid var(--gold); box-shadow: 0 0 15px var(--glow-gold); transform: scale(1.1); z-index: 5; }
     .avatar-box.selected img { filter: brightness(1.1) grayscale(0%); }
     
-    .avatar-check { position: absolute; bottom: -5px; right: -5px; background: var(--gold); color: #000; width: 22px; height: 22px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--panel-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+    .avatar-check { position: absolute; bottom: -2px; right: -2px; background: var(--gold); color: #000; width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 10px; border: 2px solid var(--panel-bg); }
     .avatar-box.selected .avatar-check { display: flex; }
 
+    /* الأزرار */
     .submit-btn { width: 100%; height: 52px; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); border: 1px solid var(--gold-muted); border-radius: 12px; color: var(--gold); font-size: 18px; font-family: 'Playfair Display', serif; font-weight: 500; cursor: pointer; margin-top: 20px; transition: all 0.3s; }
     .submit-btn:hover { background: rgba(197, 160, 89, 0.1); border-color: var(--gold); }
     .btn-outline { width: 100%; height: 52px; background: transparent; border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); font-size: 16px; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
     .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-    .bottom-text { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); }
+    .bottom-text { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); width: 100%; }
     .bottom-text span { color: var(--gold); cursor: pointer; font-weight: 500; }
 
+    /* ========================================= */
+    /* إخفاء عناصر الجوال في الشاشات الكبيرة */
+    /* ========================================= */
     .mobile-top-bar, .mobile-nav { display: none; }
 
     /* ========================================= */
-    /* الحل الجذري للجوال (إلغاء التوسيط الإجباري) */
+    /* 4. تصميم الجوال (أقل من 900px) */
     /* ========================================= */
     @media (max-width: 900px) {
-      body, body.is-player { 
-        flex-direction: column; 
-        justify-content: flex-start !important; /* هذا السطر يجبر الصفحة أن تبدأ من الأعلى دائماً */
-        align-items: center !important; 
-        padding: 0; 
-      }
-      
-      /* توسيط واجهة تسجيل الدخول عمودياً عندما لا يكون اللاعب مسجلاً */
-      body:not(.is-player) .forms-wrapper { 
-        margin-top: 10vh !important; 
+      body { 
+        padding: 15px; /* هوامش خارجية آمنة */
       }
 
+      /* مساحة سفلية للشريط العائم */
       body.is-player { 
-        padding-bottom: 120px !important; 
+        padding-bottom: 90px; 
       }
       
       .top-left-actions { top: 15px; left: 15px; flex-direction: row; }
       .sidebar { display: none !important; } 
       
-      /* التصميم الجديد للهيدر (الاسم والصورة والتاج) */
+      /* الهيدر العلوي */
       body.is-player .mobile-top-bar { 
-        display: flex !important; 
+        display: flex; 
+        flex-direction: column;
         justify-content: center; 
         align-items: center; 
-        gap: 20px; 
+        gap: 15px; 
         width: 100%; 
-        padding: 0 20px;
-        margin-top: 60px; /* مسافة أمان قوية لضمان عدم اختفائه خلف كاميرا الجوال */
-        margin-bottom: 25px;
-        background: transparent; 
-        position: relative; 
-        z-index: 100;
+        margin: 20px auto 30px auto; 
       }
       
       body.is-player .mobile-top-bar img { 
-        width: 85px; 
-        height: 85px; 
+        width: 80px; 
+        height: 80px; 
         border-radius: 50%; 
         border: 2px solid var(--gold); 
         object-fit: cover; 
-        box-shadow: 0 0 20px var(--glow-gold); 
+        box-shadow: 0 0 15px var(--glow-gold); 
       }
       
       .mobile-name-wrapper {
         position: relative;
-        display: inline-flex;
-        align-items: center;
+        display: flex;
+        justify-content: center;
       }
       
       .mobile-name-wrapper h1 { 
         font-family: 'Playfair Display', serif; 
-        font-size: 36px; 
+        font-size: 32px; 
         font-weight: 700; 
         color: var(--text-main); 
         margin: 0; 
@@ -248,47 +249,47 @@
       
       .tilted-crown {
         position: absolute;
-        top: -22px; 
-        left: -18px; 
+        top: -20px; 
+        left: -20px; 
         color: var(--gold);
-        font-size: 28px; 
+        font-size: 24px; 
         transform: rotate(-25deg); 
         filter: drop-shadow(0 0 8px rgba(197, 160, 89, 0.6)); 
       }
 
+      /* تطبيق المتطلبات بدقة للحاوية والألواح */
       .forms-wrapper, body.is-player .forms-wrapper { 
         width: 100%; 
-        max-width: 100%; 
-        padding: 0 15px;
-        margin: 0 auto; 
+        max-width: 420px; 
+        margin: 0 auto auto auto; /* التوسيط الأفقي التام مع السماح بالمرونة العمودية */
       }
       
       .glass-panel { 
         width: 100%;
         position: relative;
-        padding: 30px 20px;
-        border-radius: 24px;
+        padding: 30px 20px; /* تقليل الـ Padding لتناسب الشاشات الضيقة 390px */
+        border-radius: 20px;
         background: linear-gradient(145deg, rgba(15,15,15,0.9), rgba(5,5,5,0.95));
-        border: 1px solid rgba(197, 160, 89, 0.2);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.9);
       }
+      
+      .glass-panel::before { display: none; } 
 
+      /* محاذاة الحقول لتكون 100% رأسية على الشاشات الصغيرة جداً */
+      .split-row { flex-direction: column; gap: 15px; }
+
+      /* الشريط العائم السفلي */
       body.is-player .mobile-nav {
-        display: flex; position: fixed; bottom: 20px; left: 5%; width: 90%;
-        background: rgba(10, 10, 10, 0.85); 
+        display: flex; position: fixed; bottom: 15px; left: 5%; width: 90%;
+        background: rgba(10, 10, 10, 0.9); 
         backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         border: 1px solid rgba(197, 160, 89, 0.3);
-        border-radius: 30px; 
+        border-radius: 25px; 
         z-index: 100; justify-content: space-around; padding: 12px 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.8);
       }
-      .mobile-nav-item { color: var(--text-muted); font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: 0.3s; }
+      .mobile-nav-item { color: var(--text-muted); font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; transition: 0.3s; width: 33%; }
       .mobile-nav-item i { font-size: 18px; }
       .mobile-nav-item.active { color: var(--gold); text-shadow: 0 0 10px rgba(197, 160, 89, 0.5); transform: translateY(-2px); }
-
-      .split-row { flex-direction: column; gap: 20px; }
-      .step-text { font-size: 11px; }
-      .step-line { width: 15px; } 
     }
   </style>
 </head>
