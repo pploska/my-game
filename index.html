@@ -176,7 +176,6 @@
     .avatar-check { position: absolute; bottom: -5px; right: -5px; background: var(--gold); color: #000; width: 22px; height: 22px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--panel-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
     .avatar-box.selected .avatar-check { display: flex; }
 
-    /* الأزرار والنصوص */
     .submit-btn { width: 100%; height: 52px; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); border: 1px solid var(--gold-muted); border-radius: 12px; color: var(--gold); font-size: 18px; font-family: 'Playfair Display', serif; font-weight: 500; cursor: pointer; margin-top: 20px; transition: all 0.3s; }
     .submit-btn:hover { background: rgba(197, 160, 89, 0.1); border-color: var(--gold); }
     .btn-outline { width: 100%; height: 52px; background: transparent; border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); font-size: 16px; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
@@ -184,47 +183,48 @@
     .bottom-text { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); }
     .bottom-text span { color: var(--gold); cursor: pointer; font-weight: 500; }
 
-    /* إخفاء عناصر الجوال في الشاشات الكبيرة */
     .mobile-top-bar, .mobile-nav { display: none; }
 
     /* ========================================= */
-    /* التصميم الجديد بالكامل لنسخة الجوال */
+    /* الحل الجذري للجوال (إلغاء التوسيط الإجباري) */
     /* ========================================= */
     @media (max-width: 900px) {
-      /* إيقاف تقنية الفليكس في البدي لمنع قص الشاشة من الأعلى نهائياً */
-      body { 
-        display: block; 
+      body, body.is-player { 
+        flex-direction: column; 
+        justify-content: flex-start !important; /* هذا السطر يجبر الصفحة أن تبدأ من الأعلى دائماً */
+        align-items: center !important; 
         padding: 0; 
       }
       
       /* توسيط واجهة تسجيل الدخول عمودياً عندما لا يكون اللاعب مسجلاً */
       body:not(.is-player) .forms-wrapper { 
-        margin-top: 15vh; 
+        margin-top: 10vh !important; 
       }
 
       body.is-player { 
-        padding-top: 30px; /* مسافة أمان من الأعلى (Notch Safe Area) */
-        padding-bottom: 120px; /* مسافة كافية للشريط السفلي العائم */
+        padding-bottom: 120px !important; 
       }
       
       .top-left-actions { top: 15px; left: 15px; flex-direction: row; }
       .sidebar { display: none !important; } 
       
-      /* التصميم الجديد والفخم للهيدر (الاسم والصورة والتاج) */
+      /* التصميم الجديد للهيدر (الاسم والصورة والتاج) */
       body.is-player .mobile-top-bar { 
-        display: flex; 
+        display: flex !important; 
         justify-content: center; 
         align-items: center; 
-        gap: 20px; /* مسافة متناسقة ومريحة بين الصورة والاسم */
+        gap: 20px; 
         width: 100%; 
-        padding: 20px 20px 30px; /* هوامش متزنة */
+        padding: 0 20px;
+        margin-top: 60px; /* مسافة أمان قوية لضمان عدم اختفائه خلف كاميرا الجوال */
+        margin-bottom: 25px;
         background: transparent; 
         position: relative; 
         z-index: 100;
       }
       
       body.is-player .mobile-top-bar img { 
-        width: 85px; /* تكبير صورة الأفاتار */
+        width: 85px; 
         height: 85px; 
         border-radius: 50%; 
         border: 2px solid var(--gold); 
@@ -234,25 +234,25 @@
       
       .mobile-name-wrapper {
         position: relative;
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
       }
       
       .mobile-name-wrapper h1 { 
         font-family: 'Playfair Display', serif; 
-        font-size: 36px; /* تكبير الاسم بشكل ملحوظ */
+        font-size: 36px; 
         font-weight: 700; 
         color: var(--text-main); 
         margin: 0; 
       }
       
-      /* التاج الذهبي المائل فوق الاسم بتصميم احترافي */
       .tilted-crown {
         position: absolute;
-        top: -22px; /* الرفع للأعلى قليلاً لتناسب حجم الاسم */
+        top: -22px; 
         left: -18px; 
         color: var(--gold);
-        font-size: 28px; /* تكبير التاج */
-        transform: rotate(-25deg); /* جعله مائلاً بشكل ديناميكي */
+        font-size: 28px; 
+        transform: rotate(-25deg); 
         filter: drop-shadow(0 0 8px rgba(197, 160, 89, 0.6)); 
       }
 
@@ -272,7 +272,6 @@
         border: 1px solid rgba(197, 160, 89, 0.2);
         box-shadow: 0 10px 30px rgba(0,0,0,0.9);
       }
-      .glass-panel::before { display: none; } 
 
       body.is-player .mobile-nav {
         display: flex; position: fixed; bottom: 20px; left: 5%; width: 90%;
