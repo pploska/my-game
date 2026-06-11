@@ -23,10 +23,21 @@
       --glow-gold: rgba(197, 160, 89, 0.4);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* تطبيق البوكس سايزنج على كل العناصر لمنع خروج الـ padding عن الـ 100% */
+    *, *::before, *::after { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+
+    /* منع الـ Overflow الأفقي بالكامل وتحديد العرض بـ 100% حسب طلبك */
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
 
     body {
-      width: 100vw; 
       min-height: 100vh;
       background-image: 
         linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%), 
@@ -38,13 +49,8 @@
       font-family: 'Inter', sans-serif;
       display: flex; 
       align-items: center; 
-      justify-content: center; 
+      justify-content: center; /* توسيط النوافذ أفقياً للزوار */
       color: var(--text-main); 
-      overflow-x: hidden;
-    }
-
-    body.is-player {
-      justify-content: space-between;
     }
 
     /* ========================================= */
@@ -64,10 +70,10 @@
     .icon-btn:hover { color: var(--gold); border-color: var(--gold); box-shadow: 0 0 15px var(--glow-gold); }
 
     /* ========================================= */
-    /* القائمة الجانبية (Sidebar) */
+    /* القائمة الجانبية (Sidebar) - الشاشات الكبيرة */
     /* ========================================= */
     .sidebar { 
-      width: 300px; margin-left: 120px; 
+      width: 300px; margin-left: 100px; 
       display: none; flex-direction: column; z-index: 10; 
     }
     .logo-container { margin-bottom: 50px; }
@@ -76,15 +82,9 @@
     .welcome-text { margin-bottom: 40px; }
     .welcome-text p { color: var(--gold); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 600; }
     
-    .player-header-desktop {
-      display: flex; align-items: center; gap: 15px; margin-top: 10px;
-    }
-    .player-header-desktop img {
-      width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: 0 0 10px var(--glow-gold);
-    }
-    .player-header-desktop h1 { 
-      font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; line-height: 1.2; color: var(--gold); 
-    }
+    .player-header-desktop { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+    .player-header-desktop img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: 0 0 10px var(--glow-gold); }
+    .player-header-desktop h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; line-height: 1.2; color: var(--gold); }
 
     .dashboard-menu { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
     .dash-item {
@@ -97,103 +97,110 @@
     .dash-item.active { border: 1px solid var(--border-color); background: rgba(197, 160, 89, 0.05); color: var(--gold); }
 
     /* ========================================= */
-    /* الشريط العلوي للجوال (يظهر الأفاتار والاسم) */
+    /* الشريط العلوي للجوال */
     /* ========================================= */
     .mobile-top-bar {
       display: none; align-items: center; justify-content: center; gap: 12px; 
       margin-bottom: 25px; width: 100%; text-align: center;
     }
-    .mobile-top-bar img {
-      width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: 0 0 10px var(--glow-gold);
+    .mobile-top-bar img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; box-shadow: 0 0 10px var(--glow-gold); }
+    .mobile-top-bar h1 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--gold); margin: 0; }
+
+    /* ========================================= */
+    /* النوافذ (Forms Wrapper) - تم التعديل حسب طلبك */
+    /* ========================================= */
+    .forms-wrapper { 
+      width: 100%; 
+      max-width: 420px; 
+      margin: 0 auto; 
+      position: relative; 
+      z-index: 10; 
     }
-    .mobile-top-bar h1 {
-      font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--gold); margin: 0;
+
+    /* للشاشات الكبيرة بعد تسجيل الدخول ندفع الواجهة لليمين قليلاً */
+    @media (min-width: 901px) {
+      body.is-player { justify-content: space-between; }
+      body.is-player .forms-wrapper { margin-right: 10%; margin-left: auto; }
     }
 
     /* ========================================= */
-    /* النوافذ والتصميم */
+    /* الألواح الزجاجية (.glass-panel) - تم التعديل حسب طلبك */
     /* ========================================= */
-    .forms-wrapper { width: 100%; max-width: 440px; position: relative; z-index: 10; transition: all 0.5s ease; }
-    body.is-player .forms-wrapper { margin-right: 10%; margin-left: auto; }
-
     .glass-panel {
-      position: absolute; top: 0; right: 0; width: 100%;
-      background: var(--panel-bg); border: 1px solid var(--border-color);
-      border-radius: 20px; padding: 40px 30px;
-      opacity: 0; visibility: hidden; transform: translateY(20px); transition: all 0.4s ease;
+      display: none; /* إخفاء كلي بدلاً من الإزاحة المطلقة */
+      width: 100%; 
+      position: relative;
+      background: var(--panel-bg); 
+      border: 1px solid var(--border-color);
+      border-radius: 20px; 
+      padding: 40px 30px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.8);
     }
+    
     .glass-panel::before {
       content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
       width: 60%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent);
     }
-    .glass-panel.show { opacity: 1; visibility: visible; transform: translateY(0); position: relative; }
+    
+    .glass-panel.show { 
+      display: block; 
+      animation: fadeInPanel 0.4s ease forwards;
+    }
 
+    @keyframes fadeInPanel {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========================================= */
+    /* محتويات النوافذ */
+    /* ========================================= */
     .panel-header { text-align: center; margin-bottom: 30px; }
     .panel-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--gold); font-weight: 500; margin-bottom: 8px; letter-spacing: 0.5px; }
     .panel-header p { color: var(--text-muted); font-size: 14px; }
 
-    .stepper { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 35px; }
-    .step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+    .stepper { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 35px; width: 100%; }
+    .step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); white-space: nowrap; }
     .step.active { color: var(--gold); }
-    .step-circle { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.3s; }
+    .step-circle { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.3s; flex-shrink: 0; }
     .step.active .step-circle { border-color: var(--gold); background: rgba(197, 160, 89, 0.1); color: var(--gold); }
-    .step-line { height: 1px; width: 30px; background: var(--border-color); }
+    .step-line { height: 1px; width: 25px; background: var(--border-color); flex-shrink: 0; }
 
-    .input-group { margin-bottom: 20px; text-align: left; }
+    .input-group { margin-bottom: 20px; text-align: left; width: 100%; }
     .input-group label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; font-weight: 400; }
-    .input-box { display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 0 15px; height: 52px; transition: all 0.3s; }
+    
+    .input-box { display: flex; align-items: center; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 0 15px; height: 52px; width: 100%; transition: all 0.3s; }
     .input-box:focus-within { border-color: var(--gold-muted); box-shadow: 0 0 10px rgba(197, 160, 89, 0.05); }
-    .input-box i { color: var(--text-muted); font-size: 16px; margin-right: 12px; width: 20px; text-align: center; }
+    .input-box i { color: var(--text-muted); font-size: 16px; margin-right: 12px; width: 20px; text-align: center; flex-shrink: 0; }
     .input-box input { flex: 1; background: transparent; border: none; color: var(--text-main); font-family: 'Inter', sans-serif; font-size: 14px; outline: none; width: 100%; }
     .eye-icon { cursor: pointer; color: var(--gold) !important; opacity: 0.7; }
-    .split-row { display: flex; gap: 15px; }
-    .split-row .input-group { flex: 1; }
+    
+    .split-row { display: flex; gap: 15px; width: 100%; }
+    .split-row .input-group { flex: 1; margin-bottom: 0; }
 
-    /* ========================================= */
-    /* الأفاتارات (التسجيل والتعديل) */
-    /* ========================================= */
-    .avatars-section { margin-bottom: 25px; text-align: left; }
+    /* الأفاتارات */
+    .avatars-section { margin-bottom: 25px; text-align: left; width: 100%; overflow: hidden; }
     .avatars-section h3 { font-size: 14px; color: #ccc; margin-bottom: 15px; font-weight: 400; }
-    .avatars-row { display: flex; justify-content: space-between; gap: 10px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; }
+    .avatars-row { display: flex; justify-content: flex-start; gap: 12px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none; width: 100%; }
     
-    .avatar-box { 
-      position: relative; width: 55px; height: 55px; border-radius: 50%; 
-      border: 1px solid var(--border-color); cursor: pointer; 
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; 
-    }
-    .avatar-box img { 
-      width: 100%; height: 100%; border-radius: 50%; object-fit: cover; 
-      filter: brightness(0.3) grayscale(100%); transition: all 0.3s; 
-    }
+    .avatar-box { position: relative; width: 55px; height: 55px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; }
+    .avatar-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; filter: brightness(0.3) grayscale(100%); transition: all 0.3s; }
     
-    /* التأثير البصري القوي عند اختيار الأفاتار */
-    .avatar-box.selected { 
-      border: 3px solid var(--gold); 
-      box-shadow: 0 0 20px var(--glow-gold); 
-      transform: scale(1.2); 
-      z-index: 5;
-    }
+    .avatar-box.selected { border: 3px solid var(--gold); box-shadow: 0 0 20px var(--glow-gold); transform: scale(1.15); z-index: 5; }
     .avatar-box.selected img { filter: brightness(1.1) grayscale(0%); }
     
-    .avatar-check { 
-      position: absolute; bottom: -5px; right: -5px; 
-      background: var(--gold); color: #000; 
-      width: 22px; height: 22px; border-radius: 50%; 
-      display: none; align-items: center; justify-content: center; 
-      font-size: 12px; border: 2px solid var(--panel-bg); 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
+    .avatar-check { position: absolute; bottom: -5px; right: -5px; background: var(--gold); color: #000; width: 22px; height: 22px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--panel-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
     .avatar-box.selected .avatar-check { display: flex; }
 
-    .submit-btn { width: 100%; height: 52px; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); border: 1px solid var(--gold-muted); border-radius: 12px; color: var(--gold); font-size: 18px; font-family: 'Playfair Display', serif; font-weight: 500; cursor: pointer; margin-top: 10px; transition: all 0.3s; }
+    /* الأزرار والنصوص */
+    .submit-btn { width: 100%; height: 52px; background: linear-gradient(180deg, rgba(30,30,30,1) 0%, rgba(10,10,10,1) 100%); border: 1px solid var(--gold-muted); border-radius: 12px; color: var(--gold); font-size: 18px; font-family: 'Playfair Display', serif; font-weight: 500; cursor: pointer; margin-top: 20px; transition: all 0.3s; }
     .submit-btn:hover { background: rgba(197, 160, 89, 0.1); border-color: var(--gold); }
     .btn-outline { width: 100%; height: 52px; background: transparent; border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); font-size: 16px; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
     .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
     .bottom-text { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); }
     .bottom-text span { color: var(--gold); cursor: pointer; font-weight: 500; }
 
-    /* شريط التنقل السفلي في الجوال */
+    /* شريط الملاحة للجوال */
     .mobile-nav {
       display: none; position: fixed; bottom: 0; left: 0; width: 100%;
       background: var(--panel-bg); border-top: 1px solid var(--border-color);
@@ -205,11 +212,19 @@
     .mobile-nav-item.active { color: var(--gold); text-shadow: 0 0 10px rgba(197, 160, 89, 0.3); }
 
     /* ========================================= */
-    /* تحسينات استجابة ومقاسات الجوال بالكامل */
+    /* إعدادات الجوال الدقيقة (Responsive Fixes) */
     /* ========================================= */
     @media (max-width: 900px) {
-      body { flex-direction: column; justify-content: flex-start; padding: 15px; overflow-y: auto; }
-      body.is-player { padding-bottom: 80px; }
+      body { 
+        flex-direction: column; 
+        padding: 20px; 
+      }
+      body.is-player {
+        padding-top: 30px;
+        padding-bottom: 90px; /* لتجنب تداخل الأزرار مع شريط الملاحة */
+        justify-content: center;
+      }
+      
       .top-left-actions { top: 15px; left: 15px; flex-direction: row; }
       .sidebar { display: none !important; } 
       
@@ -217,12 +232,21 @@
       body.is-player .mobile-top-bar { display: flex; }
 
       .forms-wrapper, body.is-player .forms-wrapper { 
-        margin: 0 auto; width: 100%; max-width: 100%; margin-top: 10px; 
+        width: 100%; 
+        max-width: 420px; 
+        margin: 0 auto; /* توسيط أفقياً دائماً */
       }
-      .split-row { flex-direction: column; gap: 0; }
-      .glass-panel { padding: 30px 20px; }
       
-      .avatars-row { justify-content: flex-start; gap: 15px; } /* لترتيب الأفاتارات أفضل في الجوال */
+      .glass-panel { 
+        width: 100%;
+        position: relative;
+        padding: 30px 20px; /* تقليل الحواف الجانبية لضمان عدم القص */
+      }
+
+      .split-row { flex-direction: column; gap: 20px; }
+      
+      .step-text { font-size: 11px; }
+      .step-line { width: 15px; } /* تصغير الخطوط العرضية ليناسب الشاشات الصغيرة جداً */
     }
   </style>
 </head>
@@ -234,9 +258,7 @@
   </div>
 
   <div class="sidebar" id="sidebar">
-    <div class="logo-container">
-      <i class="fa-solid fa-crown"></i>
-    </div>
+    <div class="logo-container"><i class="fa-solid fa-crown"></i></div>
     <div class="welcome-text">
       <p>Dashboard</p>
       <div class="player-header-desktop">
@@ -281,11 +303,11 @@
         <p>Create your account</p>
       </div>
       <div class="stepper">
-        <div class="step active"><div class="step-circle">1</div> Avatar</div>
+        <div class="step active"><div class="step-circle">1</div> <span class="step-text">Avatar</span></div>
         <div class="step-line"></div>
-        <div class="step"><div class="step-circle">2</div> Info</div>
+        <div class="step"><div class="step-circle">2</div> <span class="step-text">Info</span></div>
         <div class="step-line"></div>
-        <div class="step"><div class="step-circle">3</div> Confirm</div>
+        <div class="step"><div class="step-circle">3</div> <span class="step-text">Confirm</span></div>
       </div>
       <div class="avatars-section">
         <h3>Choose your avatar</h3>
@@ -334,9 +356,9 @@
       <div style="text-align: center; margin-top: 10px;">
         <img id="profileAvatarDisplay" src="" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 20px var(--glow-gold);">
         
-        <div class="avatars-section">
-          <h3 style="text-align: center; font-size: 12px; margin-bottom: 12px; color: var(--gold);">Change Avatar</h3>
-          <div class="avatars-row" id="profileAvatars" style="justify-content: center; padding-bottom: 15px;"></div>
+        <div class="avatars-section" style="overflow: visible;">
+          <h3 style="text-align: center; font-size: 12px; margin-bottom: 15px; color: var(--gold);">Change Avatar</h3>
+          <div class="avatars-row" id="profileAvatars" style="justify-content: center; padding-bottom: 20px;"></div>
         </div>
 
         <div class="input-group" style="margin-top: 15px;">
@@ -541,7 +563,6 @@
           avatarUrl: profileSelectedAvatarUrl
         }, { merge: true });
 
-        // التحديث الفوري للواجهات
         document.getElementById('sidebarPlayerName').innerText = newUsername;
         document.getElementById('mobilePlayerName').innerText = newUsername;
         document.getElementById('sidebarAvatar').src = profileSelectedAvatarUrl;
@@ -579,7 +600,6 @@
         
         openPanel('homePanel', document.querySelector('.dash-item.active'));
         
-        // تعبئة البيانات في الواجهات (الجوال والكمبيوتر)
         document.getElementById('sidebarPlayerName').innerText = username;
         document.getElementById('mobilePlayerName').innerText = username;
         document.getElementById('profileNameInput').value = username;
